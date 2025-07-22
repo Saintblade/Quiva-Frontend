@@ -17,7 +17,7 @@ const AppLayout = ({ children, bgClassName, className }: AppLayoutProps) => {
 			>
 				{children}
 			</main>
-			{/* <Footer /> */}
+			<Footer />
 		</>
 	);
 };

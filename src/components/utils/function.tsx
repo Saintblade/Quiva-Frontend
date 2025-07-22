@@ -26,10 +26,12 @@ export const QuivaLogo = ({ className, showText }: QuivaLogoProps) => {
 					src={tonmicIcon}
 					alt='Quiva logo'
 					loading='eager'
-					className={`w-7 lg:w-8 ${className}`}
+					className={`w-10 lg:w-8 ${className}`}
 				/>
 				{showText && (
-					<span className='font-semibold text-sm text-black-200'>Quiva</span>
+					<span className='font-semibold text-base lg:text-sm text-black-200'>
+						Quiva
+					</span>
 				)}
 			</div>
 		</Link>
