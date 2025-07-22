@@ -1,11 +1,18 @@
 import React from "react";
 import TitleText from "../text/TitleText";
 import { MainButton } from "../button";
+import { QuivaLogo } from "../utils/function";
+import { emailAddress, phoneNum, SOCIAL_MEDIA_LINKS } from "../utils/constant";
+import Link from "next/link";
+import Picture from "../picture/Index";
+import { footerImg, heroImage1 } from "../../../public/dev_images";
 
 const Footer = () => {
+	const currentYear = new Date().getFullYear();
+
 	return (
 		<div
-			className='min-h-screen grid place-items-center relative'
+			className='grid place-items-center relative overflow-hidden'
 			style={{
 				backgroundImage: "url('/dev_images/hero-bg-img.png')",
 				backgroundSize: "cover",
@@ -13,22 +20,83 @@ const Footer = () => {
 				backgroundRepeat: "no-repeat",
 			}}
 		>
-			<div className='space-y-8 max-w-[850px] text-center pt-20 mx-auto'>
+			<div className='space-y-7 lg:space-y-12 w-[85%] lg:max-w-[850px] text-center pt-10 lg:pt-20 pb-5 lg:pb-40 mx-auto'>
 				<TitleText
 					title='Build. Play. Earn. Belong'
-					className='!text-black-100 !text-6xl'
+					className='!text-black-100'
 				/>
 				<p className='text-black-100 font-poppins text-lg'>
 					Whether you draw, read or just vibe. Quiva is for you..
 				</p>
 
-				<div className='flex flex-col lg:flex-row items-center gap-2 pt-20 pb-0 w-3/5 sm:w-fit'>
-					<MainButton className='w-full lg:w-fit'>Yap on Kaito</MainButton>
-					<MainButton className='bg-transparent w-full lg:w-fit'>
-						Explore ComicPad
+				<Picture
+					src={footerImg}
+					alt='Quiva logo'
+					loading='eager'
+					className={`w-[90%] h-[200px] sm:h-fit lg:max-w-[850px] mx-auto`}
+				/>
+
+				<div className='flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-8 pb-0 w-3/5 mx-auto'>
+					<MainButton className='w-full'>Become a creator</MainButton>
+					<MainButton className='bg-transparent w-full'>
+						Join the community
 					</MainButton>
 				</div>
+
+				<h5 className='text-black-100 font-recursive text-sm lg:text-lg mt-6'>
+					Stake Now
+				</h5>
 			</div>
+
+			<div className='py-6 lg:grid grid-cols-2 w-full max-w-screen-xl'>
+				<div className='space-y-4 px-8 pb-10 lg:pt-0 lg:px-0'>
+					<QuivaLogo showText />
+					<p className='text-black-100 font-poppins text-lg max-w-xs lg:max-w-sm'>
+						Interactive, tokenized, powered by Blockchain Technology.
+					</p>
+
+					<h5 className='text-light-300/80 text-xs'>
+						© {currentYear} — Copyright
+					</h5>
+				</div>
+				<div className='lg:flex justify-between space-y-8 lg:space-y-0 items-start px-8 lg:px-16 lg:py-6 text-sm border-t-2 border-red-100 lg:border-transparent pt-8'>
+					<div className='space-y-3'>
+						<p className='text-red-100 uppercase tracking-wide text-xs mb-2'>
+							Contact
+						</p>
+						<div className='space-y-1'>
+							<h5 className='font-medium'>{phoneNum}</h5>
+							<h5 className='font-medium'>{emailAddress}</h5>
+						</div>
+					</div>
+
+					<div className='space-y-3'>
+						<p className='text-red-100 uppercase tracking-wide text-xs'>
+							Follow Us
+						</p>
+						<div className='flex gap-4'>
+							{SOCIAL_MEDIA_LINKS.map((social) => (
+								<Link
+									key={social.id}
+									href={social.url}
+									target='_blank'
+									rel='noopener noreferrer'
+									className={`p-3 border rounded-full flex items-center justify-center !cursor-pointer group transition-[.5] border-red-100 z-10`}
+								>
+									<span className='group-hover:scale-110'>{social.icon}</span>
+								</Link>
+							))}
+						</div>
+					</div>
+				</div>
+				<div className='lg:hidden px-8 mt-8'>
+					<h5 className='text-light-300/80 text-xs'>
+						© {currentYear} — Copyright
+					</h5>
+				</div>
+			</div>
+
+			<div className='w-1/2 h-[280px] hidden lg:block border border-red-100 border-b-transparent border-r-transparent rounded-tl-[120px] absolute -bottom-[60px] right-0' />
 		</div>
 	);
 };

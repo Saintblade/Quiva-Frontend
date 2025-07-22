@@ -4,12 +4,18 @@ import heroImage2 from "./hero-img-2.png";
 import mascotThreeQuarter from "./mascot_three_quarter.png";
 import mascotThree2 from "./mascot-three-2.png";
 import heroBgImg from "./hero-bg-img.png";
+import footerImg from "./footer-img.png";
+import comicpadImg from "./comicpad-img.png";
+import mapPattern from "./map-pattern.png";
 
 export {
 	tonmicIcon,
+	mapPattern,
+	comicpadImg,
 	heroImage1,
 	heroImage2,
 	mascotThreeQuarter,
 	mascotThree2,
 	heroBgImg,
+	footerImg,
 };

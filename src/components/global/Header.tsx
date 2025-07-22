@@ -45,9 +45,9 @@ const Header = () => {
 			<header
 				className={`fixed w-full flex items-center z-20 h-16 lg:h-fit lg:py-3 top-0 border-b dashed-border-strong ${
 					isScrolled ? "backdrop-blur-lg bg-white/40" : ""
-				} drop-shadow-sm`}
+				} drop-shadow-sm z-50`}
 			>
-				<nav className='hidden lg:grid w-full grid-cols-6 lg:px-3 xl:px-0 items-center xl:max-w-[1200px] mx-auto'>
+				<nav className='hidden lg:grid w-full grid-cols-6 lg:px-3 xl:px-0 items-center xl:max-w-screen-xl mx-auto'>
 					<div className='col-span-1'>
 						<QuivaLogo showText />
 					</div>
