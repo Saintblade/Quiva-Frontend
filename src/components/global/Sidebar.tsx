@@ -37,19 +37,25 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }: SidebarProps) => {
 			}`}
 		>
 			<div
-				className={`-translate-x-full duration-500 ease-in-out flex flex-col h-lvh pl-6 pr-2 pt-2 pb-10 fixed bottom-0 top-0 left-0 z-40 bg-white w-[80%] sm:w-[50%] ${
+				className={`-translate-x-full duration-500 ease-in-out flex flex-col h-lvh pl-6 pr-2 pt-2 pb-10 fixed bottom-0 top-0 left-0 z-40 backdrop-blur-lg bg-white/40 w-[80%] sm:w-[50%] ${
 					isSidebarOpen ? "translate-x-0" : "-translate-x-full"
 				}`}
 			>
 				<div className='flex w-full items-center justify-between mt-4'>
-					<QuivaLogo showText />
+					<QuivaLogo showText className='invert' />
 					<button
 						className={`relative grid place-items-center ${
 							isSidebarOpen && "!z-50"
 						}`}
 						onClick={toggleSidebar}
 					>
-						<Hamburger size={20} toggled={isSidebarOpen} rounded hideOutline />
+						<Hamburger
+							color='white'
+							size={20}
+							toggled={isSidebarOpen}
+							rounded
+							hideOutline
+						/>
 					</button>
 				</div>
 				<ul className='flex gap-y-6 flex-col mt-6'>
@@ -59,7 +65,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }: SidebarProps) => {
 								<Link
 									href={links.href}
 									className={`capitalize relative text-lg font-medium font-sans group ${
-										pathName === links.href ? "text-primary-100" : ""
+										pathName === links.href ? "text-primary-100" : "text-white"
 									}`}
 								>
 									<div className='flex items-center gap-1.5'>{links.label}</div>

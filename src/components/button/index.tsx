@@ -18,3 +18,18 @@ export const MainButton = ({
 		</button>
 	);
 };
+
+export const MainButton2 = ({
+	children,
+	onClick,
+	className = "",
+}: MainButtonProps) => {
+	return (
+		<button
+			onClick={onClick}
+			className={`bg-secondary-200 text-white font-recursive text-sm rounded-full px-7 py-3 border-[3px] border-white shadow-[2px_2px_0_0_black] transition-all duration-200 font-medium ${className} hover:scale-105 transition-[.4]`}
+		>
+			{children}
+		</button>
+	);
+};

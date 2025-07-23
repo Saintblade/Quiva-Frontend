@@ -43,21 +43,23 @@ const Header = () => {
 		<>
 			{/* Desktop Navigation */}
 			<header
-				className={`fixed w-full flex items-center z-20 h-16 lg:h-fit lg:py-3 top-0 border-b dashed-border-strong ${
-					isScrolled ? "backdrop-blur-lg bg-white/40" : ""
+				className={`fixed w-full flex items-center z-20 h-16 lg:h-fit lg:py-3 top-0 ${
+					isScrolled
+						? "backdrop-blur-lg bg-white/40"
+						: "lg:border-b lg:dashed-border-strong"
 				} drop-shadow-sm z-50`}
 			>
 				<nav className='hidden lg:grid w-full grid-cols-6 lg:px-3 xl:px-0 items-center xl:max-w-screen-xl mx-auto'>
 					<div className='col-span-1'>
-						<QuivaLogo showText />
+						<QuivaLogo showText className='invert' />
 					</div>
 
-					<ul className='flex gap-6 xl:gap-8 mx-auto text-black-200 py-3 font-spaceGrotesk col-span-4'>
+					<ul className='flex gap-6 xl:gap-8 mx-auto text-white py-3 font-spaceGrotesk col-span-4'>
 						{NAV_LINKS.map((link) => (
 							<li key={link.href}>
 								<Link
 									href={link.href}
-									className='hover:text-primary transition-colors'
+									className='hover:text-primary-100 transition-colors'
 								>
 									{link.label}
 								</Link>
@@ -72,9 +74,9 @@ const Header = () => {
 
 				{/* Mobile Navigation */}
 				<nav className='w-full relative flex justify-between items-center xl:hidden px-4'>
-					<QuivaLogo showText />
+					<QuivaLogo showText className='invert' />
 					<button
-						className={`relative text-black-100 grid place-items-center transition-[.20] ${
+						className={`relative text-white grid place-items-center transition-[.20] ${
 							isSidebarOpen ? "hidden" : ""
 						}`}
 						onClick={toggleSidebar}

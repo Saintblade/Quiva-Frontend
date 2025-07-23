@@ -5,21 +5,23 @@ import { QuivaLogo } from "../utils/function";
 import { emailAddress, phoneNum, SOCIAL_MEDIA_LINKS } from "../utils/constant";
 import Link from "next/link";
 import Picture from "../picture/Index";
-import { footerImg, heroImage1 } from "../../../public/dev_images";
+import { footerImg, heroBgImg, heroImage1 } from "../../../public/dev_images";
 
 const Footer = () => {
 	const currentYear = new Date().getFullYear();
 
 	return (
-		<div
-			className='grid place-items-center relative overflow-hidden'
-			style={{
-				backgroundImage: "url('/dev_images/hero-bg-img.png')",
-				backgroundSize: "cover",
-				backgroundPosition: "center",
-				backgroundRepeat: "no-repeat",
-			}}
-		>
+		<div className='grid place-items-center relative overflow-hidden'>
+			<div className='absolute inset-0'>
+				<div className='relative w-full h-full'>
+					<Picture
+						src={heroBgImg}
+						alt='home bg'
+						loading='eager'
+						className='w-full h-full object-fill'
+					/>
+				</div>
+			</div>
 			<div className='space-y-7 lg:space-y-12 w-[85%] lg:max-w-[850px] text-center pt-10 lg:pt-20 pb-5 lg:pb-40 mx-auto'>
 				<TitleText
 					title='Build. Play. Earn. Belong'

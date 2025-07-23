@@ -227,7 +227,13 @@
 }
 
 .dashed-border-strong {
-	border-bottom: 2px dashed #1a1a1a3d;
+	border-bottom: 2px dashed #ffffff80;
 	padding-bottom: 6px; /* replaces border-spacing for bottom margin */
 	margin-bottom: 6px;
+}
+
+.dashed-border-strong-2 {
+	border: 3px dashed #ffffff;
+	padding-bottom: 12px; /* replaces border-spacing for bottom margin */
+	margin-bottom: 12px;
 }

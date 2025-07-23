@@ -1,17 +1,23 @@
 import TitleText from "@/components/text/TitleText";
 import React from "react";
+import ProgressWorkPad from "./ProgressWorkPad";
 
 const HowComicPadWorks = () => {
 	return (
-		<section className='bg-black-500 min-h-screen pt-16 pb-24'>
-			<div className='xl:max-w-screen-xl mx-auto'>
-				<div className='space-y-8 max-w-[850px]'>
-					<TitleText title='How ComicPad Works' className='text-light-100' />
-					<p className='text-light-200 font-poppins text-lg'>
+		<section className='bg-black-500 min-h-screen lg:py-24'>
+			<div className='xl:max-w-screen-xl mx-auto px-4 lg:px-0'>
+				<div className='space-y-4 lg:space-y-8 max-w-[850px]'>
+					<TitleText
+						title='How ComicPad Works'
+						className='text-light-100 w-[80%] sm:w-full text-center lg:text-start mx-auto sm:mx-0 tracking-wide lg:tracking-normal'
+					/>
+					<p className='text-light-200 font-poppins text-base lg:text-lg text-center lg:text-start'>
 						Unleash your creativity with our simple process. From choosing your
-						comic to tracking your earnings, it's all streamlined for you.
+						comic to tracking your earnings, it&apos;s all streamlined for you.
 					</p>
 				</div>
+
+				<ProgressWorkPad />
 			</div>
 		</section>
 	);
