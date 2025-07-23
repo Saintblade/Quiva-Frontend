@@ -38,7 +38,7 @@ const Footer = () => {
 					className={`w-[90%] h-[200px] sm:h-fit lg:max-w-[850px] mx-auto`}
 				/>
 
-				<div className='flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-8 pb-0 w-3/5 mx-auto'>
+				<div className='flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-8 pb-0 lg:w-3/5 mx-auto'>
 					<MainButton className='w-full'>Become a creator</MainButton>
 					<MainButton className='bg-transparent w-full'>
 						Join the community
