@@ -29,7 +29,9 @@ export const QuivaLogo = ({ className, showText }: QuivaLogoProps) => {
 					className={`w-10 lg:w-8 ${className}`}
 				/>
 				{showText && (
-					<span className='font-semibold text-base lg:text-sm text-black-200'>
+					<span
+						className={`font-semibold text-base lg:text-sm text-black-200 ${className}`}
+					>
 						Quiva
 					</span>
 				)}

@@ -8,10 +8,11 @@ import WhyQuiva from "./_components/WhyQuiva";
 import WhyBlockchain from "./_components/WhyBlockchain";
 import WhatYouCanDoWithTMS from "./_components/WhatYouCanDoWithTMS";
 import HomeRoadMap from "./_components/HomeRoadMap";
+import WhatIsQuiva from "./_components/WhatIsQuiva";
 
 const page = () => {
 	return (
-		<AppLayout className='pb-20'>
+		<AppLayout className=''>
 			<Hero />
 			<ExcitingProducts />
 			<HowComicPadWorks />
@@ -19,6 +20,7 @@ const page = () => {
 			<WhyQuiva />
 			<WhyBlockchain />
 			<WhatYouCanDoWithTMS />
+			<WhatIsQuiva />
 			<HomeRoadMap />
 		</AppLayout>
 	);
