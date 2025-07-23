@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { progress_1, tag_img } from "../../../../public/dev_images";
 import Picture from "@/components/picture/Index";
+import { HiOutlineArrowLeft, HiOutlineArrowRight } from "react-icons/hi";
+
 import Image from "next/image";
 
 const slideSteps = [
@@ -72,9 +74,9 @@ const ProgressWorkPad = () => {
 					loading='eager'
 					className='w-[60px] md:w-[85px] absolute transition-all lg:hidden duration-500 ease-in-out left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 -top-6 md:-top-7'
 					style={{
-						top: `calc(${currentStep * 20}% + 10%)`,
+						top: `calc(${currentStep * 20}% + 1%)`,
 						// Mobile centers via class, desktop uses calculated `left`
-						...(isMobile ? {} : { left: `calc(${currentStep * 20}% + 10%)` }),
+						...(isMobile ? { left: `calc(${currentStep * 20}% + 15%)` } : {}),
 					}}
 				/>
 
@@ -131,14 +133,14 @@ const ProgressWorkPad = () => {
 						disabled={currentStep === 0}
 						className='w-12 h-8 flex items-center justify-center rounded-full border-2 border-white/50 hover:border-white disabled:opacity-30'
 					>
-						←
+						<HiOutlineArrowLeft />
 					</button>
 					<button
 						onClick={goNext}
 						disabled={currentStep === slideSteps.length - 1}
 						className='w-12 h-8 flex items-center justify-center rounded-full border-2 border-white/50 hover:border-white disabled:opacity-30'
 					>
-						→
+						<HiOutlineArrowRight />
 					</button>
 				</div>
 			</div>

@@ -1,25 +1,26 @@
 import { MainButton } from "@/components/button";
+import Picture from "@/components/picture/Index";
 import TitleText from "@/components/text/TitleText";
 import React from "react";
 
 const NoToolsNoProblem = () => {
 	const tools = [
-		{ name: "Pen", icon: "✒️" },
-		{ name: "Brush", icon: "🖌️" },
-		{ name: "Color", icon: "🎨" },
-		{ name: "Fill", icon: "🪣" },
-		{ name: "Zoom", icon: "🔍" },
-		{ name: "Save", icon: "💾" },
-		{ name: "Pin", icon: "📌" },
-		{ name: "File", icon: "🗄️" },
-		{ name: "Bubble", icon: "💬" },
-		{ name: "Shape", icon: "◼️" },
-		{ name: "Text", icon: "🔤" },
-		{ name: "Undo", icon: "↩️" },
-		{ name: "Ruler", icon: "📏" },
-		{ name: "Mint", icon: "🤹" },
-		{ name: "Asset", icon: "👓" },
-		{ name: "Redo", icon: "↪️" },
+		{ name: "Pen", image: "/dev_images/tool-1.png" },
+		{ name: "Pencil", image: "/dev_images/tool-2.png" },
+		{ name: "Eraser", image: "/dev_images/tool-3.png" },
+		{ name: "Ruler", image: "/dev_images/tool-4.png" },
+		{ name: "Brush", image: "/dev_images/tool-5.png" },
+		{ name: "Highlighter", image: "/dev_images/tool-6.png" },
+		{ name: "Marker", image: "/dev_images/tool-7.png" },
+		{ name: "Compass", image: "/dev_images/tool-8.png" },
+		{ name: "Protractor", image: "/dev_images/tool-9.png" },
+		{ name: "Scissors", image: "/dev_images/tool-10.png" },
+		{ name: "Glue", image: "/dev_images/tool-11.png" },
+		{ name: "Stapler", image: "/dev_images/tool-12.png" },
+		{ name: "Notebook", image: "/dev_images/tool-13.png" },
+		{ name: "Calculator", image: "/dev_images/tool-14.png" },
+		{ name: "Clipboard", image: "/dev_images/tool-15.png" },
+		{ name: "Sticky Notes", image: "/dev_images/tool-16.png" },
 	];
 
 	return (
@@ -33,10 +34,17 @@ const NoToolsNoProblem = () => {
 							{tools.map((tool) => (
 								<div
 									key={tool.name}
-									className='bg-black-100 border w-full h-[90px] lg:h-[100px] border-gray-700 rounded-xl flex flex-col items-center justify-center text-white hover:scale-110 transition-[.3]'
+									className='bg-black-100 border w-full h-[90px] lg:h-[100px] border-gray-700 rounded-xl flex flex-col items-center justify-center text-white hover:scale-110 space-y-2 transition-[.3]'
 								>
-									<div className='text-3xl mb-2'>{tool.icon}</div>
-									<div className='text-sm font-medium'>{tool.name}</div>
+									<Picture
+										src={tool.image}
+										alt='home bg'
+										loading='eager'
+										className='size-[50%] lg:size-[35%] object-contain'
+									/>
+									<div className='text-xs sm:text-sm font-medium'>
+										{tool.name}
+									</div>
 								</div>
 							))}
 						</div>
