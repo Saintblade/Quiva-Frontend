@@ -33,7 +33,7 @@ const WhatYouCanDoWithTMS = () => {
 				<div className='space-y-20 text-start'>
 					<div className='space-y-6 w-[90%]'>
 						<TitleText
-							title='What Can You Do With $TMS?'
+							title='What Can You Do With $Q?'
 							className='text-light-100'
 						/>
 

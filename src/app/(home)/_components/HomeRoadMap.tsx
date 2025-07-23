@@ -25,7 +25,7 @@ const ROADMAP_DATA = [
 		items: [
 			"Launched Jumble Jester (Telegram word game)",
 			"Built early leaderboard + reward loops",
-			"Started integrating with $TOM token",
+			"Started integrating with $TON token",
 		],
 		image: roadmapImg, // You can use different images for each if needed
 	},
