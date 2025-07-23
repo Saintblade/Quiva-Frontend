@@ -74,11 +74,16 @@ const Header = () => {
 
 				{/* Mobile Navigation */}
 				<nav className='w-full relative flex justify-between items-center xl:hidden px-4'>
-					<QuivaLogo showText className='invert' />
+					<QuivaLogo
+						showText
+						className={`${
+							isScrolled ? "" : "invert lg:invert"
+						} transition-[.4]`}
+					/>
 					<button
-						className={`relative text-white grid place-items-center transition-[.20] ${
+						className={`relative grid place-items-center transition-[.20] ${
 							isSidebarOpen ? "hidden" : ""
-						}`}
+						} ${isScrolled ? "text-black-100" : "text-white"}`}
 						onClick={toggleSidebar}
 						aria-label='Toggle Sidebar'
 					>
