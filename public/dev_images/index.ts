@@ -16,9 +16,17 @@ import curiousImg from "./curious.png";
 import comic from "./comic.png";
 import comic2 from "./comic2.png";
 import lockImg from "./lock.png";
+import contractsImg from "./contracts.png";
+import launchImg from "./launch.png";
+import jumbleImg from "./jumble.png";
+import scrabbleImg from "./scrabble.png";
 
 export {
 	tonmicIcon,
+	jumbleImg,
+	scrabbleImg,
+	contractsImg,
+	launchImg,
 	comic,
 	comic2,
 	lockImg,

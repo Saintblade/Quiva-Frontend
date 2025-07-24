@@ -47,7 +47,7 @@ const ROADMAP_DATA = [
 			"Public ComicPad Launch",
 			"Spin-to-Win events",
 			"Creator reward system + leaderboard",
-			"Start building D40 & AR Comic features",
+			"Start building DAO & AR Comic features",
 		],
 		image: roadmapImg,
 	},
