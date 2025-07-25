@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { progress_1, tag_img } from "../../../../public/dev_images";
+import { progress_1, progress_2, progress_3, progress_4, progress_5, tag_img } from "../../../../public/dev_images";
 import Picture from "@/components/picture/Index";
 import { HiOutlineArrowLeft, HiOutlineArrowRight } from "react-icons/hi";
 
@@ -9,23 +9,23 @@ import Image from "next/image";
 const slideSteps = [
 	{
 		title: "Choose your Comic Project",
-		image: progress_1, // Replace with your image
+		image: progress_1,
 	},
 	{
 		title: "Create or Upload your Comic NFTs",
-		image: progress_1,
+		image: progress_2,
 	},
 	{
 		title: "Set Minting & Rewards Rules",
-		image: progress_1,
+		image: progress_3,
 	},
 	{
 		title: "Go Live – Let Fans Mint & Read",
-		image: progress_1,
+		image: progress_4,
 	},
 	{
 		title: "Track, Earn, & Build Your Community",
-		image: progress_1,
+		image: progress_5,
 	},
 ];
 

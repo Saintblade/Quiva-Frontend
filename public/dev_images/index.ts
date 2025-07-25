@@ -10,6 +10,10 @@ import mapPattern from "./map-pattern.png";
 import roadmapImg from "./roadmap-img.png";
 import tag_img from "./tag-img.png";
 import progress_1 from "./progress-1.png";
+import progress_2 from "./progress-2.png";
+import progress_3 from "./progress-3.png";
+import progress_4 from "./progress-4.png";
+import progress_5 from "./progress-5.png";
 import bg_what from "./bg-what.png";
 import hm_bg_2 from "./hm-bg-2.png";
 import curiousImg from "./curious.png";
@@ -36,6 +40,10 @@ export {
 	mapPattern,
 	tag_img,
 	progress_1,
+	progress_2,
+	progress_3,
+	progress_4,
+	progress_5,
 	comicpadImg,
 	roadmapImg,
 	heroImage1,
