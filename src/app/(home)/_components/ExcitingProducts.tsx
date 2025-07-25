@@ -136,8 +136,13 @@ const ExcitingProducts = () => {
 						.map((item: any, i) => {
 							const isTopDeck = i === 0;
 							return (
-							<div
-								key={item}
+								<AnimatePresence mode="wait" key={item}>
+							<motion.div
+								
+								initial={{ opacity: 0, x: 20 }}
+								animate={{ opacity: 1, x: 0 }}
+								exit={{ opacity: 0, x: -20 }}
+								transition={{ duration: 0.6, ease: "easeInOut" }}
 								className={` border-[#161616] border-r-large  w-[10%] h-[560px] rounded-r-[30px] px-10 -ml-5 z-[${
 									10 - i
 								}] hidden lg:flex items-center justify-center bg-gray-${
@@ -147,11 +152,12 @@ const ExcitingProducts = () => {
 								style={{ cursor: "pointer" }}
 							>
 								<div className='transform rotate-90 origin-center'>
-									<p className='text-white text-4xl font-bold tracking-wide whitespace-nowrap'>
+									<p className='text-white text-4xl font-bold tracking-wide whitespace-nowrap inner-shadow-text'>
 										{item}
 									</p>
 								</div>
-							</div>
+							</motion.div>
+							</AnimatePresence>
 						)
 					})}
 				</div>
