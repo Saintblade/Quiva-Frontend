@@ -237,3 +237,13 @@
 	padding-bottom: 12px; /* replaces border-spacing for bottom margin */
 	margin-bottom: 12px;
 }
+
+
+.top_deck{
+	box-shadow: 14px 0px 24px 0px #000000 !important;
+}
+
+.bottom_deck{
+	/* background: #161616; */
+	box-shadow: 2px 0px 2px 0px #000000 !important;
+}
