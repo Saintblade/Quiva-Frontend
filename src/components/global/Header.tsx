@@ -46,7 +46,7 @@ const Header = () => {
 				className={`fixed w-full flex items-center z-20 h-16 lg:h-fit lg:py-3 top-0 ${
 					isScrolled
 						? "backdrop-blur-lg bg-white/40"
-						: "lg:border-b lg:dashed-border-strong"
+						: "lg:border-b dashed-border-strong"
 				} drop-shadow-sm z-50`}
 			>
 				<nav className='hidden lg:grid w-full grid-cols-6 lg:px-3 xl:px-0 items-center xl:max-w-screen-xl mx-auto'>

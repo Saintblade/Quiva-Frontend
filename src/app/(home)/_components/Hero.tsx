@@ -28,7 +28,7 @@ const Hero = () => {
 			</div>
 
 			<div className='w-full h-full lg:w-[75%] mx-auto flex flex-col items-center text-center lg:text-start lg:h-[70%] lg:grid grid-cols-10 z-10'>
-				<div className='col-span-6 flex lg:items-start flex-col items-center space-y-5 lg:space-y-8 justify-center w-[95%] lg:w-full pt-32 lg:pt-0 border'>
+				<div className='col-span-6 flex lg:items-start flex-col items-center space-y-5 lg:space-y-8 justify-center w-[95%] lg:w-full pt-32 lg:pt-0'>
 					<h3 className='font-recursive text-3xl sm:text-4xl lg:text-6xl text-white text-center lg:text-start font-semibold tracking-wider'>
 						Comics. Reimagined.
 					</h3>

@@ -6,7 +6,7 @@ import Picture from "@/components/picture/Index";
 
 const WhyQuiva = () => {
 	return (
-		<section className='bg-black-500 min-h-screen pt-16 lg:pt-24 pb-20 lg:pb-40'>
+		<section className='bg-black-500 min-h-screen pt-10 lg:pt-24 pb-14 lg:pb-40'>
 			<div className='xl:max-w-screen-xl mx-auto'>
 				<div className='space-y-12 px-4 lg:px-0 max-w-[850px] text-center mx-auto'>
 					<TitleText title='Why Quiva?' className='text-light-100' />

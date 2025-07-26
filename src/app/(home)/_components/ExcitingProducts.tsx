@@ -2,6 +2,7 @@
 import Picture from "@/components/picture/Index";
 import TitleText from "@/components/text/TitleText";
 import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
 	comicpadImg,
 	footerImg,
@@ -9,6 +10,20 @@ import {
 	scrabbleImg,
 } from "../../../../public/dev_images";
 import { StaticImageData } from "next/image";
+
+const fadeInUp = {
+	initial: { opacity: 0, y: 30 },
+	animate: { opacity: 1, y: 0 },
+	exit: { opacity: 0, y: -30 },
+	transition: { duration: 1.8 },
+};
+
+const fade = {
+	initial: { opacity: 0 },
+	animate: { opacity: 1 },
+	exit: { opacity: 0 },
+	transition: { duration: 0.8 },
+};
 
 const ExcitingProducts = () => {
 	type DeckKey = "ComicPad" | "Jumble Jester" | "Scrabble Arena";
@@ -62,7 +77,7 @@ const ExcitingProducts = () => {
 	}, []);
 
 	return (
-		<section className='bg-black-500 min-h-screen pb-24'>
+		<section className='bg-black-500 min-h-screen pb-8 lg:pb-24'>
 			<div className='space-y-6 lg:space-y-8 w-[80%] sm:max-w-[850px] text-center pt-16 lg:pt-32 mx-auto'>
 				<TitleText
 					title='Explore Our Exciting Product Offerings'
@@ -76,10 +91,23 @@ const ExcitingProducts = () => {
 			</div>
 			<div className='px-2 lg:px-0 lg:max-w-screen-xl mt-12 grid place-items-center mx-auto'>
 				<div className='flex flex-col-reverse lg:flex-row justify-center items-center lg:items-end lg:w-[1100px] mx-auto'>
-					{/* Card */}
-					<div className='bg-black-600 w-[95%] lg:w-[90%] lg:h-[570px] shadow-2xl lg:border-2 border-secondary-200 rounded-[30px] flex flex-col-reverse lg:grid grid-cols-10 gap-12 lg:gap-0 lg:space-x-8 place-items-center px-5 lg:px-10 z-20 py-12 lg:py-0'>
+					{/* Main Card Container */}
+					<motion.div
+						key={selected} // Animate on tab change
+						variants={fadeInUp}
+						initial='initial'
+						animate='animate'
+						exit='exit'
+						className='bg-black-600 w-[95%] lg:w-[90%] lg:h-[570px] shadow-2xl lg:border-2 border-secondary-200 rounded-[30px] flex flex-col-reverse lg:grid grid-cols-10 gap-12 lg:gap-0 lg:space-x-8 place-items-center px-5 lg:px-10 z-20 py-12 lg:py-0'
+					>
 						{/* Mobile Tab Titles */}
-						<div className='lg:hidden text-start space-y-4 w-full'>
+						<motion.div
+							className='lg:hidden text-start space-y-4 w-full'
+							variants={fade}
+							initial='initial'
+							animate='animate'
+							exit='exit'
+						>
 							{Object.keys(deckData).map((item: any) => (
 								<p
 									key={item}
@@ -91,10 +119,14 @@ const ExcitingProducts = () => {
 									{item}
 								</p>
 							))}
-						</div>
+						</motion.div>
 
-						{/* Left: Image */}
-						<div
+						{/* Left Image Section */}
+						<motion.div
+							variants={fadeInUp}
+							initial='initial'
+							animate='animate'
+							exit='exit'
 							className={`col-span-5 ${current.gradient} h-[50%] w-[95%] lg:h-[70%] lg:w-full rounded-md lg:rounded-3xl flex flex-col items-end lg:items-center justify-end lg:justify-center gap-8 lg:gap-0 lg:grid place-items-center`}
 						>
 							<TitleText
@@ -107,24 +139,32 @@ const ExcitingProducts = () => {
 								loading='eager'
 								className='w-[85%] lg:h-[65%] mx-auto'
 							/>
-						</div>
+						</motion.div>
 
-						{/* Right: Text */}
-						<div className='col-span-5 lg:grid place-items-center'>
+						{/* Right Text Section */}
+						<motion.div
+							variants={fadeInUp}
+							initial='initial'
+							animate='animate'
+							exit='exit'
+							className='col-span-5 lg:grid place-items-center'
+						>
 							<div className='space-y-3 lg:space-y-5'>
 								<TitleText title={current.title} className='!text-white' />
 								<p className='text-white/80 font-poppins text-base lg:text-lg leading-8 lg:w-4/5'>
 									{current.description}
 								</p>
 							</div>
-						</div>
-					</div>
+						</motion.div>
+					</motion.div>
 
-					{/* Deck Tabs - Desktop Only */}
+					{/* Desktop Tabs (Vertical Cards) */}
 					{Object.keys(deckData)
 						.filter((key) => key !== selected)
 						.map((item: any, i) => (
-							<div
+							<motion.div
+								whileHover={{ scale: 1.05 }}
+								transition={{ type: "spring", stiffness: 300 }}
 								key={item}
 								className={`shadow-2xl w-[10%] h-[560px] rounded-r-[30px] px-10 -ml-5 z-[${
 									10 - i
@@ -139,7 +179,7 @@ const ExcitingProducts = () => {
 										{item}
 									</p>
 								</div>
-							</div>
+							</motion.div>
 						))}
 				</div>
 			</div>
