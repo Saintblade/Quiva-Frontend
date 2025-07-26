@@ -10,7 +10,6 @@ import {
 	scrabbleImg,
 } from "../../../../public/dev_images";
 import { StaticImageData } from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
 
 const ExcitingProducts = () => {
 	type DeckKey = "ComicPad" | "Jumble Jester" | "Scrabble Arena";
