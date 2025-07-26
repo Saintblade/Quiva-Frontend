@@ -62,7 +62,7 @@ const Footer = () => {
 					</h5>
 				</div>
 				<div className='lg:flex justify-between space-y-8 lg:space-y-0 items-start px-8 lg:px-16 lg:py-6 text-sm border-t-2 border-red-100 lg:border-transparent pt-8'>
-					<div className='space-y-3'>
+					{/* <div className='space-y-3'>
 						<p className='text-red-100 uppercase tracking-wide text-xs mb-2'>
 							Contact
 						</p>
@@ -70,7 +70,7 @@ const Footer = () => {
 							<h5 className='font-medium'>{phoneNum}</h5>
 							<h5 className='font-medium'>{emailAddress}</h5>
 						</div>
-					</div>
+					</div> */}
 
 					<div className='space-y-3'>
 						<p className='text-red-100 uppercase tracking-wide text-xs'>
