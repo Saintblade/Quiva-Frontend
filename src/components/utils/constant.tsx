@@ -1,5 +1,5 @@
 import { FiInstagram } from "react-icons/fi";
-import { RiTelegram2Fill } from "react-icons/ri";
+import { RiTwitterFill } from "react-icons/ri";
 
 export const NAV_LINKS = [
 	{ href: "/", label: "Home" },
@@ -15,12 +15,12 @@ export const SOCIAL_MEDIA_LINKS = [
 	{
 		id: "instagram",
 		icon: <FiInstagram className='text-2xl' />,
-		url: "https://instagram.com/yourprofile",
+		url: "https://www.instagram.com/quivacomics",
 	},
 	{
-		id: "telegram",
-		icon: <RiTelegram2Fill className='text-2xl' />,
-		url: "https://t.me/yourchannel",
+		id: "twitter",
+		icon: <RiTwitterFill className='text-2xl' />,
+		url: "https://x.com/quivacomics",
 	},
 ];
 

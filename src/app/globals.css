@@ -242,3 +242,76 @@
 	padding-bottom: 12px; /* replaces border-spacing for bottom margin */
 	margin-bottom: 12px;
 }
+
+
+.top_deck{
+	box-shadow: 14px 0px 24px 0px #000000 !important;
+}
+
+.bottom_deck{
+	/* background: #161616; */
+	box-shadow: 2px 0px 2px 0px #000000 !important;
+}
+
+.inner-shadow-text {
+  position: relative;
+  color: white;
+}
+
+.inner-shadow-text::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  color: transparent;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.animate-fadeIn {
+	animation: fadeIn 0.6s ease-out forwards;
+}
+
+.delay-100 {
+	animation-delay: 0.1s;
+}
+
+.delay-200 {
+	animation-delay: 0.2s;
+}
+
+/* Custom swiper pagination styling */
+:global(.swiper-pagination-bullet) {
+	background: rgba(255, 255, 255, 0.3) !important;
+	width: 12px !important;
+	height: 12px !important;
+	margin: 0 8px !important;
+	transition: all 0.3s ease !important;
+}
+
+:global(.swiper-pagination-bullet-active) {
+	background: #your-secondary-200-color !important;
+	transform: scale(1.2) !important;
+}
+
+/* Smooth hover effects */
+:global(.swiper-slide) {
+	transition: transform 0.3s ease;
+}
+
+:global(.swiper-slide:hover) {
+	transform: translateY(-2px);
+}

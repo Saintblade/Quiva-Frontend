@@ -1,155 +1,340 @@
 "use client";
-import React, { useState } from "react";
-import { progress_1, tag_img } from "../../../../public/dev_images";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, useScroll, useTransform, AnimatePresence, Variants } from "framer-motion";
+import { progress_1, progress_2, progress_3, progress_4, progress_5, tag_img } from "../../../../public/dev_images";
 import Picture from "@/components/picture/Index";
 import { HiOutlineArrowLeft, HiOutlineArrowRight } from "react-icons/hi";
-
 import Image from "next/image";
 
 const slideSteps = [
 	{
 		title: "Choose your Comic Project",
-		image: progress_1, // Replace with your image
+		image: progress_1,
 	},
 	{
 		title: "Create or Upload your Comic NFTs",
-		image: progress_1,
+		image: progress_2,
 	},
 	{
 		title: "Set Minting & Rewards Rules",
-		image: progress_1,
+		image: progress_3,
 	},
 	{
 		title: "Go Live – Let Fans Mint & Read",
-		image: progress_1,
+		image: progress_4,
 	},
 	{
 		title: "Track, Earn, & Build Your Community",
-		image: progress_1,
+		image: progress_5,
 	},
 ];
 
 const ProgressWorkPad = () => {
 	const [currentStep, setCurrentStep] = useState(0);
+	const [isMobile, setIsMobile] = useState(false);
+	const [isInView, setIsInView] = useState(false);
+	const containerRef = useRef(null);
+	const contentRef = useRef(null);
+	const sectionRef = useRef(null);
+
+	// Scroll progress tracking for the entire section
+	const { scrollYProgress } = useScroll({
+		target: containerRef,
+		offset: ["start start", "end end"]
+	});
+
+	// Track when section is in view
+	const { scrollYProgress: viewProgress } = useScroll({
+		target: sectionRef,
+		offset: ["start center", "end center"]
+	});
+
+	// Transform scroll progress to step index
+	const stepProgress = useTransform(
+		scrollYProgress,
+		[0.1, 0.9], // Start slightly after beginning and end before finish
+		[0, slideSteps.length - 1]
+	);
+
+	// Update current step based on scroll
+	useEffect(() => {
+		return stepProgress.onChange((latest) => {
+			const newStep = Math.round(Math.max(0, Math.min(latest, slideSteps.length - 1)));
+			if (newStep !== currentStep) {
+				setCurrentStep(newStep);
+			}
+		});
+	}, [stepProgress, currentStep]);
+
+	// Track if section is in view
+	useEffect(() => {
+		return viewProgress.onChange((latest) => {
+			setIsInView(latest > 0.1 && latest < 0.9);
+		});
+	}, [viewProgress]);
+
+	// Handle mobile detection
+	useEffect(() => {
+		const checkMobile = () => {
+			setIsMobile(window.innerWidth < 768);
+		};
+		
+		checkMobile();
+		window.addEventListener('resize', checkMobile);
+		return () => window.removeEventListener('resize', checkMobile);
+	}, []);
 
 	const goPrev = () => {
-		if (currentStep > 0) setCurrentStep(currentStep - 1);
+		if (currentStep > 0) {
+			setCurrentStep(currentStep - 1);
+		}
 	};
 
 	const goNext = () => {
-		if (currentStep < slideSteps.length - 1) setCurrentStep(currentStep + 1);
+		if (currentStep < slideSteps.length - 1) {
+			setCurrentStep(currentStep + 1);
+		}
 	};
 
-	const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+	// Animation variants with proper typing
+	const containerVariants: Variants = {
+		hidden: { 
+			opacity: 0 
+		},
+		visible: {
+			opacity: 1,
+			transition: {
+				duration: 0.6,
+				staggerChildren: 0.1
+			}
+		}
+	};
+
+	const stepVariants: Variants = {
+		hidden: { 
+			opacity: 0, 
+			y: 20 
+		},
+		visible: {
+			opacity: 1,
+			y: 0,
+			transition: { 
+				duration: 0.5 
+			}
+		}
+	};
+
+	const imageVariants: Variants = {
+		hidden: { 
+			opacity: 0, 
+			scale: 0.9, 
+			y: 30 
+		},
+		visible: {
+			opacity: 1,
+			scale: 1,
+			y: 0,
+			transition: {
+				duration: 0.7,
+				ease: [0.25, 0.46, 0.45, 0.94]
+			}
+		},
+		exit: {
+			opacity: 0,
+			scale: 0.9,
+			y: -30,
+			transition: { 
+				duration: 0.3 
+			}
+		}
+	};
 
 	return (
-		<div className='mt-14 relative'>
-			{/* Step Tracker Bar */}
-			<div className='flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-5 pt-10 pb-24 relative'>
-				{/* Horizontal progress bar for desktop */}
-				<div className='hidden md:block absolute top-0 left-0 w-full h-0.5 bg-primary-100/50'></div>
-				<div
-					className='hidden md:block absolute top-0 left-0 h-0.5 bg-primary-100 transition-all duration-500 ease-in-out'
-					style={{
-						width: `${((currentStep + 1) / slideSteps.length) * 100}%`,
-					}}
-				></div>
-
-				{/* Vertical progress line for mobile */}
-				{/* Background track (full height) */}
-				<div className='md:hidden absolute left-1/2 top-0 h-full w-0.5 bg-primary-100/10 -translate-x-1/2'></div>
-
-				{/* Progress indicator (dynamic height) */}
-				<div
-					className='md:hidden absolute left-1/2 top-0 w-0.5 bg-primary-100 transition-all duration-500 ease-in-out -translate-x-1/2'
-					style={{
-						height: `${((currentStep + 1) / slideSteps.length) * 100}%`,
-					}}
-				></div>
-
-				{/* Step tag image (adjusted for mobile) */}
-				<Image
-					src={tag_img}
-					alt='map pattern'
-					loading='eager'
-					className='w-[60px] md:w-[85px] absolute transition-all lg:hidden duration-500 ease-in-out left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 -top-6 md:-top-7'
-					style={{
-						top: `calc(${currentStep * 20}% + 1%)`,
-						// Mobile centers via class, desktop uses calculated `left`
-						...(isMobile ? { left: `calc(${currentStep * 20}% + 15%)` } : {}),
-					}}
-				/>
-
-				{/* Step tag image (adjusted for desktop) */}
-				<Image
-					src={tag_img}
-					alt='map pattern'
-					loading='eager'
-					className='w-[60px] md:w-[85px] absolute hidden lg:block transition-all duration-500 ease-in-out left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 -top-6 md:-top-7'
-					style={{
-						top: ``,
-						...(isMobile ? {} : { left: `calc(${currentStep * 20}% + 10%)` }),
-					}}
-				/>
-
-				{/* Step items */}
-				{slideSteps.map((step, index) => {
-					const isActive = index === currentStep;
-					return (
-						<div
-							key={index}
-							className='flex flex-col mx-auto lg:mx-0 justify-center md:justify-start items-center lg:items-start md:w-1/5 space-y-1 md:space-y-3 md:pl-0 relative'
-						>
-							<div
-								className={`text-sm ${
-									isActive ? "text-white/80" : "text-white/25"
-								}`}
-							>
-								Step {index + 1}
-							</div>
-							<div
-								className={`text-sm sm:text-base md:text-lg font-medium leading-6 md:leading-7 w-[90%] text-center lg:text-start ${
-									isActive ? "text-white" : "text-white/25"
-								}`}
-							>
-								{step.title}
-							</div>
-						</div>
-					);
-				})}
-			</div>
-
-			{/* Slide Section */}
-			<div className='relative w-[70%] hidden lg:flex flex-col justify-center mx-auto items-center py-8 text-white'>
-				<Picture
-					src={slideSteps[currentStep].image}
-					alt={slideSteps[currentStep].title}
-					className='w-full h-auto object-cover'
-				/>
-
-				<div className='flex gap-4 items-center mt-14 justify-center'>
-					<button
-						onClick={goPrev}
-						disabled={currentStep === 0}
-						className='w-12 h-8 flex items-center justify-center rounded-full border-2 border-white/50 hover:border-white disabled:opacity-30'
-					>
-						<HiOutlineArrowLeft />
-					</button>
-					<button
-						onClick={goNext}
-						disabled={currentStep === slideSteps.length - 1}
-						className='w-12 h-8 flex items-center justify-center rounded-full border-2 border-white/50 hover:border-white disabled:opacity-30'
-					>
-						<HiOutlineArrowRight />
-					</button>
-				</div>
-			</div>
-			<Picture
-				src={tag_img}
-				alt='map pattern'
-				loading='eager'
-				className='w-[85px] absolute bottom-0 right-0 hidden lg:block'
+		<div ref={sectionRef} className="relative">
+			{/* Scroll trigger container - creates the scroll space */}
+			<div 
+				ref={containerRef}
+				className="h-[400vh] relative"
 			/>
+			
+			{/* Content container - conditionally fixed */}
+			<motion.div 
+				ref={contentRef}
+				className={`${isInView ? 'fixed inset-0' : 'relative'} flex items-center justify-center z-10 pointer-events-none`}
+				variants={containerVariants}
+				initial="hidden"
+				animate="visible"
+			>
+				<div className="mt-14 relative w-full max-w-7xl mx-auto px-4 pointer-events-auto">
+					{/* Step Tracker Bar */}
+					<motion.div 
+						className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-5 pt-10 pb-24 relative"
+						variants={containerVariants}
+					>
+						{/* Horizontal progress bar for desktop */}
+						<div className="hidden md:block absolute top-0 left-0 w-full h-0.5 bg-primary-100/50"></div>
+						<motion.div
+							className="hidden md:block absolute top-0 left-0 h-0.5 bg-primary-100"
+							initial={{ width: "0%" }}
+							animate={{ 
+								width: `${((currentStep + 1) / slideSteps.length) * 100}%` 
+							}}
+							transition={{ 
+								duration: 0.8,
+								ease: [0.25, 0.46, 0.45, 0.94]
+							}}
+						/>
+
+						{/* Vertical progress line for mobile */}
+						<div className="md:hidden absolute left-1/2 top-0 h-full w-0.5 bg-primary-100/10 -translate-x-1/2"></div>
+						<motion.div
+							className="md:hidden absolute left-1/2 top-0 w-0.5 bg-primary-100 -translate-x-1/2"
+							initial={{ height: "0%" }}
+							animate={{ 
+								height: `${((currentStep + 1) / slideSteps.length) * 100}%` 
+							}}
+							transition={{ 
+								duration: 0.8,
+								ease: [0.25, 0.46, 0.45, 0.94]
+							}}
+						/>
+
+						{/* Animated step tag image */}
+						<motion.div
+							className="absolute -top-6 md:-top-7"
+							animate={{
+								left: isMobile 
+									? "50%" 
+									: `calc(${currentStep * 20}% + 10%)`,
+								top: isMobile 
+									? `calc(${currentStep * 20}% + 1%)` 
+									: "-1.75rem",
+								x: isMobile ? "-50%" : "0%"
+							}}
+							transition={{
+								duration: 0.8,
+								ease: [0.25, 0.46, 0.45, 0.94]
+							}}
+						>
+							<motion.div
+								whileHover={{ scale: 1.1, rotate: 5 }}
+								transition={{ duration: 0.2 }}
+							>
+								<Image
+									src={tag_img}
+									alt="map pattern"
+									loading="eager"
+									className="w-[60px] md:w-[85px]"
+								/>
+							</motion.div>
+						</motion.div>
+
+						{/* Step items */}
+						{slideSteps.map((step, index) => {
+							const isActive = index === currentStep;
+							return (
+								<motion.div
+									key={index}
+									className="flex flex-col mx-auto lg:mx-0 justify-center md:justify-start items-center lg:items-start md:w-1/5 space-y-1 md:space-y-3 md:pl-0 relative"
+									variants={stepVariants}
+									whileHover={{ scale: 1.02 }}
+									transition={{ duration: 0.2 }}
+								>
+									<motion.div
+										className={`text-sm transition-colors duration-300 ${
+											isActive ? "text-white/80" : "text-white/25"
+										}`}
+										animate={{
+											opacity: isActive ? 1 : 0.4,
+											scale: isActive ? 1.05 : 1
+										}}
+										transition={{ duration: 0.3 }}
+									>
+										Step {index + 1}
+									</motion.div>
+									<motion.div
+										className={`text-sm sm:text-base md:text-lg font-medium leading-6 md:leading-7 w-[90%] text-center lg:text-start transition-colors duration-300 ${
+											isActive ? "text-white" : "text-white/25"
+										}`}
+										animate={{
+											opacity: isActive ? 1 : 0.4,
+											y: isActive ? 0 : 5
+										}}
+										transition={{ duration: 0.3 }}
+									>
+										{step.title}
+									</motion.div>
+								</motion.div>
+							);
+						})}
+					</motion.div>
+
+					{/* Slide Section */}
+					<div className="relative w-[70%] hidden lg:flex flex-col justify-center mx-auto items-center py-8 text-white">
+						<div className="relative w-full h-auto overflow-hidden rounded-lg">
+							<AnimatePresence mode="wait">
+								<motion.div
+									key={currentStep}
+									variants={imageVariants}
+									initial="hidden"
+									animate="visible"
+									exit="exit"
+									className="w-full"
+								>
+									<Picture
+										src={slideSteps[currentStep].image}
+										alt={slideSteps[currentStep].title}
+										className="w-full h-auto object-cover"
+									/>
+								</motion.div>
+							</AnimatePresence>
+						</div>
+
+						<motion.div 
+							className="flex gap-4 items-center mt-14 justify-center"
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ delay: 0.3, duration: 0.5 }}
+						>
+							<motion.button
+								onClick={goPrev}
+								disabled={currentStep === 0}
+								className="w-12 h-8 flex items-center justify-center rounded-full border-2 border-white/50 hover:border-white disabled:opacity-30 transition-all duration-200"
+								whileHover={{ scale: 1.1, borderColor: "rgba(255,255,255,0.8)" }}
+								whileTap={{ scale: 0.95 }}
+								transition={{ duration: 0.2 }}
+							>
+								<HiOutlineArrowLeft />
+							</motion.button>
+							<motion.button
+								onClick={goNext}
+								disabled={currentStep === slideSteps.length - 1}
+								className="w-12 h-8 flex items-center justify-center rounded-full border-2 border-white/50 hover:border-white disabled:opacity-30 transition-all duration-200"
+								whileHover={{ scale: 1.1, borderColor: "rgba(255,255,255,0.8)" }}
+								whileTap={{ scale: 0.95 }}
+								transition={{ duration: 0.2 }}
+							>
+								<HiOutlineArrowRight />
+							</motion.button>
+						</motion.div>
+					</div>
+
+					<motion.div
+						className="absolute bottom-0 right-0 hidden lg:block"
+						initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
+						animate={{ opacity: 1, scale: 1, rotate: 0 }}
+						transition={{ delay: 0.5, duration: 0.6 }}
+						whileHover={{ scale: 1.1, rotate: 5 }}
+					>
+						<Picture
+							src={tag_img}
+							alt="map pattern"
+							loading="eager"
+							className="w-[85px]"
+						/>
+					</motion.div>
+				</div>
+			</motion.div>
 		</div>
 	);
 };

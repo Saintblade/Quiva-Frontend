@@ -2,92 +2,110 @@
 import { MainButton } from "@/components/button";
 import Picture from "@/components/picture/Index";
 import TitleText from "@/components/text/TitleText";
-import React, { useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
 	comicpadImg,
 	contractsImg,
 	launchImg,
 	lockImg,
 } from "../../../../public/dev_images";
+import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/effect-fade";
+import { Pagination, Autoplay, EffectFade } from "swiper/modules";
 
 const WhyBlockchain = () => {
-	// Create refs for each section
-	const ownStoryRef = useRef<HTMLDivElement>(null);
-	const noSecretRef = useRef<HTMLDivElement>(null);
-	const launchRef = useRef<HTMLDivElement>(null);
+	const [activeSlide, setActiveSlide] = useState(0);
+	const swiperRef = useRef<SwiperType | null>(null);
 
-	const BLOCKCHAIN_SECTIONS = [
+	const SLIDES = [
 		{
-			id: "own-story",
+			id: 0,
 			title: "Own Your Story",
 			description:
 				"Every comic you read or mint is yours. No middlemen, no loss. It's forever yours.",
 			image: lockImg,
-			ref: useRef<HTMLDivElement>(null),
 			bgColor: "bg-black-600",
 			borderColor: "border-secondary-200",
+			buttonText: "Own your story",
 		},
-		{
-			id: "no-secret",
-			title: "No Secrets. Just Smart Contracts.",
-			description:
-				"All rights, rewards, and royalties are coded and public. What you see is what you get.",
-			image: contractsImg,
-			ref: useRef<HTMLDivElement>(null),
-			bgColor: "bg-black-600",
-			borderColor: "border-secondary-200",
-		},
-		{
-			id: "launch",
-			title: "Launch.",
-			description:
-				"Whether you're in Lagos or Tokyo, Quiva lets you create, publish, and earn globally.",
-			image: launchImg,
-			ref: useRef<HTMLDivElement>(null),
-			bgColor: "bg-black-600",
-			borderColor: "border-secondary-200",
-		},
-	];
-
-	// Scroll function
-	const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
-		ref.current?.scrollIntoView({
-			behavior: "smooth",
-			block: "nearest",
-			inline: "center",
-		});
-	};
-
-	// Slide data constants
-	const SLIDES = [
 		{
 			id: 1,
 			title: "No Secrets. Just Smart Contracts.",
 			description:
 				"All rights, rewards, and royalties are coded and public. What you see is what you get.",
-			image: contractsImg, // Replace with your image import
+			image: contractsImg,
 			bgColor: "bg-black-600",
 			borderColor: "border-secondary-200",
+			buttonText: "No Secret",
 		},
 		{
 			id: 2,
 			title: "Launch from Anywhere.",
 			description:
-				"Whether you’re in Lagos or Tokyo, Quiva lets you create, publish, and earn globally.",
-			image: launchImg, // Replace with your image import
+				"Whether you're in Lagos or Tokyo, Quiva lets you create, publish, and earn globally.",
+			image: launchImg,
 			bgColor: "bg-black-600",
 			borderColor: "border-secondary-200",
-		},
-		{
-			id: 2,
-			title: "Own Your Story",
-			description:
-				"Every comic you read or mint is yours. No middlemen, no loss. It's forever yours.",
-			image: lockImg,
-			bgColor: "bg-black-600",
-			borderColor: "border-secondary-200",
+			buttonText: "Launch",
 		},
 	];
+
+	// Animation settings
+	const SWIPER_SETTINGS = {
+		spaceBetween: 30,
+		slidesPerView: 1 as const,
+		loop: true,
+		autoplay: {
+			delay: 5000,
+			disableOnInteraction: false,
+			pauseOnMouseEnter: true,
+		},
+		pagination: {
+			clickable: true,
+			dynamicBullets: true,
+		},
+		effect: "fade" as const,
+		fadeEffect: {
+			crossFade: true,
+		},
+		speed: 1000,
+		modules: [Pagination, Autoplay, EffectFade],
+		className: "w-full",
+		onSlideChange: (swiper: SwiperType) => {
+			const realIndex = swiper.realIndex;
+			setActiveSlide(realIndex);
+		},
+		onSwiper: (swiper: SwiperType) => {
+			swiperRef.current = swiper;
+		},
+	};
+
+	const handleButtonClick = (slideIndex: number) => {
+		if (
+			swiperRef.current &&
+			typeof swiperRef.current.slideToLoop === "function"
+		) {
+			swiperRef.current.slideToLoop(slideIndex);
+			setActiveSlide(slideIndex);
+		}
+	};
+
+	// Restart autoplay when manually changing slides
+	useEffect(() => {
+		if (swiperRef.current && swiperRef.current.autoplay) {
+			// Stop current autoplay
+			swiperRef.current.autoplay.stop();
+			// Start autoplay again after a brief delay
+			setTimeout(() => {
+				if (swiperRef.current && swiperRef.current.autoplay) {
+					swiperRef.current.autoplay.start();
+				}
+			}, 100);
+		}
+	}, [activeSlide]);
 
 	return (
 		<section className='bg-black-900 min-h-screen pt-12 pb-16 lg:py-24'>
@@ -99,61 +117,100 @@ const WhyBlockchain = () => {
 							className='text-light-100'
 						/>
 						<div className='flex flex-wrap items-center gap-4'>
-							{BLOCKCHAIN_SECTIONS.map((section) => (
+							{SLIDES.map((slide, index) => (
 								<MainButton
-									key={section.id}
-									onClick={() => scrollToSection(section.ref)}
-									className={`w-fit ${
-										section.id === "own-story" ? "!px-3 lg:!px-8" : "lg:!px-12"
-									} ${
-										section.id === "own-story"
-											? "bg-secondary-200 border-secondary-200"
-											: "bg-transparent text-secondary-200 border-secondary-200"
-									} border`}
+									key={slide.id}
+									onClick={() => handleButtonClick(index)}
+									className={`w-fit !px-3 lg:!px-8 transition-all duration-300 transform hover:scale-105 ${
+										activeSlide === index
+											? "bg-secondary-200 border border-secondary-200 text-black shadow-lg scale-105"
+											: "bg-transparent text-secondary-200 border border-secondary-200 hover:bg-secondary-200/10"
+									}`}
 								>
-									{section.title.split(".")[0]}
+									{slide.buttonText}
 								</MainButton>
 							))}
 						</div>
 					</div>
 
-					{/* Horizontal Scrolling Container */}
-					<div className='relative'>
-						<div className='flex overflow-x-auto no-scrollbar pb-6 gap-6 snap-x snap-mandatory'>
-							{BLOCKCHAIN_SECTIONS.map((section) => (
-								<div
-									key={section.id}
-									ref={section.ref}
-									className='flex-shrink-0 w-full max-w-[1200px] snap-center'
-								>
+					<div className='swiper-container'>
+						<Swiper {...SWIPER_SETTINGS}>
+							{SLIDES.map((slide, index) => (
+								<SwiperSlide key={slide.id}>
 									<div
-										className={`${section.bgColor} h-fit lg:h-[570px] shadow-2xl border-2 ${section.borderColor} rounded-[30px] flex flex-col-reverse lg:grid grid-cols-10 lg:space-x-8 gap-5 lg:gap-0 place-items-center lg:px-10 z-20 px-2 py-10 lg:py-0`}
+										className={`${
+											slide.bgColor
+										} w-full lg:h-[570px] shadow-2xl border-2 ${
+											slide.borderColor
+										} rounded-[30px] flex flex-col-reverse lg:grid grid-cols-10 lg:space-x-8 gap-5 lg:gap-0 place-items-center lg:px-10 z-20 px-2 py-10 lg:py-0 transition-all duration-700 transform ${
+											activeSlide === index ? "animate-fadeIn" : ""
+										}`}
 									>
-										<div className='col-span-4 h-[80%] w-full relative'>
+										<div className='col-span-4 h-[80%] w-full relative overflow-hidden rounded-3xl'>
 											<Picture
-												src={section.image}
-												alt={section.title}
-												className='w-full h-[100%] object-cover rounded-3xl'
+												src={slide.image}
+												alt={slide.title}
+												loading='eager'
+												className={`w-full h-[100%] object-cover transition-all duration-1000 ${
+													activeSlide === index
+														? "scale-100 opacity-100"
+														: "scale-110 opacity-90"
+												} hover:scale-105`}
+											/>
+											{/* Overlay effect for smooth transitions */}
+											<div
+												className={`absolute inset-0 bg-gradient-to-r from-transparent to-black/10 transition-opacity duration-700 ${
+													activeSlide === index ? "opacity-0" : "opacity-30"
+												}`}
 											/>
 										</div>
 										<div className='col-span-6 grid place-items-center'>
-											<div className='space-y-5'>
+											<div
+												className={`space-y-5 transform transition-all duration-700 ${
+													activeSlide === index
+														? "translate-y-0 opacity-100"
+														: "translate-y-4 opacity-70"
+												}`}
+											>
 												<TitleText
-													title={section.title}
-													className='!text-white'
+													title={slide.title}
+													className={`!text-white transition-all duration-500 ${
+														activeSlide === index
+															? "animate-fadeIn transform translate-y-0"
+															: "transform translate-y-2"
+													}`}
 												/>
-												<p className='text-white/70 font-poppins sm:text-xl lg:text-3xl leading-6 lg:leading-10 w-4/5'>
-													{section.description}
+												<p
+													className={`text-white/70 font-poppins sm:text-xl lg:text-3xl leading-6 lg:leading-10 w-4/5 transition-all duration-700 delay-200 ${
+														activeSlide === index
+															? "animate-fadeIn transform translate-y-0 opacity-100"
+															: "transform translate-y-3 opacity-70"
+													}`}
+												>
+													{slide.description}
 												</p>
 											</div>
 										</div>
 									</div>
-								</div>
+								</SwiperSlide>
 							))}
-						</div>
+						</Swiper>
+					</div>
 
-						{/* Scroll indicator */}
-						<div className='hidden md:block absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-black to-transparent pointer-events-none' />
+					{/* Progress indicator */}
+					<div className='flex justify-center space-x-2 mt-8'>
+						{SLIDES.map((_, index) => (
+							<button
+								key={index}
+								onClick={() => handleButtonClick(index)}
+								className={`w-3 h-3 rounded-full transition-all duration-300 ${
+									activeSlide === index
+										? "bg-secondary-200 scale-125"
+										: "bg-white/30 hover:bg-white/50"
+								}`}
+								aria-label={`Go to slide ${index + 1}`}
+							/>
+						))}
 					</div>
 				</div>
 			</div>

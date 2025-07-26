@@ -73,7 +73,7 @@ const Header = () => {
 				</nav>
 
 				{/* Mobile Navigation */}
-				<nav className='w-full relative flex justify-between items-center xl:hidden px-4'>
+				<nav className='w-full relative flex justify-between items-center lg:hidden px-4'>
 					<QuivaLogo
 						showText
 						className={`${
