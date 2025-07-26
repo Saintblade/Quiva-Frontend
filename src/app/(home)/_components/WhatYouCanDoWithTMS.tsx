@@ -28,16 +28,16 @@ const WhatYouCanDoWithTMS = () => {
 	];
 
 	return (
-		<section className='bg-black-500 min-h-screen pt-14 lg:pt-24 pb-20 lg:pb-40'>
+		<section className='bg-black-500 min-h-screen pt-10 lg:pt-24 pb-10 lg:pb-40'>
 			<div className='px-4 lg:px-0 xl:max-w-screen-xl mx-auto'>
-				<div className='space-y-20 text-start'>
+				<div className='space-y-8 lg:space-y-20 text-start'>
 					<div className='space-y-6 w-[90%]'>
 						<TitleText
 							title='What Can You Do With $Q?'
 							className='text-light-100'
 						/>
 
-						<p className='text-light-200 font-poppins text-lg'>
+						<p className='text-light-200 font-poppins lg:text-lg'>
 							More than a token — it’s your key to the Quiva universe.
 						</p>
 
@@ -46,7 +46,7 @@ const WhatYouCanDoWithTMS = () => {
 						</MainButton>
 					</div>
 
-					<div className='mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16'>
+					<div className='mt-5 lg:mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-16'>
 						{features.map(({ id, title, description, gradient }) => (
 							<div
 								key={id}

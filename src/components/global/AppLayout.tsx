@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
+import ScrollToTopBottom from "../button/ScrollToTopBottom";
 
 interface AppLayoutProps {
 	children: ReactNode;
@@ -16,6 +17,7 @@ const AppLayout = ({ children, bgClassName, className }: AppLayoutProps) => {
 				className={`relative w-full min-h-screen ${className} ${bgClassName}`}
 			>
 				{children}
+				<ScrollToTopBottom />
 			</main>
 			<Footer />
 		</>

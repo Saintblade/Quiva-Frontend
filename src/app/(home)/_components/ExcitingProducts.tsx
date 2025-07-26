@@ -2,6 +2,7 @@
 import Picture from "@/components/picture/Index";
 import TitleText from "@/components/text/TitleText";
 import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
 	comicpadImg,
 	footerImg,
@@ -9,8 +10,6 @@ import {
 	scrabbleImg,
 } from "../../../../public/dev_images";
 import { StaticImageData } from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-
 
 const ExcitingProducts = () => {
 	type DeckKey = "ComicPad" | "Jumble Jester" | "Scrabble Arena";
@@ -64,7 +63,7 @@ const ExcitingProducts = () => {
 	}, []);
 
 	return (
-		<section className='bg-black-500 min-h-screen pb-24'>
+		<section className='bg-black-500 min-h-screen pb-8 lg:pb-24'>
 			<div className='space-y-6 lg:space-y-8 w-[80%] sm:max-w-[850px] text-center pt-16 lg:pt-32 mx-auto'>
 				<TitleText
 					title='Explore Our Exciting Product Offerings'
@@ -79,7 +78,7 @@ const ExcitingProducts = () => {
 			<div className='px-2 lg:px-0 lg:max-w-screen-xl mt-12 grid place-items-center mx-auto'>
 				<div className='flex flex-col-reverse lg:flex-row justify-center items-center lg:items-end lg:w-[1100px] mx-auto'>
 					{/* Card */}
-					<AnimatePresence mode="wait">
+					<AnimatePresence mode='wait'>
 						<motion.div
 							key={selected} // very important for animation trigger
 							initial={{ opacity: 0, x: 20 }}
@@ -136,30 +135,29 @@ const ExcitingProducts = () => {
 						.map((item: any, i) => {
 							const isTopDeck = i === 0;
 							return (
-								<AnimatePresence mode="wait" key={item}>
-							<motion.div
-								
-								initial={{ opacity: 0, x: 20 }}
-								animate={{ opacity: 1, x: 0 }}
-								exit={{ opacity: 0, x: -20 }}
-								transition={{ duration: 0.6, ease: "easeInOut" }}
-								className={` border-[#161616] border-r-large  w-[10%] h-[560px] rounded-r-[30px] px-10 -ml-5 z-[${
-									10 - i
-								}] hidden lg:flex items-center justify-center bg-gray-${
-									200 + i * 100
-								} ${isTopDeck ? 'top_deck' : 'bottom_deck'}`}
-								onClick={() => setSelected(item)}
-								style={{ cursor: "pointer" }}
-							>
-								<div className='transform rotate-90 origin-center'>
-									<p className='text-white text-4xl font-bold tracking-wide whitespace-nowrap inner-shadow-text'>
-										{item}
-									</p>
-								</div>
-							</motion.div>
-							</AnimatePresence>
-						)
-					})}
+								<AnimatePresence mode='wait' key={item}>
+									<motion.div
+										initial={{ opacity: 0, x: 20 }}
+										animate={{ opacity: 1, x: 0 }}
+										exit={{ opacity: 0, x: -20 }}
+										transition={{ duration: 0.6, ease: "easeInOut" }}
+										className={` border-[#161616] border-r-large  w-[10%] h-[560px] rounded-r-[30px] px-10 -ml-5 z-[${
+											10 - i
+										}] hidden lg:flex items-center justify-center bg-gray-${
+											200 + i * 100
+										} ${isTopDeck ? "top_deck" : "bottom_deck"}`}
+										onClick={() => setSelected(item)}
+										style={{ cursor: "pointer" }}
+									>
+										<div className='transform rotate-90 origin-center'>
+											<p className='text-white text-4xl font-bold tracking-wide whitespace-nowrap inner-shadow-text'>
+												{item}
+											</p>
+										</div>
+									</motion.div>
+								</AnimatePresence>
+							);
+						})}
 				</div>
 			</div>
 		</section>
