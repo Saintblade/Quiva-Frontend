@@ -9,23 +9,28 @@ import Image from "next/image";
 const slideSteps = [
 	{
 		title: "Choose your Comic Project",
-		image: progress_1, // Replace with your image
+		image: progress_1,
+		step: 0,
 	},
 	{
 		title: "Create or Upload your Comic NFTs",
 		image: progress_2,
+		step: 1,
 	},
 	{
 		title: "Set Minting & Rewards Rules",
 		image: progress_3,
+		step: 2,
 	},
 	{
 		title: "Go Live – Let Fans Mint & Read",
 		image: progress_4,
+		step: 3,
 	},
 	{
 		title: "Track, Earn, & Build Your Community",
 		image: progress_5,
+		step: 4,
 	},
 ];
 
@@ -98,7 +103,8 @@ const ProgressWorkPad = () => {
 					return (
 						<div
 							key={index}
-							className='flex flex-col mx-auto lg:mx-0 justify-center md:justify-start items-center lg:items-start md:w-1/5 space-y-1 md:space-y-3 md:pl-0 relative'
+							onClick={() => setCurrentStep(step.step || index)}
+							className='cursor-pointer flex flex-col mx-auto lg:mx-0 justify-center md:justify-start items-center lg:items-start md:w-1/5 space-y-1 md:space-y-3 md:pl-0 relative'
 						>
 							<div
 								className={`text-sm ${
