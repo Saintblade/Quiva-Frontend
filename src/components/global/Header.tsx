@@ -68,7 +68,7 @@ const Header = () => {
 					</ul>
 
 					<div className='flex justify-end col-span-1'>
-						<MainButton>Explore free comics</MainButton>
+						<MainButton>White Paper</MainButton>
 					</div>
 				</nav>
 

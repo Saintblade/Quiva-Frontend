@@ -9,7 +9,7 @@ import { bg_what, curiousImg } from "../../../../public/dev_images";
 
 const WhatIsQuiva = () => {
 	return (
-		<section className='bg-black-100 pt-2 lg:pt-24 pb-48 lg:pb-40 relative'>
+		<section className='bg-black-100 pt-2 lg:pt-24 pb-20 lg:pb-40 relative'>
 			<div className='absolute inset-0'>
 				<Picture
 					src={bg_what}
@@ -53,7 +53,7 @@ const WhatIsQuiva = () => {
 				src={curiousImg}
 				alt='curious image'
 				loading='eager'
-				className='w-[60%] lg:w-[600px] absolute bottom-0 left-5 lg:left-20 object-contain'
+				className='w-[60%] lg:w-[600px] absolute bottom-0 left-5 lg:left-20 object-contain hidden lg:block'
 			/>
 		</section>
 	);
