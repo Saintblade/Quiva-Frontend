@@ -5,7 +5,7 @@ import { QuivaLogo } from "../utils/function";
 import { emailAddress, phoneNum, SOCIAL_MEDIA_LINKS } from "../utils/constant";
 import Link from "next/link";
 import Picture from "../picture/Index";
-import { footerImg, heroBgImg, heroImage1 } from "../../../public/dev_images";
+import { footerImg, heroBgImg } from "../../../public/dev_images";
 
 const Footer = () => {
 	const currentYear = new Date().getFullYear();
@@ -46,7 +46,7 @@ const Footer = () => {
 				</div>
 
 				<h5 className='text-black-100 font-recursive text-sm lg:text-lg mt-6'>
-					Stake Now
+					Quiva Game
 				</h5>
 			</div>
 
