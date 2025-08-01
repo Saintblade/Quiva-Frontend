@@ -44,8 +44,20 @@ const Hero = () => {
 						</MainButton2>
 					</div>
 				</div>
-				<div className='col-span-4 lg:grid place-items-center'>
-					<div className='w-[280px] sm:w-[320px] md:w-[360px] lg:w-[404.04px] h-[300px] relative mx-auto flex justify-center'>
+				<div className='col-span-4 mt-5 lg:mt-0 lg:grid place-items-center'>
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: false, amount: 0.4 }}
+						transition={{ duration: 1, delay: 0.8 }}
+						className='flex flex-col lg:hidden items-center gap-3 lg:gap-2 lg:pt-20 pb-0 w-fit'
+					>
+						<MainButton className='w-full lg:w-fit'>Quiva Game</MainButton>
+						<MainButton className='bg-transparent w-full lg:w-fit !border-white !border-[3px] text-white'>
+							Explore ComicPad
+						</MainButton>
+					</motion.div>
+					<div className='w-[280px] sm:w-[320px] md:w-[360px] lg:w-[404.04px] h-[300px] relative mx-auto hidden lg:flex justify-center'>
 						<motion.div
 							initial={{ opacity: 0, y: 40 }}
 							whileInView={{ opacity: 1, y: 0 }}
@@ -67,32 +79,47 @@ const Hero = () => {
 						</motion.div>
 					</div>
 
-					<motion.div
-						initial={{ opacity: 0, y: 20 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						viewport={{ once: false, amount: 0.4 }}
-						transition={{ duration: 1, delay: 0.8 }}
-						className='flex flex-col lg:hidden items-center gap-3 lg:gap-2 lg:pt-20 pb-0 w-fit'
-					>
-						<MainButton className='w-full lg:w-fit'>Quiva Game</MainButton>
-						<MainButton className='bg-transparent w-full lg:w-fit !border-white !border-[3px] text-white'>
-							Explore ComicPad
-						</MainButton>
-					</motion.div>
+					<div className='relative w-full max-w-[762px] mx-auto lg:hidden mt-12'>
+						{/* BACKGROUND IMAGE LAYER (Behind Mascot) */}
+						<div className='absolute inset-0 flex justify-center items-start pointer-events-none -z-10'>
+							<div className='w-[280px] sm:w-[320px] md:w-[360px] lg:w-[404.04px] h-[300px] relative grid place-items-center'>
+								<motion.div
+									initial={{ opacity: 0, y: 40 }}
+									whileInView={{ opacity: 1, y: 0 }}
+									viewport={{ once: false, amount: 0.4 }}
+									transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+									className='absolute top-4 lg:-top-12 w-[80%] xs:w-[300px] sm:w-[320px] md:w-[360px] lg:w-[400px]'
+								>
+									<Picture src={heroImage2} alt='Quiva logo' loading='eager' />
+								</motion.div>
 
-					<motion.div
-						initial={{ opacity: 0, y: 30 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						viewport={{ once: false, amount: 0.4 }}
-						transition={{ duration: 1, delay: 1.1 }}
-						className='lg:hidden w-[100%] sm:w-[762px] object-cover bottom-0 -mt-10'
-					>
-						<Picture
-							src={mascotThree2}
-							alt='Mascot three quarter'
-							loading='eager'
-						/>
-					</motion.div>
+								<motion.div
+									initial={{ opacity: 0, scale: 0.95 }}
+									whileInView={{ opacity: 1, scale: 1 }}
+									viewport={{ once: false, amount: 0.4 }}
+									transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
+									className='absolute top-4 lg:-top-12 w-[70%] xs:w-[280px] sm:w-[284px] md:w-[320px] lg:w-[356px]'
+								>
+									<Picture src={heroImage1} alt='Quiva logo' loading='eager' />
+								</motion.div>
+							</div>
+						</div>
+
+						{/* FOREGROUND MASCOT IMAGE */}
+						<motion.div
+							initial={{ opacity: 0, y: 30 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: false, amount: 0.4 }}
+							transition={{ duration: 1, delay: 1.1 }}
+							className='relative w-[80%] sm:w-[762px] mx-auto object-cover -mt-10 z-10'
+						>
+							<Picture
+								src={mascotThree2}
+								alt='Mascot three quarter'
+								loading='eager'
+							/>
+						</motion.div>
+					</div>
 				</div>
 			</div>
 
