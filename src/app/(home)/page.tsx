@@ -41,7 +41,9 @@ const page = () => {
 			<WhyQuiva />
 			<WhyBlockchain />
 			<WhatYouCanDoWithTMS />
+			<div id='faq' />
 			<WhatIsQuiva />
+			<div id='roadmap' />
 			<HomeRoadMap />
 		</AppLayout>
 	);

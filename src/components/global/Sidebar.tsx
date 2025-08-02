@@ -10,8 +10,13 @@ import { QuivaLogo } from "../utils/function";
 interface SidebarProps {
 	isSidebarOpen: boolean;
 	toggleSidebar: () => void;
+	onOpenWhitePaper: () => void;
 }
-const Sidebar = ({ isSidebarOpen, toggleSidebar }: SidebarProps) => {
+const Sidebar = ({
+	isSidebarOpen,
+	toggleSidebar,
+	onOpenWhitePaper,
+}: SidebarProps) => {
 	const pathName = usePathname();
 
 	useEffect(() => {
@@ -60,21 +65,62 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }: SidebarProps) => {
 				</div>
 				<ul className='flex gap-y-6 flex-col mt-6'>
 					{NAV_LINKS.map((links, index) => {
+						const isSectionLink =
+							links.href === "/faq" || links.href === "/roadmap";
+						const sectionId = links.href.substring(1);
+
+						// Check if active (either exact path match or section match on homepage)
+						const isActive =
+							pathName === links.href ||
+							(isSectionLink &&
+								window.location.hash === `#${sectionId}` &&
+								pathName === "/");
+
 						return (
 							<li key={index} className='relative'>
-								<Link
-									href={links.href}
-									className={`capitalize relative text-lg font-medium font-sans group ${
-										pathName === links.href ? "text-primary-100" : "text-white"
-									}`}
-								>
-									<div className='flex items-center gap-1.5'>{links.label}</div>
-								</Link>
-
-								{/* Coming Soon badge */}
+								{isSectionLink ? (
+									<a
+										href={`/#${sectionId}`}
+										onClick={(e) => {
+											if (pathName === "/") {
+												e.preventDefault();
+												document.getElementById(sectionId)?.scrollIntoView({
+													behavior: "smooth",
+												});
+												// Update URL without reload
+												window.history.pushState({}, "", `/#${sectionId}`);
+											}
+										}}
+										className={`capitalize relative text-lg w-fit font-medium font-sans group ${
+											isActive ? "text-primary-100 border-b" : "text-white"
+										}`}
+									>
+										<div className='flex items-center w-fit gap-1.5'>
+											{links.label}
+										</div>
+									</a>
+								) : (
+									<Link
+										href={links.href}
+										className={`capitalize relative text-lg w-fit font-medium font-sans group ${
+											isActive ? "text-primary-100" : "text-white"
+										}`}
+									>
+										<div className='flex items-center gap-1.5'>
+											{links.label}
+										</div>
+									</Link>
+								)}
 							</li>
 						);
 					})}
+
+					<span
+						onClick={onOpenWhitePaper}
+						className={`capitalize relative text-lg font-medium font-sans w-fit rounded-full bg-primary-100 px-4 py-1 border border-primary-100 text-white`}
+					>
+						<div className='flex items-center gap-1.5'>White Paper</div>
+					</span>
 				</ul>
 			</div>
 		</aside>

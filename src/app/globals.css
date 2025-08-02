@@ -314,3 +314,8 @@
 :global(.swiper-slide:hover) {
 	transform: translateY(-2px);
 }
+
+.gradient-border {
+	border: 2px solid transparent;
+	border-image: linear-gradient(to right, #e57226, #faa31e) 1;
+}

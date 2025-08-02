@@ -7,12 +7,22 @@ import Hamburger from "hamburger-react";
 import Link from "next/link";
 import { NAV_LINKS } from "../utils/constant";
 import Sidebar from "./Sidebar";
+import { Modal, ModalContent, useDisclosure } from "@heroui/react";
+import WhitePaperModal from "../modals/WhitePaperModal";
+import GeneralModal from "../modals/GeneralModal";
 
 const Header = () => {
 	const [search, setSearch] = useState("");
 	const [isScrolled, setIsScrolled] = useState(false);
 	const pathname = usePathname();
 	const router = useRouter();
+
+	const {
+		isOpen: isOpenWhitePaper,
+		onOpen: onOpenWhitePaper,
+		onOpenChange: onOpenChangeWhitePaper,
+		onClose: onCloseWhitePaper,
+	} = useDisclosure();
 
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const toggleSidebar = () => {
@@ -55,20 +65,59 @@ const Header = () => {
 					</div>
 
 					<ul className='flex gap-6 xl:gap-8 mx-auto text-white py-3 font-spaceGrotesk col-span-4'>
-						{NAV_LINKS.map((link) => (
-							<li key={link.href}>
-								<Link
-									href={link.href}
-									className='hover:text-primary-100 transition-colors'
-								>
-									{link.label}
-								</Link>
-							</li>
-						))}
+						{NAV_LINKS.map((link) => {
+							const isSectionLink =
+								link.href === "/faq" || link.href === "/roadmap";
+							const sectionId = link.href.substring(1);
+							const currentPath = window.location.pathname;
+							const currentHash = window.location.hash.substring(1);
+							// Check if active (either exact path match or section match)
+							const isActive =
+								currentPath === link.href ||
+								(isSectionLink &&
+									currentHash === sectionId &&
+									currentPath === "/");
+
+							return (
+								<li key={link.href}>
+									{isSectionLink ? (
+										<a
+											href={`/#${sectionId}`}
+											onClick={(e) => {
+												if (currentPath === "/") {
+													e.preventDefault();
+													document.getElementById(sectionId)?.scrollIntoView({
+														behavior: "smooth",
+													});
+												}
+											}}
+											className={`hover:text-primary-100 transition-colors ${
+												isActive
+													? "text-primary-100 font-semibold"
+													: "text-white"
+											}`}
+										>
+											{link.label}
+										</a>
+									) : (
+										<Link
+											href={link.href}
+											className={`hover:text-primary-100 transition-colors ${
+												isActive
+													? "text-primary-100 font-semibold"
+													: "text-white"
+											}`}
+										>
+											{link.label}
+										</Link>
+									)}
+								</li>
+							);
+						})}
 					</ul>
 
 					<div className='flex justify-end col-span-1'>
-						<MainButton>White Paper</MainButton>
+						<MainButton onClick={onOpenWhitePaper}>White Paper</MainButton>
 					</div>
 				</nav>
 
@@ -92,7 +141,22 @@ const Header = () => {
 				</nav>
 			</header>
 
-			<Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+			<Sidebar
+				isSidebarOpen={isSidebarOpen}
+				toggleSidebar={toggleSidebar}
+				onOpenWhitePaper={onOpenWhitePaper}
+			/>
+
+			{/* White paper */}
+			<GeneralModal
+				isOpen={isOpenWhitePaper}
+				onOpenChange={onOpenChangeWhitePaper}
+				onClose={onCloseWhitePaper}
+				backdrop='blur'
+				size='xl'
+			>
+				<WhitePaperModal onClose={onCloseWhitePaper} />
+			</GeneralModal>
 		</>
 	);
 };
