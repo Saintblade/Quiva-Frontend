@@ -68,12 +68,14 @@ const Header = () => {
 						{NAV_LINKS.map((link) => {
 							const isSectionLink =
 								link.href === "/faq" || link.href === "/roadmap";
+							const isExternalLink = !link.href.startsWith("/"); // Check for external URLs
 							const sectionId = link.href.substring(1);
 							const currentPath =
 								typeof window !== "undefined" && window.location.pathname;
 							const currentHash =
 								typeof window !== "undefined" &&
 								window.location.hash.substring(1);
+
 							// Check if active (either exact path match or section match)
 							const isActive =
 								currentPath === link.href ||
@@ -94,6 +96,19 @@ const Header = () => {
 													});
 												}
 											}}
+											className={`hover:text-primary-100 transition-colors ${
+												isActive
+													? "text-primary-100 font-semibold"
+													: "text-white"
+											}`}
+										>
+											{link.label}
+										</a>
+									) : isExternalLink ? (
+										<a
+											href={link.href}
+											target='_blank'
+											rel='noopener noreferrer'
 											className={`hover:text-primary-100 transition-colors ${
 												isActive
 													? "text-primary-100 font-semibold"

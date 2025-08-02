@@ -4,7 +4,7 @@ import { RiTwitterXFill, RiYoutubeFill } from "react-icons/ri";
 export const NAV_LINKS = [
 	{ href: "/", label: "Home" },
 	{ href: "/explore", label: "Explore" },
-	{ href: "/games", label: "Games" },
+	{ href: "https://t.me/Quiva_bot", label: "Games" }, // This needs target blank
 	{ href: "/comic-pad", label: "Comic Pad" },
 	{ href: "/faq", label: "FAQ" },
 	{ href: "/roadmap", label: "Roadmap" },

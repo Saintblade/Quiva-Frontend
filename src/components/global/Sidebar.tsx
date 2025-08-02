@@ -67,6 +67,7 @@ const Sidebar = ({
 					{NAV_LINKS.map((links, index) => {
 						const isSectionLink =
 							links.href === "/faq" || links.href === "/roadmap";
+						const isExternalLink = !links.href.startsWith("/"); // Check for external URLs
 						const sectionId = links.href.substring(1);
 
 						// Check if active (either exact path match or section match on homepage)
@@ -88,7 +89,6 @@ const Sidebar = ({
 												document.getElementById(sectionId)?.scrollIntoView({
 													behavior: "smooth",
 												});
-												// Update URL without reload
 												typeof window !== "undefined" &&
 													window.history.pushState({}, "", `/#${sectionId}`);
 											}
@@ -98,6 +98,19 @@ const Sidebar = ({
 										}`}
 									>
 										<div className='flex items-center w-fit gap-1.5'>
+											{links.label}
+										</div>
+									</a>
+								) : isExternalLink ? (
+									<a
+										href={links.href}
+										target='_blank'
+										rel='noopener noreferrer'
+										className={`capitalize relative text-lg w-fit font-medium font-sans group ${
+											isActive ? "text-primary-100" : "text-white"
+										}`}
+									>
+										<div className='flex items-center gap-1.5'>
 											{links.label}
 										</div>
 									</a>
