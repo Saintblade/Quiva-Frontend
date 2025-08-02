@@ -1,6 +1,14 @@
 "use client";
-import React, { useState } from "react";
-import { progress_1, progress_2, progress_3, progress_4, progress_5, tag_img } from "../../../../public/dev_images";
+import React, { useEffect, useRef, useState } from "react";
+import {
+	progress_1,
+	progress_2,
+	progress_3,
+	progress_4,
+	progress_5,
+	tag_img,
+} from "../../../../public/dev_images";
+import { motion, AnimatePresence } from "framer-motion";
 import Picture from "@/components/picture/Index";
 import { HiOutlineArrowLeft, HiOutlineArrowRight } from "react-icons/hi";
 
@@ -34,18 +42,92 @@ const slideSteps = [
 	},
 ];
 
+// Locomotive Scroll + GSAP + Framer Motion
+
 const ProgressWorkPad = () => {
 	const [currentStep, setCurrentStep] = useState(0);
+	const [direction, setDirection] = useState(0);
+	const [isScrolling, setIsScrolling] = useState(false);
+	const containerRef = useRef<HTMLDivElement>(null);
+	const sliderRef = useRef<HTMLDivElement>(null);
+	const scrollTimeout = useRef<NodeJS.Timeout>();
+
+	// Handle wheel events for horizontal scrolling
+	useEffect(() => {
+		const container = containerRef.current;
+		if (!container) return;
+
+		const handleWheel = (e: WheelEvent) => {
+			e.preventDefault();
+
+			if (isScrolling) return;
+			setIsScrolling(true);
+
+			clearTimeout(scrollTimeout.current);
+			scrollTimeout.current = setTimeout(() => {
+				setIsScrolling(false);
+			}, 1000);
+
+			if (e.deltaY > 0) {
+				// Scroll down - go to next step
+				if (currentStep < slideSteps.length - 1) {
+					setDirection(1);
+					setCurrentStep((prev) => prev + 1);
+				}
+			} else {
+				// Scroll up - go to previous step
+				if (currentStep > 0) {
+					setDirection(-1);
+					setCurrentStep((prev) => prev - 1);
+				}
+			}
+		};
+
+		container.addEventListener("wheel", handleWheel, { passive: false });
+		return () => container.removeEventListener("wheel", handleWheel);
+	}, [currentStep, isScrolling]);
 
 	const goPrev = () => {
-		if (currentStep > 0) setCurrentStep(currentStep - 1);
+		if (currentStep > 0) {
+			setDirection(-1);
+			setCurrentStep((prev) => prev - 1);
+		}
 	};
 
 	const goNext = () => {
-		if (currentStep < slideSteps.length - 1) setCurrentStep(currentStep + 1);
+		if (currentStep < slideSteps.length - 1) {
+			setDirection(1);
+			setCurrentStep((prev) => prev + 1);
+		}
 	};
 
 	const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+
+	useEffect(() => {
+		const timer = setInterval(() => {
+			if (currentStep < slideSteps.length - 1) {
+				goNext();
+			} else {
+				setCurrentStep(0);
+			}
+		}, 5000);
+		return () => clearInterval(timer);
+	}, [currentStep]);
+
+	const variants = {
+		enter: (direction: number) => ({
+			x: direction > 0 ? "100%" : "-100%",
+			opacity: 0,
+		}),
+		center: {
+			x: 0,
+			opacity: 1,
+		},
+		exit: (direction: number) => ({
+			x: direction < 0 ? "100%" : "-100%",
+			opacity: 0,
+		}),
+	};
 
 	return (
 		<div className='mt-14 relative'>
@@ -126,28 +208,73 @@ const ProgressWorkPad = () => {
 			</div>
 
 			{/* Slide Section */}
-			<div className='relative w-[70%] hidden lg:flex flex-col justify-center mx-auto items-center py-8 text-white'>
-				<Picture
-					src={slideSteps[currentStep].image}
-					alt={slideSteps[currentStep].title}
-					className='w-full h-auto object-cover'
-				/>
+			<div
+				ref={containerRef}
+				className='relative w-full max-w-4xl mx-auto overflow-hidden'
+			>
+				{/* Slider Container */}
+				<div ref={sliderRef} className='relative h-[500px] lg:h-[600px]'>
+					<AnimatePresence custom={direction} initial={false}>
+						<motion.div
+							key={currentStep}
+							custom={direction}
+							variants={variants}
+							initial='enter'
+							animate='center'
+							exit='exit'
+							transition={{
+								x: { type: "spring", stiffness: 300, damping: 30 },
+								opacity: { duration: 0.2 },
+							}}
+							className='absolute inset-0 flex flex-col items-center justify-center'
+						>
+							<div className='w-full h-full flex items-center justify-center'>
+								<Picture
+									src={slideSteps[currentStep]?.image}
+									alt={slideSteps[currentStep]?.title}
+									className='w-full h-full object-contain max-h-[80%]'
+								/>
+							</div>
+							<h3 className='text-xl md:text-2xl font-bold mt-6 text-center px-4'>
+								{slideSteps[currentStep]?.title}
+							</h3>
+						</motion.div>
+					</AnimatePresence>
+				</div>
 
-				<div className='flex gap-4 items-center mt-14 justify-center'>
-					<button
-						onClick={goPrev}
-						disabled={currentStep === 0}
-						className='w-12 h-8 flex items-center justify-center rounded-full border-2 border-white/50 hover:border-white disabled:opacity-30'
-					>
-						<HiOutlineArrowLeft />
-					</button>
-					<button
-						onClick={goNext}
-						disabled={currentStep === slideSteps.length - 1}
-						className='w-12 h-8 flex items-center justify-center rounded-full border-2 border-white/50 hover:border-white disabled:opacity-30'
-					>
-						<HiOutlineArrowRight />
-					</button>
+				{/* Navigation Arrows */}
+				<button
+					onClick={goPrev}
+					disabled={currentStep === 0}
+					className='absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 text-white border border-white/20 disabled:opacity-30 transition-all duration-200 z-10'
+				>
+					<HiOutlineArrowLeft className='w-6 h-6' />
+				</button>
+				<button
+					onClick={goNext}
+					disabled={currentStep === slideSteps.length - 1}
+					className='absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 text-white border border-white/20 disabled:opacity-30 transition-all duration-200 z-10'
+				>
+					<HiOutlineArrowRight className='w-6 h-6' />
+				</button>
+
+				{/* Progress Dots */}
+				<div className='absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10'>
+					{slideSteps.map((_, index) => (
+						<button
+							key={index}
+							onClick={() => {
+								setDirection(index > currentStep ? 1 : -1);
+								setCurrentStep(index);
+							}}
+							className={`w-3 h-3 rounded-full transition-all duration-300 ${
+								index === currentStep
+									? "bg-white w-6"
+									: "bg-white/30 hover:bg-white/50"
+							}`}
+							aria-label={`Go to step ${index + 1}`}
+						/>
+					))}
 				</div>
 			</div>
 			<Picture
