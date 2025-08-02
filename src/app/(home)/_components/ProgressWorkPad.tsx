@@ -1,13 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {
-	progress_1,
-	progress_2,
-	progress_3,
-	progress_4,
-	progress_5,
-	tag_img,
-} from "../../../../public/dev_images";
+import { progress_1, progress_2, progress_3, progress_4, progress_5, tag_img } from "../../../../public/dev_images";
 import Picture from "@/components/picture/Index";
 import { HiOutlineArrowLeft, HiOutlineArrowRight } from "react-icons/hi";
 

@@ -1,5 +1,5 @@
 import { FiInstagram } from "react-icons/fi";
-import { RiTwitterFill } from "react-icons/ri";
+import { RiTwitterXFill, RiYoutubeFill } from "react-icons/ri";
 
 export const NAV_LINKS = [
 	{ href: "/", label: "Home" },
@@ -14,13 +14,18 @@ export const NAV_LINKS = [
 export const SOCIAL_MEDIA_LINKS = [
 	{
 		id: "instagram",
-		icon: <FiInstagram className='text-2xl' />,
+		icon: <FiInstagram className='text-2xl hover:text-red-100' />,
 		url: "https://www.instagram.com/quivacomics",
 	},
 	{
 		id: "twitter",
-		icon: <RiTwitterFill className='text-2xl' />,
+		icon: <RiTwitterXFill className='text-2xl hover:text-black-100' />,
 		url: "https://x.com/quivacomics",
+	},
+	{
+		id: "youtube",
+		icon: <RiYoutubeFill className='text-2xl hover:text-red-100' />,
+		url: "https://youtube.com/@quivacomics?si=yXh4OpxcOm8tUp6g",
 	},
 ];
 
