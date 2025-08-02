@@ -69,8 +69,11 @@ const Header = () => {
 							const isSectionLink =
 								link.href === "/faq" || link.href === "/roadmap";
 							const sectionId = link.href.substring(1);
-							const currentPath = window.location.pathname;
-							const currentHash = window.location.hash.substring(1);
+							const currentPath =
+								typeof window !== "undefined" && window.location.pathname;
+							const currentHash =
+								typeof window !== "undefined" &&
+								window.location.hash.substring(1);
 							// Check if active (either exact path match or section match)
 							const isActive =
 								currentPath === link.href ||

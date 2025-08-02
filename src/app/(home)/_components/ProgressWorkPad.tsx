@@ -1,5 +1,4 @@
 "use client";
-<<<<<<< HEAD
 import React, { useEffect, useRef, useState } from "react";
 import {
 	progress_1,
@@ -10,10 +9,6 @@ import {
 	tag_img,
 } from "../../../../public/dev_images";
 import { motion, AnimatePresence } from "framer-motion";
-=======
-import React, { useState } from "react";
-import { progress_1, progress_2, progress_3, progress_4, progress_5, tag_img } from "../../../../public/dev_images";
->>>>>>> e0fb9877e75e2170823afc5e1857c0e27ae8047b
 import Picture from "@/components/picture/Index";
 import { HiOutlineArrowLeft, HiOutlineArrowRight } from "react-icons/hi";
 

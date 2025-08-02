@@ -73,6 +73,7 @@ const Sidebar = ({
 						const isActive =
 							pathName === links.href ||
 							(isSectionLink &&
+								typeof window !== "undefined" &&
 								window.location.hash === `#${sectionId}` &&
 								pathName === "/");
 
@@ -88,7 +89,8 @@ const Sidebar = ({
 													behavior: "smooth",
 												});
 												// Update URL without reload
-												window.history.pushState({}, "", `/#${sectionId}`);
+												typeof window !== "undefined" &&
+													window.history.pushState({}, "", `/#${sectionId}`);
 											}
 										}}
 										className={`capitalize relative text-lg w-fit font-medium font-sans group ${
