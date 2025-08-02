@@ -30,7 +30,7 @@
 
 	/* Scrollbar */
 	::-webkit-scrollbar {
-		width: 15px;
+		width: 5px;
 		z-index: 50;
 	}
 	/* Track */
