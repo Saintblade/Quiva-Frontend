@@ -66,7 +66,7 @@ const Sidebar = ({
 				<ul className='flex gap-y-6 flex-col mt-6'>
 					{NAV_LINKS.map((links, index) => {
 						const isSectionLink =
-							links.href === "/faq" || links.href === "/roadmap";
+							links.href === "/roadmap";
 						const isExternalLink = !links.href.startsWith("/"); // Check for external URLs
 						const sectionId = links.href.substring(1);
 
