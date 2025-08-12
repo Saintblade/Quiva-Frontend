@@ -2,11 +2,11 @@ import { FiInstagram } from "react-icons/fi";
 import { RiTwitterXFill, RiYoutubeFill } from "react-icons/ri";
 
 export const NAV_LINKS = [
-	{ href: "/", label: "Home" },
-	{ href: "/explore", label: "Explore" },
-	{ href: "https://t.me/Quiva_bot", label: "Games" }, // This needs target blank
-	{ href: "/comic-pad", label: "Comic Pad" },
-	{ href: "/faq", label: "FAQ" },
+	{ href: "/", label: "Our Products" },
+	{ href: "/explore", label: "Creators" },
+	{ href: "/games", label: "Whitepaper" },
+	// { href: "/comic-pad", label: "Comic Pad" },
+	// { href: "/faq", label: "FAQ" },
 	{ href: "/roadmap", label: "Roadmap" },
 	{ href: "/community", label: "Community" },
 ] as const;

@@ -49,7 +49,7 @@ const NoToolsNoProblem = () => {
 							))}
 						</div>
 					</div>
-					<p className='text-light-200 font-poppins text-base lg:text-lg'>
+					<p className='text-light-200 font-poppins text-bas	e lg:text-lg'>
 						Whether you&apos;re a pro artist or just getting started, Quiva
 						gives you the tools to draw, layout, and publish comics — right in
 						your browser.

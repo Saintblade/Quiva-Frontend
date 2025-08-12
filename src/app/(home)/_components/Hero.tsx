@@ -38,7 +38,7 @@ const Hero = () => {
 					</p>
 
 					<div className='hidden lg:flex items-center gap-2'>
-						<MainButton>Quiva Game</MainButton>
+						<MainButton>Quiva Games</MainButton>
 						<MainButton2 className='bg-transparent'>
 							Explore ComicPad
 						</MainButton2>
@@ -52,7 +52,7 @@ const Hero = () => {
 						transition={{ duration: 1, delay: 0.8 }}
 						className='flex flex-col lg:hidden items-center gap-3 lg:gap-2 lg:pt-20 pb-0 w-fit'
 					>
-						<MainButton className='w-full lg:w-fit'>Quiva Game</MainButton>
+						<MainButton className='w-full lg:w-fit'>Quiva Games</MainButton>
 						<MainButton className='bg-transparent w-full lg:w-fit !border-white !border-[3px] text-white'>
 							Explore ComicPad
 						</MainButton>
