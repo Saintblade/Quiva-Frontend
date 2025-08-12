@@ -53,7 +53,7 @@ const Header = () => {
 		<>
 			{/* Desktop Navigation */}
 			<header
-				className={`fixed w-full flex items-center z-20 h-16 lg:h-fit lg:py-3 top-0 ${
+				className={`fixed max-w-[1700px] w-full flex items-center z-20 h-16 lg:h-fit lg:py-3 top-0 ${
 					isScrolled
 						? "backdrop-blur-lg bg-white/40"
 						: "lg:border-b dashed-border-strong"
@@ -67,7 +67,7 @@ const Header = () => {
 					<ul className='flex gap-6 xl:gap-8 mx-auto text-white py-3 font-spaceGrotesk col-span-4'>
 						{NAV_LINKS.map((link) => {
 							const isSectionLink =
-								link.href === "/faq" || link.href === "/roadmap";
+								link.href === "/roadmap";
 							const isExternalLink = !link.href.startsWith("/"); // Check for external URLs
 							const sectionId = link.href.substring(1);
 							const currentPath =
@@ -96,7 +96,7 @@ const Header = () => {
 													});
 												}
 											}}
-											className={`hover:text-primary-100 transition-colors ${
+											className={`text-sm font-light hover:text-primary-100 transition-colors ${
 												isActive
 													? "text-primary-100 font-semibold"
 													: "text-white"
@@ -109,7 +109,7 @@ const Header = () => {
 											href={link.href}
 											target='_blank'
 											rel='noopener noreferrer'
-											className={`hover:text-primary-100 transition-colors ${
+											className={`text-sm font-light hover:text-primary-100 transition-colors ${
 												isActive
 													? "text-primary-100 font-semibold"
 													: "text-white"
@@ -120,7 +120,7 @@ const Header = () => {
 									) : (
 										<Link
 											href={link.href}
-											className={`hover:text-primary-100 transition-colors ${
+											className={`text-sm font-light hover:text-primary-100 transition-colors ${
 												isActive
 													? "text-primary-100 font-semibold"
 													: "text-white"
@@ -135,7 +135,7 @@ const Header = () => {
 					</ul>
 
 					<div className='flex justify-end col-span-1'>
-						<MainButton onClick={onOpenWhitePaper}>White Paper</MainButton>
+						<MainButton onClick={onOpenWhitePaper}>Login</MainButton>
 					</div>
 				</nav>
 
