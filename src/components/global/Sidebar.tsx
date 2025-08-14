@@ -132,9 +132,9 @@ const Sidebar = ({
 
 					<span
 						onClick={onOpenWhitePaper}
-						className={`capitalize relative text-lg font-medium font-sans w-fit rounded-full bg-primary-100 px-4 py-1 border border-primary-100 text-white`}
+						className={`capitalize relative text-lg fontmedium font-sans w-fit rounded-full bg-primary-100 px-4 py-1 border border-primary-100 text-white`}
 					>
-						<div className='flex items-center gap-1.5'>White Paper</div>
+						<div className='flex items-center gap-1.5'>Login</div>
 					</span>
 				</ul>
 			</div>

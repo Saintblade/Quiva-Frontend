@@ -1,5 +1,5 @@
 import { FiInstagram } from "react-icons/fi";
-import { RiTwitterXFill, RiYoutubeFill } from "react-icons/ri";
+import { RiTelegram2Fill, RiTwitterXFill, RiYoutubeFill } from "react-icons/ri";
 
 export const NAV_LINKS = [
 	{ href: "/", label: "Our Products" },
@@ -27,6 +27,11 @@ export const SOCIAL_MEDIA_LINKS = [
 		icon: <RiYoutubeFill className='text-2xl hover:text-red-100' />,
 		url: "https://youtube.com/@quivacomics?si=yXh4OpxcOm8tUp6g",
 	},
+	{
+		id:"telegram",
+		icon: <RiTelegram2Fill className='text-2xl hover:text-red-100' />,
+		url: "https://t.me/Quiva_bot",
+	}
 ];
 
 export const faqs = [
