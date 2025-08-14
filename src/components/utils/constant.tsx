@@ -2,8 +2,8 @@ import { FiInstagram } from "react-icons/fi";
 import { RiTelegram2Fill, RiTwitterXFill, RiYoutubeFill } from "react-icons/ri";
 
 export type NavLink = {
-  label: string;
-  href: string;
+   label: string;
+   href: string;
 };
 
 export const NAV_LINKS: NavLink[] = [

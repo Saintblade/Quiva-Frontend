@@ -46,7 +46,7 @@ const Footer = () => {
 				</div>
 
 				<h5 className='text-black-100 font-recursive text-sm lg:text-lg mt-6'>
-					Quiva Game
+					<a href='https://t.me/Quiva_bot' target="_blank" rel="noopener noreferrer">Stake Now</a>
 				</h5>
 			</div>
 
