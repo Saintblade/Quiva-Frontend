@@ -35,9 +35,11 @@ const page = () => {
 	return (
 		<AppLayout className=''>
 			<Hero />
+			<div id='products' />
 			<ExcitingProducts />
 			<HowComicPadWorks />
 			<NoToolsNoProblem />
+			<div id='creators' />
 			<WhyQuiva />
 			<WhyBlockchain />
 			<WhatYouCanDoWithTMS />
@@ -45,6 +47,7 @@ const page = () => {
 			<WhatIsQuiva />
 			<div id='roadmap' />
 			<HomeRoadMap />
+			<div id='community' />
 		</AppLayout>
 	);
 };

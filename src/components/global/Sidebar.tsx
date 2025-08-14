@@ -66,7 +66,7 @@ const Sidebar = ({
 				<ul className='flex gap-y-6 flex-col mt-6'>
 					{NAV_LINKS.map((links, index) => {
 						const isSectionLink =
-							links.href === "/roadmap";
+							links.href === "/creators" || links.href === "/products" || links.href === "/community" || links.href === "/roadmap";
 						const isExternalLink = !links.href.startsWith("/"); // Check for external URLs
 						const sectionId = links.href.substring(1);
 
@@ -132,9 +132,9 @@ const Sidebar = ({
 
 					<span
 						onClick={onOpenWhitePaper}
-						className={`capitalize relative text-lg font-medium font-sans w-fit rounded-full bg-primary-100 px-4 py-1 border border-primary-100 text-white`}
+						className={`capitalize relative text-lg fontmedium font-sans w-fit rounded-full bg-primary-100 px-4 py-1 border border-primary-100 text-white`}
 					>
-						<div className='flex items-center gap-1.5'>White Paper</div>
+						<div className='flex items-center gap-1.5'>Login</div>
 					</span>
 				</ul>
 			</div>

@@ -1,6 +1,6 @@
 import React from "react";
 import TitleText from "../text/TitleText";
-import { MainButton } from "../button";
+import { AnchorButton, MainButton } from "../button";
 import { QuivaLogo } from "../utils/function";
 import { emailAddress, phoneNum, SOCIAL_MEDIA_LINKS } from "../utils/constant";
 import Link from "next/link";
@@ -12,7 +12,7 @@ const Footer = () => {
 
 	return (
 		<div className='grid place-items-center relative overflow-hidden'>
-			<div className='absolute inset-0'>
+			<div className='absolute inset-0 z-0'>
 				<div className='relative w-full h-full'>
 					<Picture
 						src={heroBgImg}
@@ -22,7 +22,7 @@ const Footer = () => {
 					/>
 				</div>
 			</div>
-			<div className='space-y-7 lg:space-y-12 w-[85%] lg:max-w-[850px] text-center pt-10 lg:pt-20 pb-5 lg:pb-40 mx-auto'>
+			<div className='z-10 space-y-7 lg:space-y-12 w-[85%] lg:max-w-[850px] text-center pt-10 lg:pt-20 pb-5 lg:pb-40 mx-auto'>
 				<TitleText
 					title='Build. Play. Earn. Belong'
 					className='!text-black-100'
@@ -40,9 +40,9 @@ const Footer = () => {
 
 				<div className='flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-8 pb-0 lg:w-3/5 mx-auto'>
 					<MainButton className='w-full'>Become a creator</MainButton>
-					<MainButton className='bg-transparent w-full'>
+					<AnchorButton href="https://t.me/Quivannouncement" className='bg-transparent w-full'>
 						Join the community
-					</MainButton>
+					</AnchorButton>
 				</div>
 
 				<h5 className='text-black-100 font-recursive text-sm lg:text-lg mt-6'>
