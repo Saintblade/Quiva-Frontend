@@ -2,9 +2,9 @@ import { FiInstagram } from "react-icons/fi";
 import { RiTelegram2Fill, RiTwitterXFill, RiYoutubeFill } from "react-icons/ri";
 
 export const NAV_LINKS = [
-	{ href: "/", label: "Our Products" },
-	{ href: "/explore", label: "Creators" },
-	{ href: "/games", label: "Whitepaper" },
+	{ href: "/products", label: "Our Products" },
+	{ href: "/creators", label: "Creators" },
+	{ href: "/roadmap", label: "Whitepaper" },
 	// { href: "/comic-pad", label: "Comic Pad" },
 	// { href: "/faq", label: "FAQ" },
 	{ href: "/roadmap", label: "Roadmap" },
