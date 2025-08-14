@@ -67,7 +67,7 @@ const Header = () => {
 					<ul className='flex gap-6 xl:gap-8 mx-auto text-white py-3 font-spaceGrotesk col-span-4'>
 						{NAV_LINKS.map((link) => {
 							const isSectionLink =
-								link.href === "/creators" || link.href === "/products" || link.href === "/community" || link.href === "/roadmap";
+								link.href === "/products" || link.href === "/community" || link.href === "/roadmap";
 							const isExternalLink = !link.href.startsWith("/"); // Check for external URLs
 							const sectionId = link.href.substring(1);
 							const currentPath =
