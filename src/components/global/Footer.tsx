@@ -50,7 +50,7 @@ const Footer = () => {
 				</h5>
 			</div>
 
-			<div className='py-6 lg:grid grid-cols-2 w-full max-w-screen-xl'>
+			<div className='py-6 lg:grid grid-cols-2 w-full max-w-screen-xl section-padding'>
 				<div className='space-y-4 px-8 pb-10 lg:pt-0 lg:px-0'>
 					<QuivaLogo showText />
 					<p className='text-black-100 font-poppins text-lg max-w-xs lg:max-w-sm'>

@@ -4,7 +4,7 @@ import ProgressWorkPad from "./ProgressWorkPad";
 
 const HowComicPadWorks = () => {
 	return (
-		<section className='bg-black-500 min-h-screen lg:py-24'>
+		<section className='bg-black-500 min-h-screen lg:py-24 section-padding'>
 			<div className='xl:max-w-screen-xl mx-auto px-4 lg:px-0'>
 				<div className='space-y-4 lg:space-y-8 max-w-[850px]'>
 					<TitleText

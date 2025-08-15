@@ -108,7 +108,7 @@ const WhyBlockchain = () => {
 	}, [activeSlide]);
 
 	return (
-		<section className='bg-black-900 min-h-screen pt-12 pb-16 lg:py-24'>
+		<section className='bg-black-900 min-h-screen pt-12 pb-16 lg:py-24 section-padding'>
 			<div className='px-4 lg:px-0 xl:max-w-screen-xl mx-auto'>
 				<div className='space-y-7 lg:space-y-20 text-start'>
 					<div className='space-y-6 lg:space-y-12 lg:w-[40%]'>

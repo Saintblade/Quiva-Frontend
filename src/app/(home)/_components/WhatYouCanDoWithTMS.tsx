@@ -28,7 +28,7 @@ const WhatYouCanDoWithTMS = () => {
 	];
 
 	return (
-		<section className='bg-black-500 min-h-screen pt-10 lg:pt-24 pb-10 lg:pb-40'>
+		<section className='bg-black-500 min-h-screen pt-10 lg:pt-24 pb-10 lg:pb-40 section-padding'>
 			<div className='px-4 lg:px-0 xl:max-w-screen-xl mx-auto'>
 				<div className='space-y-8 lg:space-y-20 text-start'>
 					<div className='space-y-6 w-[90%]'>

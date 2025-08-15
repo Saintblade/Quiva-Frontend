@@ -7,6 +7,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components{
+	.section-padding{
+		@apply px-1 lg:px-8;
+	}
+}
+
 @layer utilities {
 	@variants responsive {
 		/* Hide scrollbar for Chrome, Safari and Opera */

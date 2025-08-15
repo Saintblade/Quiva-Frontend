@@ -63,7 +63,7 @@ const ExcitingProducts = () => {
 	}, []);
 
 	return (
-		<section className='bg-black-500 min-h-screen pb-8 lg:pb-24'>
+		<section className='bg-black-500 min-h-screen pb-8 lg:pb-24 section-padding'>
 			<div className='space-y-6 lg:space-y-8 w-[80%] sm:max-w-[850px] text-center pt-16 lg:pt-32 mx-auto'>
 				<TitleText
 					title='Explore Our Exciting Product Offerings'
@@ -76,7 +76,7 @@ const ExcitingProducts = () => {
 				</p>
 			</div>
 			<div className='px-2 lg:px-0 lg:max-w-screen-xl mt-12 grid place-items-center mx-auto'>
-				<div className='flex flex-col-reverse lg:flex-row justify-center items-center lg:items-end lg:w-[1100px] mx-auto'>
+				<div className='flex flex-col-reverse lg:flex-row justify-center items-center lg:items-end xl:w-[1100px] mx-auto'>
 					{/* Card */}
 					<AnimatePresence mode='wait'>
 						<motion.div
