@@ -46,7 +46,7 @@ const Footer = () => {
 				</div>
 
 				<h5 className='text-black-100 font-recursive text-sm lg:text-lg mt-6'>
-					<a href='https://t.me/Quiva_bot' target="_blank" rel="noopener noreferrer">Quiva Games</a>
+					<a href='https://t.me/Quiva_bot/quivaGame' target="_blank" rel="noopener noreferrer">Quiva Games</a>
 				</h5>
 			</div>
 

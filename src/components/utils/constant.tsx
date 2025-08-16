@@ -35,7 +35,7 @@ export const SOCIAL_MEDIA_LINKS = [
 	{
 		id:"telegram",
 		icon: <RiTelegram2Fill className='text-2xl hover:text-red-100' />,
-		url: "https://t.me/Quiva_bot",
+		url: "https://t.me/Quiva_bot/quivaGame",
 	}
 ];
 
