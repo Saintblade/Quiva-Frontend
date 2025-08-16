@@ -14,6 +14,11 @@ import progress_2 from "./progress-2.png";
 import progress_3 from "./progress-3.png";
 import progress_4 from "./progress-4.png";
 import progress_5 from "./progress-5.png";
+import mobile_progress_1 from "./mobile-progress-1.png";
+import mobile_progress_2 from "./mobile-progress-2.png";
+import mobile_progress_3 from "./mobile-progress-3.png";
+import mobile_progress_4 from "./mobile-progress-4.png";
+import mobile_progress_5 from "./mobile-progress-5.png";
 import bg_what from "./bg-what.png";
 import hm_bg_2 from "./hm-bg-2.png";
 import curiousImg from "./curious.png";
@@ -24,6 +29,7 @@ import contractsImg from "./contracts.png";
 import launchImg from "./launch.png";
 import jumbleImg from "./jumble.png";
 import scrabbleImg from "./scrabble.png";
+
 
 export {
 	tonmicIcon,
@@ -44,6 +50,11 @@ export {
 	progress_3,
 	progress_4,
 	progress_5,
+	mobile_progress_1,
+	mobile_progress_2,
+	mobile_progress_3,
+	mobile_progress_4,
+	mobile_progress_5,
 	comicpadImg,
 	roadmapImg,
 	heroImage1,

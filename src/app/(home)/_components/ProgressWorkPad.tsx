@@ -6,54 +6,76 @@ import {
 	progress_3,
 	progress_4,
 	progress_5,
+	mobile_progress_1,
+	mobile_progress_2,
+	mobile_progress_3,
+	mobile_progress_4,
+	mobile_progress_5,
 	tag_img,
 } from "../../../../public/dev_images";
 import { motion, AnimatePresence } from "framer-motion";
 import Picture from "@/components/picture/Index";
 import { HiOutlineArrowLeft, HiOutlineArrowRight } from "react-icons/hi";
-
 import Image from "next/image";
+import MobileProgressCarousel from "./MobileProgressCarousel";
 
 const slideSteps = [
 	{
 		title: "Choose your Comic Project",
 		image: progress_1,
+		mobileImage: mobile_progress_1,
 		step: 0,
 	},
 	{
 		title: "Create or Upload your Comic NFTs",
 		image: progress_2,
+		mobileImage: mobile_progress_2,
 		step: 1,
 	},
 	{
 		title: "Set Minting & Rewards Rules",
 		image: progress_3,
+		mobileImage: mobile_progress_3,
 		step: 2,
 	},
 	{
 		title: "Go Live – Let Fans Mint & Read",
 		image: progress_4,
+		mobileImage: mobile_progress_4,
 		step: 3,
 	},
 	{
-		title: "Track, Earn, & Build Your Community",
+		title: "Earn & Build Your Community",
 		image: progress_5,
+		mobileImage: mobile_progress_5,
 		step: 4,
 	},
 ];
-
-// Locomotive Scroll + GSAP + Framer Motion
 
 const ProgressWorkPad = () => {
 	const [currentStep, setCurrentStep] = useState(0);
 	const [direction, setDirection] = useState(0);
 	const [isScrolling, setIsScrolling] = useState(false);
+	const [isMobile, setIsMobile] = useState(false);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const sliderRef = useRef<HTMLDivElement>(null);
 	const scrollTimeout = useRef<NodeJS.Timeout>();
 
-	// Handle wheel events for horizontal scrolling
+	// Check if mobile on mount and resize
 	useEffect(() => {
+		const checkMobile = () => {
+			setIsMobile(window.innerWidth < 768);
+		};
+
+		checkMobile();
+		window.addEventListener('resize', checkMobile);
+		return () => window.removeEventListener('resize', checkMobile);
+	}, []);
+
+	// Handle wheel events for horizontal scrolling (desktop only)
+	useEffect(() => {
+		if (isMobile) return;
+		
 		const container = containerRef.current;
 		if (!container) return;
 
@@ -69,13 +91,11 @@ const ProgressWorkPad = () => {
 			}, 1000);
 
 			if (e.deltaY > 0) {
-				// Scroll down - go to next step
 				if (currentStep < slideSteps.length - 1) {
 					setDirection(1);
 					setCurrentStep((prev) => prev + 1);
 				}
 			} else {
-				// Scroll up - go to previous step
 				if (currentStep > 0) {
 					setDirection(-1);
 					setCurrentStep((prev) => prev - 1);
@@ -85,7 +105,7 @@ const ProgressWorkPad = () => {
 
 		container.addEventListener("wheel", handleWheel, { passive: false });
 		return () => container.removeEventListener("wheel", handleWheel);
-	}, [currentStep, isScrolling]);
+	}, [currentStep, isScrolling, isMobile]);
 
 	const goPrev = () => {
 		if (currentStep > 0) {
@@ -101,9 +121,10 @@ const ProgressWorkPad = () => {
 		}
 	};
 
-	const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-
+	// Auto-slide for desktop only
 	useEffect(() => {
+		if (isMobile) return;
+
 		const timer = setInterval(() => {
 			if (currentStep < slideSteps.length - 1) {
 				goNext();
@@ -112,7 +133,7 @@ const ProgressWorkPad = () => {
 			}
 		}, 5000);
 		return () => clearInterval(timer);
-	}, [currentStep]);
+	}, [currentStep, isMobile]);
 
 	const variants = {
 		enter: (direction: number) => ({
@@ -129,6 +150,18 @@ const ProgressWorkPad = () => {
 		}),
 	};
 
+	// Render mobile carousel
+	if (isMobile) {
+		return (
+			<div className='mt-14 relative'>
+				<MobileProgressCarousel 
+					steps={slideSteps}
+					autoSlideInterval={5000}
+				/>
+			</div>
+		);
+	}
+
 	return (
 		<div className='mt-14 relative'>
 			{/* Step Tracker Bar */}
@@ -142,31 +175,6 @@ const ProgressWorkPad = () => {
 					}}
 				></div>
 
-				{/* Vertical progress line for mobile */}
-				{/* Background track (full height) */}
-				<div className='md:hidden absolute left-1/2 top-0 h-full w-0.5 bg-primary-100/10 -translate-x-1/2'></div>
-
-				{/* Progress indicator (dynamic height) */}
-				<div
-					className='md:hidden absolute left-1/2 top-0 w-0.5 bg-primary-100 transition-all duration-500 ease-in-out -translate-x-1/2'
-					style={{
-						height: `${((currentStep + 1) / slideSteps.length) * 100}%`,
-					}}
-				></div>
-
-				{/* Step tag image (adjusted for mobile) */}
-				<Image
-					src={tag_img}
-					alt='map pattern'
-					loading='eager'
-					className='w-[60px] md:w-[85px] absolute transition-all lg:hidden duration-500 ease-in-out left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 -top-6 md:-top-7'
-					style={{
-						top: `calc(${currentStep * 20}% + 1%)`,
-						// Mobile centers via class, desktop uses calculated `left`
-						...(isMobile ? { left: `calc(${currentStep * 20}% + 15%)` } : {}),
-					}}
-				/>
-
 				{/* Step tag image (adjusted for desktop) */}
 				<Image
 					src={tag_img}
@@ -174,8 +182,7 @@ const ProgressWorkPad = () => {
 					loading='eager'
 					className='w-[60px] md:w-[85px] absolute hidden lg:block transition-all duration-500 ease-in-out left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 -top-6 md:-top-7'
 					style={{
-						top: ``,
-						...(isMobile ? {} : { left: `calc(${currentStep * 20}% + 10%)` }),
+						left: `calc(${currentStep * 20}% + 10%)`,
 					}}
 				/>
 
