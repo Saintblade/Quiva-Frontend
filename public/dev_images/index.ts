@@ -24,9 +24,11 @@ import contractsImg from "./contracts.png";
 import launchImg from "./launch.png";
 import jumbleImg from "./jumble.png";
 import scrabbleImg from "./scrabble.png";
+import walletImg from "./wallet.png";
 
 export {
 	tonmicIcon,
+	walletImg,
 	jumbleImg,
 	scrabbleImg,
 	contractsImg,

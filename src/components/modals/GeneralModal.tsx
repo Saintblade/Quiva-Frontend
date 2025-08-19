@@ -34,11 +34,11 @@ const GeneralModal: React.FC<GeneralModalProps> = ({
 	onOpenChange,
 	onClose,
 	children,
-	size = "lg",
+	size = "xl",
 	radius = "lg",
 	backdrop = "blur",
 	shadow = "lg",
-	modalContentClass = "p-0 bg-black-100",
+	modalContentClass = "p-0 bg-black-500",
 	borderGradient = "",
 }) => {
 	return (
