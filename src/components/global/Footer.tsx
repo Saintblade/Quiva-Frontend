@@ -93,7 +93,7 @@ const Footer = () => {
 				</div>
 				<div className='lg:hidden px-8 mt-8'>
 					<h5 className='text-light-300/80 text-xs'>
-						© {currentYear} Coxuna Ltd. All rights reserved. — Copyright
+						© {currentYear} Quiva LLC. All rights reserved. — Copyright
 					</h5>
 				</div>
 			</div>
