@@ -63,6 +63,7 @@ const config: Config = {
 				secondary: {
 					100: "#9747FF",
 					200: "#FAA31E",
+					300: "#D38200",
 				},
 				light: {
 					100: "#F8F8F8",

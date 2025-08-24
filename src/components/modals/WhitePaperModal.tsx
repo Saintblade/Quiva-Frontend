@@ -4,7 +4,13 @@ import { MainButton, MainButton2 } from "../button";
 import TextInput from "../TextAreaInput/TextInput";
 import { Form, FormikProvider, useFormik } from "formik";
 import { ImSpinner2 } from "react-icons/im";
+import { FaCircleRight } from "react-icons/fa6";
 import { LoginSchema } from "../Models/Forms";
+import { walletImg } from "../../../public/dev_images";
+import Picture from "../picture/Index";
+import { FaArrowLeft } from "react-icons/fa";
+import { HiEnvelope } from "react-icons/hi2";
+import { InputOtp } from "@heroui/react";
 
 interface WhitePaperModalProps {
 	onClose: () => void;
@@ -19,6 +25,7 @@ const WhitePaperModal = ({ onClose }: WhitePaperModalProps) => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [isLogIn, setIsLogIn] = useState(false);
 	const [isRegister, setIsRegister] = useState(false);
+	const [isVerificationCode, setIsVerificationCode] = useState(false);
 
 	const handlePasswordVisibility = () => {
 		setShowPassword(!showPassword);
@@ -44,6 +51,17 @@ const WhitePaperModal = ({ onClose }: WhitePaperModalProps) => {
 	const handleRegister = () => {
 		setIsLogIn(false);
 		setIsRegister(true);
+	};
+
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!isVerificationCode) {
+			// Send verification code logic
+			setIsVerificationCode(true);
+		} else {
+			// Verify code logic
+			console.log("Verifying code...");
+		}
 	};
 	return (
 		<>
@@ -166,60 +184,112 @@ const WhitePaperModal = ({ onClose }: WhitePaperModalProps) => {
 					</div>
 				</div>
 			) : (
-				<div className='max-w-md w-full mx-auto px-4 sm:px-6 py-8 sm:py-10 text-white'>
-					{/* Welcome Header - Responsive text sizing */}
-					<div className='space-y-2 text-center w-full sm:w-[80%] mx-auto'>
-						<h3 className='text-xl sm:text-2xl font-bold'>Welcome to Quiva</h3>
-						<p className='text-xs sm:text-sm text-white/80'>
-							Where stories earn rewards, and every reader counts.
-						</p>
-					</div>
+				<>
+					{isVerificationCode ? (
+						<div className='w-full max-w-md mx-auto text-white py-8 sm:py-12 space-y-4 lg:space-y-8'>
+							<div className='grid grid-cols-5 items-center w-full gap-0 px-2'>
+								{/* Back Button */}
+								<div className='col-span-1'>
+									<FaArrowLeft
+										className='text-white/50 text-xl hover:text-white/90 cursor-pointer transition-[.3] hover:-translate-x-1'
+										onClick={() => setIsVerificationCode(false)}
+									/>
+								</div>
 
-					{/* Social Buttons - Stacked on mobile */}
-					<div className='space-y-3 sm:space-y-2 mt-6 mb-4'>
-						<MainButton className='w-full rounded-full font-semibold py-3 sm:py-2.5 text-sm sm:text-base'>
-							Sign in with X
-						</MainButton>
-						<MainButton className='w-full rounded-full font-semibold py-3 sm:py-2.5 text-sm sm:text-base'>
-							Continue with Google
-						</MainButton>
-					</div>
+								{/* Title */}
+								<h3 className='text-sm sm:text-xl text-center font-bold col-span-3'>
+									Confirm verification code
+								</h3>
+								<div className='col-span-1'></div>
+							</div>
 
-					{/* Divider with "Or" - Responsive spacing */}
-					<div className='relative text-center my-5 sm:my-4'>
-						<div className='w-full h-px bg-white/10' />
-						<span className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black-900 px-2 text-xs sm:text-sm text-white/80'>
-							Or
-						</span>
-					</div>
+							{/* Mail Icon */}
+							<div className='flex justify-center mb-4'>
+								<div className='w-12 h-12 flex items-center justify-center rounded-full bg-secondary-300/90'>
+									<HiEnvelope className='text-black-100 text-3xl' />
+								</div>
+							</div>
 
-					{/* Email Sign Up - Responsive button size */}
-					<MainButton2 className='w-full bg-transparent border-white/70 rounded-full font-semibold mt-2 sm:mt-3 py-3 sm:py-2.5 text-sm sm:text-base'>
-						Sign up with Email
-					</MainButton2>
+							{/* Email Notice */}
+							<p className='text-center text-sm text-white/80 mb-6'>
+								We’ve sent a verification code to <br />
+								<span className='font-semibold text-white'>
+									marysokoh4@gmail.com
+								</span>
+							</p>
 
-					{/* Terms Checkbox - Improved mobile layout */}
-					<div className='flex items-start justify-center gap-2 text-xs sm:text-sm text-white/60 mt-5 sm:mt-6'>
-						<input
-							type='checkbox'
-							className='accent-secondary-200 size-4 sm:size-[14px] mt-0.5 sm:mt-0 cursor-pointer bg-transparent'
-						/>
-						<h4 className='text-left'>
-							I agree to the [Terms of Service] and [Privacy Policy].
-						</h4>
-					</div>
+							{/* Code Input Boxes */}
+							<InputOtp
+								length={6}
+								variant='faded'
+								size='lg'
+								color='warning'
+								className='mx-auto'
+								classNames={{
+									base: "gap-12",
+									input:
+										"w-12 h-14 text-center text-lg font-bold rounded-md text-white bg-black-100 border border-white/20 focus:border-secondary focus:ring-1 focus:ring-secondary placeholder:text-white/40",
+								}}
+								autoComplete='one-time-code'
+							/>
 
-					{/* Login Prompt - Responsive border and padding */}
-					<div className='text-center text-xs sm:text-sm text-white/80 border-t border-white/10 pt-4 sm:pt-3 mt-6 sm:mt-7'>
-						Already have an account?{" "}
-						<button
-							onClick={handleLogin}
-							className='text-secondary-200 font-semibold cursor-pointer underline-offset-4 hover:underline transition duration-200 focus:outline-none'
+							{/* Resend Code */}
+							<p className='text-center text-xs text-white/60'>
+								Didn’t receive a code? Check spam or <br />
+								<button className='hover:text-primary-100 font-medium hover:underline transition-[.3] underline-offset-4'>
+									Re-send Code
+								</button>
+							</p>
+						</div>
+					) : (
+						<form
+							onSubmit={handleSubmit}
+							className='w-full mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8 text-white'
 						>
-							Log In
-						</button>
-					</div>
-				</div>
+							{/* Welcome Header */}
+							<div className='space-y-2 text-center w-full sm:w-[80%] mx-auto'>
+								<h3 className='text-lg sm:text-2xl font-bold'>
+									Login or Sign up
+								</h3>
+							</div>
+
+							{/* Email Input */}
+							<div className='mt-6 relative flex items-center'>
+								<input
+									type='email'
+									placeholder='Enter your email'
+									className='w-full px-3 py-4 lg:py-6 text-white/90 bg-gray-300 rounded-md hover:border-primary-100 focus:border-primary-100 focus:outline-none transition-colors duration-200 placeholder-gray-400 text-base'
+									onSubmit={() => handleSubmit}
+								/>
+								<FaCircleRight className='absolute text-2xl lg:text-3xl text-white/70 right-3' />
+							</div>
+
+							{/* Divider with "Or" */}
+							<div className='relative text-center my-6'>
+								<div className='w-full h-px bg-white/10' />
+								<span className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black-500 font-semibold px-3 text-xs sm:text-sm text-white/70'>
+									Or
+								</span>
+							</div>
+
+							{/* Connect Wallet Button */}
+
+							<Picture
+								src={walletImg}
+								alt='home bg'
+								loading='eager'
+								className='w-full sm:h-full object-cover lg:object-fill grayscale'
+							/>
+
+							{/* Terms */}
+							<h4 className='text-white/60 text-center text-xs sm:text-sm mt-6 leading-relaxed'>
+								If you have not logged in before, you will create a new Quiva
+								account. By proceeding, you agree to our <br />
+								<b className='text-white'>Terms of Service & Privacy Policy.</b>
+							</h4>
+						</form>
+					)}
+				</>
 			)}
 		</>
 	);
