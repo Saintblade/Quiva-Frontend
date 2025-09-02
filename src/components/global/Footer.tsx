@@ -58,7 +58,7 @@ const Footer = () => {
 					</p>
 
 					<h5 className='text-light-300/80 text-xs'>
-						© {currentYear} Coxuna Ltd. All rights reserved. — Copyright
+						© {currentYear} Quiva LLC. All rights reserved. — Copyright
 					</h5>
 				</div>
 				<div className='lg:flex justify-between space-y-8 lg:space-y-0 items-start px-8 lg:px-16 lg:py-6 text-sm border-t-2 border-red-100 lg:border-transparent pt-8'>
@@ -93,7 +93,7 @@ const Footer = () => {
 				</div>
 				<div className='lg:hidden px-8 mt-8'>
 					<h5 className='text-light-300/80 text-xs'>
-						© {currentYear} Coxuna Ltd. All rights reserved. — Copyright
+						© {currentYear} Quiva LLC. All rights reserved. — Copyright
 					</h5>
 				</div>
 			</div>
