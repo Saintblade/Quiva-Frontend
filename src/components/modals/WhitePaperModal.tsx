@@ -11,6 +11,7 @@ import Picture from "../picture/Index";
 import { FaArrowLeft } from "react-icons/fa";
 import { HiEnvelope } from "react-icons/hi2";
 import { InputOtp } from "@heroui/react";
+import { useRouter } from "next/navigation";
 
 interface WhitePaperModalProps {
 	onClose: () => void;
@@ -26,6 +27,9 @@ const WhitePaperModal = ({ onClose }: WhitePaperModalProps) => {
 	const [isLogIn, setIsLogIn] = useState(false);
 	const [isRegister, setIsRegister] = useState(false);
 	const [isVerificationCode, setIsVerificationCode] = useState(false);
+	const [isVerifying, setIsVerifying] = useState(false);
+	const [otpValue, setOtpValue] = useState("");
+	const router = useRouter();
 
 	const handlePasswordVisibility = () => {
 		setShowPassword(!showPassword);
@@ -61,8 +65,10 @@ const WhitePaperModal = ({ onClose }: WhitePaperModalProps) => {
 		} else {
 			// Verify code logic
 			console.log("Verifying code...");
+			router.push("/comic-pad");
 		}
 	};
+
 	return (
 		<>
 			{isRegister ? (
