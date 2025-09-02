@@ -15,7 +15,7 @@ export const MainButton = ({
     <button
       onClick={onClick}
       type={type}
-      className={`bg-secondary-200 text-black-200 font-recursive text-sm rounded-md px-7 py-3 border-[3px] border-black-200 shadow-[2px_2px_0_0_black] transition-all duration-200 font-medium ${className} hover:scale-105`}
+      className={`bg-secondary-200 text-black-200 font-recursive text-sm rounded-full px-7 py-3 border-[3px] border-black-200 shadow-[2px_2px_0_0_black] transition-all duration-200 font-medium ${className} hover:scale-105`}
     >
       {children}
     </button>
@@ -30,7 +30,7 @@ export const MainButton2 = ({
   return (
     <button
       onClick={onClick}
-      className={`bg-black/10 text-white font-recursive text-sm rounded-md px-7 py-3 border border-black/70 shadow-[2px_2px_0_0_black] transition-all duration-200 font-medium ${className} hover:scale-105`}
+      className={`bg-black/10 text-white font-recursive text-sm rounded-full px-7 py-3 border border-black/70 shadow-[2px_2px_0_0_black] transition-all duration-200 font-medium ${className} hover:scale-105`}
     >
       {children}
     </button>
@@ -49,7 +49,7 @@ export const AnchorButton = ({
       target="_blank"
       rel="noopener noreferrer"
       onClick={onClick}
-      className={`cursor-pointer bg-secondary-200 text-black-200 font-recursive text-sm rounded-md px-7 py-3 border-[3px] border-black-200 shadow-[2px_2px_0_0_black] transition-all duration-200 font-medium ${className} hover:scale-105`}
+      className={`cursor-pointer bg-secondary-200 text-black-200 font-recursive text-sm rounded-full px-7 py-3 border-[3px] border-black-200 shadow-[2px_2px_0_0_black] transition-all duration-200 font-medium ${className} hover:scale-105`}
     >
       {children}
     </a>
