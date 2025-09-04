@@ -1,10 +1,84 @@
 import { FiInstagram } from "react-icons/fi";
 import { RiTelegram2Fill, RiTwitterXFill, RiYoutubeFill } from "react-icons/ri";
+import { soloLevel } from "../../../public/dev_images";
 
 export type NavLink = {
-   label: string;
-   href: string;
+	label: string;
+	href: string;
 };
+
+export const MY_COMICS_DATA = [
+	{
+		id: 1,
+		imageSrc: soloLevel,
+		subtitle: "Solo Level",
+		title: "Chu-Geng",
+		status: "published",
+		views: 1245,
+		likes: 89,
+		lastUpdated: "2 days ago",
+	},
+	{
+		id: 2,
+		imageSrc: soloLevel,
+		subtitle: "Demon Slayer",
+		title: "Kimetsu no Yaiba",
+		status: "published",
+		views: 2897,
+		likes: 156,
+		lastUpdated: "1 week ago",
+	},
+	{
+		id: 3,
+		imageSrc: soloLevel,
+		subtitle: "One Piece",
+		title: "Wano Kingdom Arc",
+		status: "draft",
+		views: 0,
+		likes: 0,
+		lastUpdated: "Just now",
+	},
+	{
+		id: 4,
+		imageSrc: soloLevel,
+		subtitle: "Attack on Titan",
+		title: "Final Season",
+		status: "archived",
+		views: 3452,
+		likes: 287,
+		lastUpdated: "1 month ago",
+	},
+	{
+		id: 5,
+		imageSrc: soloLevel,
+		subtitle: "My Hero Academia",
+		title: "Heroes Rising",
+		status: "published",
+		views: 1876,
+		likes: 102,
+		lastUpdated: "3 days ago",
+	},
+	{
+		id: 6,
+		imageSrc: soloLevel,
+		subtitle: "Jujutsu Kaisen",
+		title: "Shibuya Incident",
+		status: "published",
+		views: 2310,
+		likes: 198,
+		lastUpdated: "5 days ago",
+	},
+	{
+		id: 7,
+		imageSrc: soloLevel,
+		subtitle: "Tokyo Revengers",
+		title: "Bloody Halloween",
+		status: "draft",
+		views: 0,
+		likes: 0,
+		lastUpdated: "Yesterday",
+	},
+];
 
 export const NAV_LINKS: NavLink[] = [
 	{ href: "/products", label: "Our Products" },
@@ -33,10 +107,10 @@ export const SOCIAL_MEDIA_LINKS = [
 		url: "https://youtube.com/@quivacomics?si=yXh4OpxcOm8tUp6g",
 	},
 	{
-		id:"telegram",
+		id: "telegram",
 		icon: <RiTelegram2Fill className='text-2xl hover:text-red-100' />,
 		url: "https://t.me/Quiva_bot/quivaGame",
-	}
+	},
 ];
 
 export const faqs = [

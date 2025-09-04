@@ -12,28 +12,29 @@ export const isValidImage = (url: string): Promise<boolean> => {
 };
 
 interface QuivaLogoProps {
+	logoClassName?: string;
 	className?: string;
 	showText?: boolean;
 }
 
-export const QuivaLogo = ({ className, showText }: QuivaLogoProps) => {
+export const QuivaLogo = ({
+	logoClassName,
+	className,
+	showText,
+}: QuivaLogoProps) => {
 	return (
 		<Link href='/' className=''>
 			<div
-				className={`w-fit text-lg flex items-center gap-2 lgs:items-end font-recursive`}
+				className={`w-fit text-base lg:text-sm flex items-center gap-2 font-recursive ${className}`}
 			>
 				<Picture
 					src={tonmicIcon}
 					alt='Quiva logo'
 					loading='eager'
-					className={`w-10 lg:w-8 ${className}`}
+					className={`w-10 lg:w-8 ${logoClassName}`}
 				/>
 				{showText && (
-					<span
-						className={`font-semibold text-base lg:text-sm text-black-200 ${className}`}
-					>
-						Quiva
-					</span>
+					<span className={`font-semibold text-black-200`}>Quiva</span>
 				)}
 			</div>
 		</Link>

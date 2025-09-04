@@ -7,8 +7,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components{
-	.section-padding{
+@layer components {
+	.section-padding {
 		@apply px-1 lg:px-8;
 	}
 }
@@ -53,7 +53,7 @@
 
 	/* Handle */
 	::-webkit-scrollbar-thumb {
-		background: #442902fb;
+		background: #4e2e02fb;
 		border-radius: 2px;
 		z-index: 51;
 	}
@@ -249,6 +249,18 @@
 	margin-bottom: 12px;
 }
 
+.dashed-border-strong-3 {
+	border-right: 2px dashed #ffffff80;
+	padding-bottom: 12px; /* replaces border-spacing for bottom margin */
+	margin-bottom: 12px;
+}
+
+.dashed-border-strong-4 {
+	border: 2px dashed #ffffff20;
+	padding-bottom: 12px; /* replaces border-spacing for bottom margin */
+	margin-bottom: 12px;
+}
+
 .top_deck {
 	box-shadow: 14px 0px 24px 0px #000000 !important;
 }
@@ -331,18 +343,38 @@
 	border-image: linear-gradient(to right, #e57226, #faa31e) 1;
 }
 
-
 .dash-sm {
 	border-style: dashed;
-	border-image: repeating-linear-gradient(90deg, transparent, transparent 2px, currentColor 2px, currentColor 6px) 1;
+	border-image: repeating-linear-gradient(
+			90deg,
+			transparent,
+			transparent 2px,
+			currentColor 2px,
+			currentColor 6px
+		)
+		1;
 }
 
 .dash-md {
 	border-style: dashed;
-	border-image: repeating-linear-gradient(90deg, transparent, transparent 4px, currentColor 4px, currentColor 12px) 1;
+	border-image: repeating-linear-gradient(
+			90deg,
+			transparent,
+			transparent 4px,
+			currentColor 4px,
+			currentColor 12px
+		)
+		1;
 }
 
 .dash-lg {
 	border-style: dashed;
-	border-image: repeating-linear-gradient(90deg, transparent, transparent 8px, currentColor 8px, currentColor 20px) 1;
+	border-image: repeating-linear-gradient(
+			90deg,
+			transparent,
+			transparent 8px,
+			currentColor 8px,
+			currentColor 20px
+		)
+		1;
 }
