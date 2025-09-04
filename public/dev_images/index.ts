@@ -30,11 +30,20 @@ import launchImg from "./launch.png";
 import jumbleImg from "./jumble.png";
 import scrabbleImg from "./scrabble.png";
 import walletImg from "./wallet.png";
-
+import avatarImg from "./avatar.png";
+import theNorthFace from "./the-north-face.png";
+import toolOne from "./tool-1.png";
+import envelopeImg from "./envelope.png";
+import soloLevel from "./solo-level.png";
 
 export {
 	tonmicIcon,
+	soloLevel,
+	envelopeImg,
+	toolOne,
+	theNorthFace,
 	walletImg,
+	avatarImg,
 	jumbleImg,
 	scrabbleImg,
 	contractsImg,
