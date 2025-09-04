@@ -32,7 +32,7 @@ const WaitlistModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                         Thank You!
                     </h3>
                     <p className="text-gray-600">
-                        You've successfully joined our waitlist. We'll notify you when Quiva is ready to launch!
+                        You&apos;ve successfully joined our waitlist. We&apos;ll notify you when Quiva is ready to launch!
                     </p>
                 </div>
                 <button
