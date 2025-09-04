@@ -18,6 +18,7 @@ const HowComicPadWorks = () => {
 				</div>
 
 				<ProgressWorkPad />
+				
 			</div>
 		</section>
 	);

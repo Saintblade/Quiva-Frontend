@@ -7,6 +7,7 @@ import { HeroUIProvider } from "@heroui/react";
 import ReduxProvider from "./redux-provider";
 import { Metadata } from "next";
 import { SEO_CONFIG } from "@/components/utils/seoContants";
+import ReduxProviders from '@/redux/Provider';
 
 // const outfit = Outfit({
 // 	subsets: ["latin-ext"],
@@ -58,9 +59,9 @@ export default function RootLayout({
 	return (
 		<html lang='en'>
 			<body className={`max-w-[1700px] mx-auto relative`}>
-				<ReduxProvider>
+				<ReduxProviders>
 					<HeroUIProvider>{children}</HeroUIProvider>
-				</ReduxProvider>
+				</ReduxProviders>
 			</body>
 		</html>
 	);

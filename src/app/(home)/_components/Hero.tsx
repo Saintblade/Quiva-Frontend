@@ -40,7 +40,7 @@ const Hero = () => {
 					<div className='hidden lg:flex items-center gap-2'>
 						<AnchorButton href="https://t.me/Quiva_bot/quivaGame">Quiva Games</AnchorButton>
 						<MainButton2 className='bg-transparent'>
-							Explore ComicPad
+							Become Creator
 						</MainButton2>
 					</div>
 				</div>
