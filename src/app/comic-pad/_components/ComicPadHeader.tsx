@@ -16,7 +16,7 @@ const ComicPadHeader = () => {
 					Welcome Mary!
 				</h4>
 				<p className='text-white/60 text-xs lg:text-sm'>
-					Let's build something epic.
+					Let&apos;s build something epic.
 				</p>
 			</div>
 
