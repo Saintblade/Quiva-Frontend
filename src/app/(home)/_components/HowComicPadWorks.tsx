@@ -1,6 +1,7 @@
 import TitleText from "@/components/text/TitleText";
 import React from "react";
 import ProgressWorkPad from "./ProgressWorkPad";
+import { SecondaryAnchorButton } from "@/components/button";
 
 const HowComicPadWorks = () => {
 	return (
@@ -19,6 +20,11 @@ const HowComicPadWorks = () => {
 
 				<ProgressWorkPad />
 				
+				<div className="flex justify-center mt-10 lg:mt-16">
+					<SecondaryAnchorButton href={`${process.env.NEXT_LOCAL_WEBSITE_URL || 'https://quiva.app'}/waitlist`} className='bg-transparent capitalize'>
+						join creators Waitlist 
+					</SecondaryAnchorButton>
+				</div>
 			</div>
 		</section>
 	);

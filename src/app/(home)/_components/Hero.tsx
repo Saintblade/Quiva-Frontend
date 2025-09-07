@@ -1,5 +1,5 @@
 "use client";
-import { AnchorButton, MainButton, MainButton2 } from "@/components/button";
+import { AnchorButton, MainButton, SecondaryAnchorButton } from "@/components/button";
 import React from "react";
 import {
 	heroBgImg,
@@ -39,9 +39,9 @@ const Hero = () => {
 
 					<div className='hidden lg:flex items-center gap-2'>
 						<AnchorButton href="https://t.me/Quiva_bot/quivaGame">Quiva Games</AnchorButton>
-						<MainButton2 className='bg-transparent'>
-							Become Creator
-						</MainButton2>
+						<SecondaryAnchorButton href={`${process.env.NEXT_LOCAL_WEBSITE_URL || 'https://quiva.app'}/waitlist`} className='bg-transparent capitalize'>
+							join creators Waitlist 
+						</SecondaryAnchorButton>
 					</div>
 				</div>
 				<div className='col-span-4 mt-5 lg:mt-0 lg:grid place-items-center'>
