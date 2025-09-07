@@ -40,6 +40,7 @@ const Waitlist = () => {
 	// }, [waitlistState?.data, waitlistState.status]);
 
 	const handleSubmit = async (values: { email: string }, { resetForm, setSubmitting }: any) => {
+		console.log("Submitting waitlist with values:", values);
 		try {
 			const response = await axiosInstance.post(`/waitlist/join`, values);            
             if(response.data && response.data.success){
