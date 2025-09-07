@@ -53,9 +53,9 @@ const Hero = () => {
 						className='flex flex-col lg:hidden items-center gap-3 lg:gap-2 lg:pt-20 pb-0 w-fit'
 					>
 						<AnchorButton href="https://t.me/Quiva_bot/quivaGame" className='w-full lg:w-fit'>Quiva Games</AnchorButton>
-						<MainButton className='bg-transparent w-full lg:w-fit !border-white !border-[3px] text-white'>
-							Explore ComicPad
-						</MainButton>
+						<SecondaryAnchorButton href={`${process.env.NEXT_LOCAL_WEBSITE_URL || 'https://quiva.app'}/waitlist`} className='bg-transparent w-full lg:w-fit !border-white !border-[3px] text-white capitalize'>
+							join creators Waitlist 
+						</SecondaryAnchorButton>
 					</motion.div>
 					<div className='w-[280px] sm:w-[320px] md:w-[360px] lg:w-[404.04px] h-[300px] relative mx-auto hidden lg:flex justify-center'>
 						<motion.div
