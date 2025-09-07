@@ -40,7 +40,7 @@ const Footer = () => {
 				<div className='flex flex-col items-center justify-center gap-4 w-full max-w-sm mx-auto'>
 				<Link href="/waitlist" className="w-full">
 					<MainButton className='w-full rounded-2xl py-3'>
-					Join Waitlist
+					Join Creator Waitlist
 					</MainButton>
 				</Link>
 
