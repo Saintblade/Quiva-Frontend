@@ -42,25 +42,3 @@ export interface InitialState {
   admin: AsyncData;
 }
 
-export interface DashboardInitialState {
-  riders: AsyncData;
-  singleRider: AsyncData;
-  singleRiderHistory: AsyncData;
-  drivers: AsyncData;
-  singleDriver: AsyncData;
-  singleDriverHistory: AsyncData;
-  downloadRequest: AsyncData;
-  marketers: AsyncData;
-  singleMarketer: AsyncData;
-  requests: AsyncData;
-  singleMarketerHistory: AsyncData;
-  statistics: {
-    total: any | null;
-    topMarketers: any | null;
-    modeOfTransporation: any | null;
-    activeRiders: any | null;
-    requestComparison: any | null;
-    isLoading: boolean;
-    error: string | null;
-  };
-}

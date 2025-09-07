@@ -21,7 +21,7 @@ const HowComicPadWorks = () => {
 				<ProgressWorkPad />
 				
 				<div className="flex justify-center mt-10 lg:mt-16">
-					<SecondaryAnchorButton href={`${process.env.NEXT_LOCAL_WEBSITE_URL || 'https://quiva.app'}/waitlist`} className='bg-transparent capitalize'>
+					<SecondaryAnchorButton href={`${'https://quiva.app'}/waitlist`} className='bg-transparent capitalize'>
 						join creators Waitlist 
 					</SecondaryAnchorButton>
 				</div>
