@@ -60,7 +60,9 @@ export default function RootLayout({
 		<html lang='en'>
 			<body className={`max-w-[1700px] mx-auto relative`}>
 				<ReduxProviders>
-					<HeroUIProvider>{children}</HeroUIProvider>
+					<HeroUIProvider>
+						{children}
+					</HeroUIProvider>
 				</ReduxProviders>
 			</body>
 		</html>
