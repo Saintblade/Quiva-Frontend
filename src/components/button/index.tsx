@@ -55,3 +55,23 @@ export const AnchorButton = ({
     </a>
   );
 };
+
+
+export const SecondaryAnchorButton = ({
+  children,
+  onClick,
+  className = "",
+  href = "#",
+}: MainButtonProps & { href: string }) => {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={onClick}
+      className={`bg-black/10 text-white font-recursive text-sm rounded-full px-7 py-3 border border-black/70 shadow-[2px_2px_0_0_black] transition-all duration-200 font-medium ${className} hover:scale-105`}
+    >
+      {children}
+    </a>
+  );
+};

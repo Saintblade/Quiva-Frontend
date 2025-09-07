@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
 	heroImage1,
 	heroImage2,
@@ -12,11 +12,12 @@ import Image from "next/image";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { useAppSelector } from "@/redux/hook";
 import WaitlistModal from "./waitlist-modal";
 import axiosInstance from "@/redux/axios-instance";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import Link from "next/link";
+import { AxiosError } from "axios";
 
 const validationSchema = Yup.object({
 	email: Yup.string()
@@ -29,27 +30,26 @@ const initialValues = {
 };
 
 const Waitlist = () => {
-	const dispatch = useAppDispatch();
 	const { waitlist: waitlistState } = useAppSelector((state) => state.general);
 	const [showModal, setShowModal] = useState(false);
-
-	// useEffect(() => {
-	// 	if (waitlistState?.data && !waitlistState.status) {
-	// 		setShowModal(true);
-	// 	}
-	// }, [waitlistState?.data, waitlistState.status]);
 
 	const handleSubmit = async (values: { email: string }, { resetForm, setSubmitting }: any) => {
 		console.log("Submitting waitlist with values:", values);
 		try {
-			const response = await axiosInstance.post(`/waitlist/join`, values);            
+			const response = await axiosInstance.post(`/waitlist/join`, values);
+			console.log("Waitlist response:", response);     
             if(response.data && response.data.success){
                 toast.success("Successfully joined the waitlist!");
                 setShowModal(true);
             }
+
 			resetForm();
 		} catch (error) {
-			console.error("Waitlist submission failed:", error);
+			const err = error as AxiosError<{ message: string }>;
+			const errorMessage =
+				err.response?.data?.message || "Please try again later.";
+			console.error("Waitlist submission failed:", errorMessage);
+			toast.error(errorMessage);
 		} finally {
 			setSubmitting(false);
 		}
@@ -61,6 +61,7 @@ const Waitlist = () => {
 
 	return (
 		<>
+			<ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="dark"/>
 			<section className='min-h-screen grid place-items-center relative bg-black-100 overflow-hidden'>
 				<div className='absolute inset-0'>
 					<div className='relative w-full h-full'>
