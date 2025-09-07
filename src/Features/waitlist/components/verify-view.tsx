@@ -85,7 +85,7 @@ const Verify = () => {
 				);
 			case 'success':
 				return (
-					<div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+					<div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mb-4">
 						<svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
 						</svg>
@@ -94,7 +94,7 @@ const Verify = () => {
 			case 'error':
 			case 'expired':
 				return (
-					<div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+					<div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mb-4">
 						<svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
 						</svg>
@@ -123,7 +123,7 @@ const Verify = () => {
 	const getStatusColor = () => {
 		switch (verificationStatus.status) {
 			case 'success':
-				return 'text-green-400';
+				return 'text-green-800';
 			case 'error':
 			case 'expired':
 				return 'text-red-400';
@@ -185,10 +185,10 @@ const Verify = () => {
 					<div className="flex flex-col sm:flex-row gap-4 w-full max-w-md px-2">
 						{verificationStatus.status === 'success' && (
 							<Link 
-								href="/dashboard"
+								href="/"
 								className="w-full bg-yellow-500 text-black px-8 py-3 rounded-xl font-semibold hover:bg-yellow-400 transition text-center"
 							>
-								Go to Dashboard
+								Go to Home
 							</Link>
 						)}
 						
