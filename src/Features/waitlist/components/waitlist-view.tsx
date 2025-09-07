@@ -17,6 +17,7 @@ import WaitlistModal from "./waitlist-modal";
 import axiosInstance from "@/redux/axios-instance";
 import { toast, ToastContainer } from "react-toastify";
 import Link from "next/link";
+import { AxiosError } from "axios";
 
 const validationSchema = Yup.object({
 	email: Yup.string()
@@ -44,8 +45,10 @@ const Waitlist = () => {
 
 			resetForm();
 		} catch (error) {
-			console.error("Waitlist submission failed:", error);
-			const errorMessage = error?.response?.data?.message || "Please try again later.";
+			const err = error as AxiosError<{ message: string }>;
+			const errorMessage =
+				err.response?.data?.message || "Please try again later.";
+			console.error("Waitlist submission failed:", errorMessage);
 			toast.error(errorMessage);
 		} finally {
 			setSubmitting(false);
