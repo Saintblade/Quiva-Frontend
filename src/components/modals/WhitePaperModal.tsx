@@ -62,10 +62,6 @@ const WhitePaperModal = ({ onClose }: WhitePaperModalProps) => {
 		if (!isVerificationCode) {
 			// Send verification code logic
 			setIsVerificationCode(true);
-		} else {
-			// Verify code logic
-			console.log("Verifying code...");
-			router.push("/comic-pad");
 		}
 	};
 
@@ -105,7 +101,7 @@ const WhitePaperModal = ({ onClose }: WhitePaperModalProps) => {
 										loginformik.touched.email && loginformik.errors.email
 											? "border-red-500"
 											: "border-white/20"
-									} focus:border-primary-100 bg-transparent rounded-md outline-none text-white placeholder:text-white/40`}
+									} focus:border-primary-100 bg-transparent rounded-md outline-none text-white placeholder:text-white/80`}
 									placeholder='your@email.com'
 									{...loginformik.getFieldProps("email")}
 								/>
@@ -126,7 +122,7 @@ const WhitePaperModal = ({ onClose }: WhitePaperModalProps) => {
 										loginformik.touched.password && loginformik.errors.password
 											? "border-red-500"
 											: "border-white/20"
-									} focus:border-primary-100 bg-transparent rounded-md outline-none text-white placeholder:text-white/40`}
+									} focus:border-primary-100 bg-transparent rounded-md outline-none text-white placeholder:text-white/80`}
 									placeholder=''
 									passwordIconClassname='top-3 sm:top-3.5'
 									showPasswordIcon
@@ -231,6 +227,13 @@ const WhitePaperModal = ({ onClose }: WhitePaperModalProps) => {
 								size='lg'
 								color='warning'
 								className='mx-auto'
+								// value={code}
+								// onChange={(value: any) => setCode(value)}
+								onComplete={(value: any) => {
+									if (value.length === 6) {
+										router.push("/comic-pad");
+									}
+								}}
 								classNames={{
 									base: "gap-12",
 									input:
@@ -264,10 +267,13 @@ const WhitePaperModal = ({ onClose }: WhitePaperModalProps) => {
 								<input
 									type='email'
 									placeholder='Enter your email'
-									className='w-full px-3 py-4 lg:py-6 text-white/90 bg-gray-300 rounded-md hover:border-primary-100 focus:border-primary-100 focus:outline-none transition-colors duration-200 placeholder-gray-400 text-base'
+									className='w-full px-3 py-4 lg:py-6 text-white/90 bg-gray-300 rounded-md hover:border-primary-100 focus:border-primary-100 focus:outline-none transition-colors duration-200 placeholder:text-white/70 text-base'
 									onSubmit={() => handleSubmit}
 								/>
-								<FaCircleRight className='absolute text-2xl lg:text-3xl text-white/70 right-3' />
+								<FaCircleRight
+									className='absolute text-2xl lg:text-3xl text-white/70 right-3 cursor-pointer'
+									onClick={handleSubmit}
+								/>
 							</div>
 
 							{/* Divider with "Or" */}
