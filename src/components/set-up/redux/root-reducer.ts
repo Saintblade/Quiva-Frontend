@@ -1,8 +1,8 @@
 "use client";
 import { combineReducers } from "redux";
-// import ToogleModalReducer from "../../Redux/ToggleModal";
+import generalReducer from './slices/generalSlice';
 
 export const rootReducer = combineReducers({
-	// toggleModal: ToogleModalReducer,
+	general: generalReducer
 });
 export type RootState = ReturnType<typeof rootReducer>;

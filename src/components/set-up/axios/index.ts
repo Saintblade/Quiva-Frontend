@@ -3,7 +3,7 @@
 import { AxiosStatic } from "axios";
 
 export default function setupAxios(axios: AxiosStatic, store: any) {
-	const QuivaComicAPI = process.env.NEXT_PUBLIC_BACK_URL || "";
+	const QuivaComicAPI = process.env.NEXT_PUBLIC_API_URL || "";
 	axios.defaults.headers.common["Accept"] = "																				/json";
 	axios.interceptors.request.use(
 		(config: any) => {

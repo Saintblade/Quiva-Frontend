@@ -37,13 +37,21 @@ const Footer = () => {
 					loading='eager'
 					className={`w-[90%] h-[200px] sm:h-fit lg:max-w-[850px] mx-auto`}
 				/>
+				<div className='flex flex-col items-center justify-center gap-4 w-full max-w-sm mx-auto'>
+				<Link href="/waitlist" className="w-full">
+					<MainButton className='w-full rounded-2xl py-3'>
+					Join Creator Waitlist
+					</MainButton>
+				</Link>
 
-				<div className='flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-8 pb-0 lg:w-3/5 mx-auto'>
-					<MainButton className='w-full'>Become a creator</MainButton>
-					<AnchorButton href="https://t.me/Quivannouncement" className='bg-transparent w-full'>
-						Join the community
-					</AnchorButton>
+				<AnchorButton
+					href="https://t.me/Quivannouncement"
+					className='bg-transparent w-full rounded-full py-3 border border-black'
+				>
+					Join the community
+				</AnchorButton>
 				</div>
+
 
 				<h5 className='text-black-100 font-recursive text-sm lg:text-lg mt-6'>
 					<a href='https://t.me/Quiva_bot/quivaGame' target="_blank" rel="noopener noreferrer">Quiva Games</a>
