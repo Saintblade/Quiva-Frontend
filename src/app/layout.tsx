@@ -4,7 +4,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import React from "react";
 import { HeroUIProvider } from "@heroui/react";
-import ReduxProvider from "./redux-provider";
+// import ReduxProvider from "./redux-provider";
 import { Metadata } from "next";
 import { SEO_CONFIG } from "@/components/utils/seoContants";
 import ReduxProviders from '@/redux/Provider';
