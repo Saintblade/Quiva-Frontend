@@ -4,11 +4,11 @@ import { avatarImg, envelopeImg, toolOne } from "../../../../public/dev_images";
 
 const StartNewComicFast = () => {
 	return (
-		<div className='bg-black-200 flex flex-col gap-8 w-full items-center py-12'>
-			<h4 className='text-white text-sm lg:text-2xl tracking-wider'>
+		<div className='bg-black-200 flex flex-col gap-8 w-full items-center py-8 lg:py-12'>
+			<h4 className='text-white text-base lg:text-2xl tracking-wider'>
 				Start a new comic fast
 			</h4>
-			<div className='grid grid-cols-2 gap-8'>
+			<div className='grid grid-cols-2 gap-3 lg:gap-8 px-2 lg:px-0'>
 				<CreateComicCard
 					imageSrc={toolOne}
 					title='Start New Project'
