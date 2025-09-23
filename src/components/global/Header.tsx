@@ -1,5 +1,5 @@
 "use client";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { QuivaLogo } from "../utils/function";
 import { MainButton } from "../button";
@@ -7,14 +7,16 @@ import Hamburger from "hamburger-react";
 import Link from "next/link";
 import { NAV_LINKS } from "../utils/constant";
 import Sidebar from "./Sidebar";
-import { Modal, ModalContent, useDisclosure } from "@heroui/react";
+import { useDisclosure } from "@heroui/react";
 import WhitePaperModal from "../modals/WhitePaperModal";
 import GeneralModal from "../modals/GeneralModal";
 
 const Header = () => {
 	const [search, setSearch] = useState("");
 	const [isScrolled, setIsScrolled] = useState(false);
+	const [modalPage, setModalPage] = useState<string | null>(null);
 	const pathname = usePathname();
+	const searchParams = useSearchParams();
 	const router = useRouter();
 
 	const {
@@ -41,6 +43,18 @@ const Header = () => {
 		window.addEventListener("scroll", handleScroll);
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
+
+	useEffect(() => {
+		if(searchParams.get("modal")){
+			if (searchParams.get("modal") === "whitepaper") {
+				setModalPage("whitepaper");
+			}
+			if (searchParams.get("modal") === "otp") {
+				setModalPage("otp");
+			}
+			onOpenWhitePaper();
+		}
+	}, [searchParams]);
 
 	const handleSearch = () => {
 		if (pathname === "/search") {
@@ -135,7 +149,10 @@ const Header = () => {
 					</ul>
 
 					<div className='flex justify-end col-span-1'>
-						<MainButton onClick={onOpenWhitePaper}>Login</MainButton>
+						<MainButton onClick={() => {
+							router.push("?modal=whitepaper");
+							onOpenWhitePaper()
+						}}>Login</MainButton>
 					</div>
 				</nav>
 
@@ -173,7 +190,10 @@ const Header = () => {
 				backdrop='blur'
 				size='xl'
 			>
-				<WhitePaperModal onClose={onCloseWhitePaper} />
+				<WhitePaperModal 
+				onClose={onCloseWhitePaper} 
+				modalPage={modalPage}
+				setModalPage={setModalPage} />
 			</GeneralModal>
 		</>
 	);
