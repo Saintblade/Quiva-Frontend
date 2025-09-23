@@ -39,7 +39,7 @@ const PublishingModal = ({ onClose }: PublishingModalProps) => {
           <div
             key={i}
             className={`w-3 h-3 rounded-full transition ${
-              i + 1 === currentStep ? "bg-orange-500" : i + 1 < currentStep ? "bg-orange-500/60" : "bg-white/40"
+              i + 1 === currentStep ? "bg-secondary-300" : i + 1 < currentStep ? "bg-secondary-300/60" : "bg-white/40"
             }`}
           ></div>
         ))}
@@ -72,7 +72,7 @@ const PublishingModal = ({ onClose }: PublishingModalProps) => {
       <div className="flex flex-col gap-4 max-w-md mx-auto">
         <button
           onClick={handleNext}
-          className="w-full bg-orange-500 hover:bg-orange-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition text-lg"
+          className="w-full bg-secondary-300 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition-none text-lg"
         >
           Next
         </button>
@@ -95,7 +95,7 @@ const PublishingModal = ({ onClose }: PublishingModalProps) => {
           <div
             key={i}
             className={`w-3 h-3 rounded-full transition ${
-              i + 1 === currentStep ? "bg-orange-500" : i + 1 < currentStep ? "bg-orange-500/60" : "bg-white/40"
+              i + 1 === currentStep ? "bg-secondary-300" : i + 1 < currentStep ? "bg-secondary-300/60" : "bg-white/40"
             }`}
           ></div>
         ))}
@@ -113,7 +113,7 @@ const PublishingModal = ({ onClose }: PublishingModalProps) => {
         {stepNumber < totalSteps ? (
           <button
             onClick={handleNext}
-            className="w-full bg-orange-500 hover:bg-orange-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition text-lg"
+            className="w-full bg-secondary-300 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition-none text-lg"
           >
             Next
           </button>

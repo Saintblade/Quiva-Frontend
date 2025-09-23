@@ -1,20 +1,18 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
+import { OrangeButton } from "@/components/button";
 
 type Props = {
   onNext?: () => void;
   onSkip?: () => void;
   totalSteps?: number;
+  currentStep?: number;
 };
 
-const DashboardbModal = ({ onNext, onSkip, totalSteps = 6 }: Props) => {
-  const [currentStep, setCurrentStep] = useState(1);
+const DashboardbModal = ({ onNext, onSkip, totalSteps = 6, currentStep = 1 }: Props) => {
 
   const handleNext = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
-    }
     if (onNext) onNext();
   };
 
@@ -55,15 +53,15 @@ const DashboardbModal = ({ onNext, onSkip, totalSteps = 6 }: Props) => {
 
       {/* Buttons */}
       <div className="flex flex-col items-center gap-4">
-        <button
+        <OrangeButton
           onClick={handleNext}
-          className="w-full sm:w- bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition"
+          className="w-full sm:w-auto py-4 px-8 text-lg min-w-[200px]"
         >
           Next
-        </button>
+        </OrangeButton>
         <button
           onClick={onSkip}
-          className="w-full sm:w- bg-black hover:bg-gray-800 text-white font-bold py-4 px-8 rounded-2xl shadow-lg transition"
+          className="w-full sm:w-auto bg-black hover:bg-gray-800 text-white font-bold py-4 px-8 rounded-2xl shadow-lg transition min-w-[200px]"
         >
           Skip Tour
         </button>

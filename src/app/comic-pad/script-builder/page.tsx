@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { OrangeButton } from "@/components/button";
 
 type BoardType = "script" | "draw" | "layout" | "dialogue";
 
@@ -18,12 +19,12 @@ export default function ScriptBuilderPage() {
   return (
     <div className="min-h-screen bg-black text-white" style={{ background: 'linear-gradient(135deg, #000000 0%, #000000 80%, #1a0f1a 100%)' }}>
       {/* Top Navigation Bar */}
-      <div className="bg-gray-900 border-b border-gray-700 px-6 py-4">
+      <div className="bg-black border-b border-gray-700 px-6 py-4">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-6">
             <button
               onClick={() => window.history.back()}
-              className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
+              className="flex items-center gap-2 text-white-300 hover:text-white transition-colors"
             >
               ← Back to Comic Pad
             </button>
@@ -33,13 +34,13 @@ export default function ScriptBuilderPage() {
           <div className="flex items-center gap-4">
             <div className="text-gray-400 text-sm">Page 1 of 1</div>
             <button className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors">
-              👁 Preview
+              Preview
             </button>
             <button 
               onClick={() => setShowPublishingModal(true)}
-              className="flex items-center gap-2 px-6 py-2 bg-orange-500 hover:bg-orange-400 text-black font-semibold rounded-lg transition-colors"
+              className="flex items-center gap-2 px-6 py-2 bg-secondary-300 text-black font-semibold rounded-lg transition-none"
             >
-              📤 Publish
+              Publish
             </button>
           </div>
         </div>
@@ -48,7 +49,7 @@ export default function ScriptBuilderPage() {
       {/* Main Content Container */}
       <div className="max-w-7xl mx-auto p-6">
         {/* Unified Board Container */}
-        <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6 min-h-[600px]">
+        <div className="bg-black border border-gray-700 rounded-2xl p-6 min-h-[600px]">
           {/* Script Editor Board */}
           {currentBoard === "script" && (
             <div className="h-full">
@@ -56,9 +57,9 @@ export default function ScriptBuilderPage() {
                 <h2 className="text-2xl font-bold text-white">📝 Script Editor</h2>
                 <div className="flex items-center gap-3">
                   <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-white">
-                    💾 Save Draft
+                     Save 
                   </button>
-                  <button className="px-4 py-2 bg-orange-500 hover:bg-orange-400 text-black font-semibold rounded-lg transition-colors">
+                  <button className="px-4 py-2 bg-secondary-300 text-black font-semibold rounded-lg transition-none">
                     ➕ Add Scene
                   </button>
                 </div>
@@ -67,7 +68,7 @@ export default function ScriptBuilderPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="bg-gray-900 rounded-xl p-6 border border-gray-700">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
-                    ✏️ Write Your Script
+               
                   </h3>
                   <textarea
                     value={scriptContent}
@@ -120,7 +121,7 @@ SARAH: This is it. Time to find the truth."
                 <div className="flex items-center gap-3">
                   <button className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-white">↶</button>
                   <button className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-white">↷</button>
-                  <button className="px-4 py-2 bg-orange-500 hover:bg-orange-400 text-black font-semibold rounded-lg transition-colors">
+                  <button className="px-4 py-2 bg-secondary-300 text-black font-semibold rounded-lg transition-none">
                     📚 Add Layer
                   </button>
                 </div>
@@ -143,7 +144,7 @@ SARAH: This is it. Time to find the truth."
                   <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-white">
                     🔲 Grid
                   </button>
-                  <button className="px-4 py-2 bg-orange-500 hover:bg-orange-400 text-black font-semibold rounded-lg transition-colors">
+                  <button className="px-4 py-2 bg-secondary-300 text-black font-semibold rounded-lg transition-none">
                     ➕ Add Panel
                   </button>
                 </div>
@@ -166,7 +167,7 @@ SARAH: This is it. Time to find the truth."
                   <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-white">
                     🎨 Text Style
                   </button>
-                  <button className="px-4 py-2 bg-orange-500 hover:bg-orange-400 text-black font-semibold rounded-lg transition-colors">
+                  <button className="px-4 py-2 bg-secondary-300 text-black font-semibold rounded-lg transition-none">
                     ➕ Add Dialogue
                   </button>
                 </div>
@@ -189,7 +190,7 @@ SARAH: This is it. Time to find the truth."
                   onClick={() => setCurrentBoard(board.id)}
                   className={`px-4 py-2 rounded-full transition-all font-medium text-xs ${
                     currentBoard === board.id
-                      ? "bg-orange-500 text-black shadow-md"
+                      ? "bg-secondary-300 text-black shadow-md"
                       : "text-white hover:text-white hover:bg-gray-700"
                   }`}
                 >
@@ -215,7 +216,7 @@ SARAH: This is it. Time to find the truth."
             <div className="max-w-3xl w-full mx-auto px-4 sm:px-6 pt-6 pb-10 text-white text-center">
               <div className="flex justify-center gap-2 mb-8">
                 {[1, 2, 3, 4].map((step) => (
-                  <div key={step} className={`w-3 h-3 rounded-full transition-colors ${step === 1 ? "bg-orange-500" : "bg-gray-600"}`}></div>
+                  <div key={step} className={`w-3 h-3 rounded-full transition-colors ${step === 1 ? "bg-secondary-300" : "bg-gray-600"}`}></div>
                 ))}
               </div>
 
@@ -234,9 +235,9 @@ SARAH: This is it. Time to find the truth."
               </p>
 
               <div className="flex flex-col gap-4 max-w-md mx-auto">
-                <button className="w-full bg-orange-500 hover:bg-orange-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition-colors text-lg">
+                <OrangeButton className="w-full py-4 px-8 text-lg">
                   Next
-                </button>
+                </OrangeButton>
                 <button 
                   onClick={() => setShowPublishingModal(false)}
                   className="w-full bg-transparent hover:bg-gray-700 text-gray-300 hover:text-white font-medium py-4 px-8 rounded-2xl border border-gray-600 transition-colors"

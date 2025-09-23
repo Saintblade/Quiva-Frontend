@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, Filter, Heart, Star, ChevronDown, Home, BookOpen, User, Menu, X } from "lucide-react";
-import { MainButton } from "@/components/button";
+import { MainButton, GradientButton } from "@/components/button";
 import { useDisclosure } from "@heroui/react";
 import GeneralModal from "@/components/modals/GeneralModal";
-import CreatorOnboardingModal from "@/components/modals/CreatorOnboardingModal";
+import { CreatorOnboardingFlowModal } from "@/components/modals/CreatorOnboarding";
 
 interface Comic {
 	id: number;
@@ -160,7 +160,7 @@ const MarketplacePage = () => {
 
 	const handleCreatorComplete = () => {
 		onCloseCreatorModal();
-		// Creator modal will handle routing to comic-pad
+		// Creator onboarding flow will handle routing to comic-pad
 	};
 
 	const filteredComics = comics.filter(comic => {
@@ -214,13 +214,13 @@ const MarketplacePage = () => {
 						</Link>
 
 						{/* Become Creator Button */}
-						<button
+						<GradientButton
 							onClick={onOpenCreatorModal}
-							className="w-full flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-black rounded-lg font-semibold hover:from-yellow-400 hover:to-orange-400 transition mt-2"
+							className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg font-semibold mt-2"
 						>
 							<User size={20} />
 							<span className="font-medium">Become Creator</span>
-						</button>
+						</GradientButton>
 					</nav>
 				</div>
 			</div>
@@ -396,7 +396,7 @@ const MarketplacePage = () => {
 			backdrop='blur'
 			size='xl'
 		>
-			<CreatorOnboardingModal onClose={onCloseCreatorModal} onComplete={handleCreatorComplete} />
+			<CreatorOnboardingFlowModal onClose={onCloseCreatorModal} onComplete={handleCreatorComplete} />
 		</GeneralModal>
 		</>
 	);
