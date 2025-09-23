@@ -13,6 +13,8 @@ interface UserProfileData {
   interests?: string[];
   profileImage?: File;
   profilePreview?: string;
+  bannerImage?: File;
+  bannerPreview?: string;
 }
 
 interface UserProfileFlowModalProps {
@@ -39,12 +41,19 @@ const UserProfileFlowModal = ({ onClose, onComplete }: UserProfileFlowModalProps
     setCurrentStep(3);
   };
 
-  const handleStep3Next = (data: { profileImage?: File; profilePreview?: string }) => {
+  const handleStep3Next = (data: { 
+    username?: string; 
+    profileImage?: File; 
+    profilePreview?: string; 
+    bannerImage?: File; 
+    bannerPreview?: string; 
+    bio?: string; 
+  }) => {
     setUserData(prev => ({ ...prev, ...data }));
     setCurrentStep(4);
   };
 
-  const handleStep4Next = (data: { bio: string; interests: string[] }) => {
+  const handleStep4Next = (data: { interests: string[] }) => {
     setUserData(prev => ({ ...prev, ...data }));
     setCurrentStep(5);
   };
@@ -72,7 +81,6 @@ const UserProfileFlowModal = ({ onClose, onComplete }: UserProfileFlowModalProps
         return (
           <Step1WelcomeModal
             onNext={handleStep1Next}
-            onSkip={handleSkip}
             totalSteps={totalSteps}
             currentStep={currentStep}
           />
@@ -98,8 +106,12 @@ const UserProfileFlowModal = ({ onClose, onComplete }: UserProfileFlowModalProps
             totalSteps={totalSteps}
             currentStep={currentStep}
             initialData={{
+              username: userData.username,
               profileImage: userData.profileImage,
               profilePreview: userData.profilePreview,
+              bannerImage: userData.bannerImage,
+              bannerPreview: userData.bannerPreview,
+              bio: userData.bio,
             }}
           />
         );
@@ -111,7 +123,6 @@ const UserProfileFlowModal = ({ onClose, onComplete }: UserProfileFlowModalProps
             totalSteps={totalSteps}
             currentStep={currentStep}
             initialData={{
-              bio: userData.bio,
               interests: userData.interests,
             }}
           />
