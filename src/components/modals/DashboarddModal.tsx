@@ -2,6 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import { OrangeButton } from "@/components/button";
+import { comicpadImgCreator } from "../../../public/dev_images";
 
 type Props = {
   onNext?: () => void;
@@ -21,7 +22,7 @@ const DashboarddModal = ({ onNext, onSkip, totalSteps = 6, currentStep = 1 }: Pr
       {/* Image */}
       <div className="flex justify-center mb-6">
         <Image
-          src="/mobile-progress-6.png"
+          src={comicpadImgCreator}
           alt="Mobile Progress"
           width={300}
           height={300}
