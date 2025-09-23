@@ -11,10 +11,10 @@ import Picture from "../picture/Index";
 import { FaArrowLeft } from "react-icons/fa";
 import { HiEnvelope } from "react-icons/hi2";
 import { InputOtp } from "@heroui/react";
-import { useRouter } from "next/navigation";
 
 interface WhitePaperModalProps {
 	onClose: () => void;
+	onLoginSuccess?: () => void;
 }
 
 interface LoginFormValues {
@@ -22,14 +22,13 @@ interface LoginFormValues {
 	password: string;
 }
 
-const WhitePaperModal = ({ onClose }: WhitePaperModalProps) => {
+const WhitePaperModal = ({ onClose, onLoginSuccess }: WhitePaperModalProps) => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [isLogIn, setIsLogIn] = useState(false);
 	const [isRegister, setIsRegister] = useState(false);
 	const [isVerificationCode, setIsVerificationCode] = useState(false);
 	const [isVerifying, setIsVerifying] = useState(false);
 	const [otpValue, setOtpValue] = useState("");
-	const router = useRouter();
 
 	const handlePasswordVisibility = () => {
 		setShowPassword(!showPassword);
@@ -43,8 +42,13 @@ const WhitePaperModal = ({ onClose }: WhitePaperModalProps) => {
 		initialValues: LoginValues,
 		validationSchema: LoginSchema,
 		enableReinitialize: true,
-		onSubmit: (values) => {
+		onSubmit: async (values) => {
 			console.log("value", values);
+			// TODO: Replace with actual API call
+			// Simulate login success
+			await new Promise(resolve => setTimeout(resolve, 1000));
+			onClose();
+			onLoginSuccess?.();
 		},
 	});
 
@@ -57,11 +61,21 @@ const WhitePaperModal = ({ onClose }: WhitePaperModalProps) => {
 		setIsRegister(true);
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!isVerificationCode) {
 			// Send verification code logic
 			setIsVerificationCode(true);
+		} else {
+			// Handle email verification completion
+			if (otpValue.length === 6) {
+				setIsVerifying(true);
+				// TODO: Verify OTP with API
+				await new Promise(resolve => setTimeout(resolve, 2000));
+				setIsVerifying(false);
+				onClose();
+				onLoginSuccess?.();
+			}
 		}
 	};
 
@@ -231,7 +245,18 @@ const WhitePaperModal = ({ onClose }: WhitePaperModalProps) => {
 								// onChange={(value: any) => setCode(value)}
 								onComplete={(value: any) => {
 									if (value.length === 6) {
-										router.push("/comic-pad");
+										// Set OTP value and trigger verification logic
+										setOtpValue(value);
+										// Handle OTP completion directly
+										const completeOTP = async () => {
+											setIsVerifying(true);
+											// TODO: Verify OTP with API
+											await new Promise(resolve => setTimeout(resolve, 2000));
+											setIsVerifying(false);
+											onClose();
+											onLoginSuccess?.();
+										};
+										completeOTP();
 									}
 								}}
 								classNames={{

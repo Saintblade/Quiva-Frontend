@@ -130,12 +130,18 @@ const Sidebar = ({
 						);
 					})}
 
-					<span
-						onClick={onOpenWhitePaper}
-						className={`capitalize relative text-lg fontmedium font-sans w-fit rounded-full bg-primary-100 px-4 py-1 border border-primary-100 text-white`}
-					>
-						<div className='flex items-center gap-1.5'>Login</div>
-					</span>
+					<div className="flex flex-col gap-3 mt-6">
+						<Link href="/auth/login" onClick={toggleSidebar}>
+							<span className="capitalize relative text-lg font-medium font-sans w-fit block border border-white/20 px-4 py-2 rounded-lg text-white hover:bg-white/5 transition">
+								Log In
+							</span>
+						</Link>
+						<Link href="/auth/signup" onClick={toggleSidebar}>
+							<span className="capitalize relative text-lg font-medium font-sans w-fit block rounded-lg bg-primary-100 px-4 py-2 border border-primary-100 text-white">
+								Sign Up
+							</span>
+						</Link>
+					</div>
 				</ul>
 			</div>
 		</aside>

@@ -1,0 +1,151 @@
+"use client";
+import React, { useState } from "react";
+import Step1WelcomeModal from "./Step1WelcomeModal";
+import Step2BasicInfoModal from "./Step2BasicInfoModal";
+import Step3ProfilePictureModal from "./Step3ProfilePictureModal";
+import Step4BioInterestsModal from "./Step4BioInterestsModal";
+import Step5CompletionModal from "./Step5CompletionModal";
+
+interface UserProfileData {
+  displayName?: string;
+  username?: string;
+  bio?: string;
+  interests?: string[];
+  profileImage?: File;
+  profilePreview?: string;
+}
+
+interface UserProfileFlowModalProps {
+  onClose: () => void;
+  onComplete: () => void;
+}
+
+const UserProfileFlowModal = ({ onClose, onComplete }: UserProfileFlowModalProps) => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [userData, setUserData] = useState<UserProfileData>({});
+  const totalSteps = 5;
+
+  const handleSkip = () => {
+    // User chooses to skip profile setup
+    onComplete();
+  };
+
+  const handleStep1Next = () => {
+    setCurrentStep(2);
+  };
+
+  const handleStep2Next = (data: { displayName: string; username: string }) => {
+    setUserData(prev => ({ ...prev, ...data }));
+    setCurrentStep(3);
+  };
+
+  const handleStep3Next = (data: { profileImage?: File; profilePreview?: string }) => {
+    setUserData(prev => ({ ...prev, ...data }));
+    setCurrentStep(4);
+  };
+
+  const handleStep4Next = (data: { bio: string; interests: string[] }) => {
+    setUserData(prev => ({ ...prev, ...data }));
+    setCurrentStep(5);
+  };
+
+  const handleStepBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleFinalComplete = async () => {
+    // Here you would typically save the user profile data to your backend
+    console.log("Saving user profile:", userData);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Complete the flow
+    onComplete();
+  };
+
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <Step1WelcomeModal
+            onNext={handleStep1Next}
+            onSkip={handleSkip}
+            totalSteps={totalSteps}
+            currentStep={currentStep}
+          />
+        );
+      case 2:
+        return (
+          <Step2BasicInfoModal
+            onNext={handleStep2Next}
+            onBack={handleStepBack}
+            totalSteps={totalSteps}
+            currentStep={currentStep}
+            initialData={{
+              displayName: userData.displayName,
+              username: userData.username,
+            }}
+          />
+        );
+      case 3:
+        return (
+          <Step3ProfilePictureModal
+            onNext={handleStep3Next}
+            onBack={handleStepBack}
+            totalSteps={totalSteps}
+            currentStep={currentStep}
+            initialData={{
+              profileImage: userData.profileImage,
+              profilePreview: userData.profilePreview,
+            }}
+          />
+        );
+      case 4:
+        return (
+          <Step4BioInterestsModal
+            onNext={handleStep4Next}
+            onBack={handleStepBack}
+            totalSteps={totalSteps}
+            currentStep={currentStep}
+            initialData={{
+              bio: userData.bio,
+              interests: userData.interests,
+            }}
+          />
+        );
+      case 5:
+        return (
+          <Step5CompletionModal
+            onComplete={handleFinalComplete}
+            totalSteps={totalSteps}
+            currentStep={currentStep}
+            userData={userData}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="relative">
+      {/* Close button (only show on first step) */}
+      {currentStep === 1 && (
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition"
+        >
+          <span className="text-white text-lg">×</span>
+        </button>
+      )}
+
+      {/* Render current step */}
+      {renderCurrentStep()}
+    </div>
+  );
+};
+
+export default UserProfileFlowModal;

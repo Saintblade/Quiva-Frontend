@@ -57,8 +57,8 @@ export default function RootLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<html lang='en'>
-			<body className={`max-w-[1700px] mx-auto relative`}>
+		<html lang='en' className="bg-black">
+			<body className={`max-w-[1700px] mx-auto relative bg-black`}>
 				<ReduxProviders>
 					<HeroUIProvider>
 						{children}

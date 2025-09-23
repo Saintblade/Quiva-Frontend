@@ -10,6 +10,7 @@ import Sidebar from "./Sidebar";
 import { Modal, ModalContent, useDisclosure } from "@heroui/react";
 import WhitePaperModal from "../modals/WhitePaperModal";
 import GeneralModal from "../modals/GeneralModal";
+import UserProfileFlowModal from "../modals/UserProfile/UserProfileFlowModal";
 
 const Header = () => {
 	const [search, setSearch] = useState("");
@@ -23,6 +24,24 @@ const Header = () => {
 		onOpenChange: onOpenChangeWhitePaper,
 		onClose: onCloseWhitePaper,
 	} = useDisclosure();
+
+	const {
+		isOpen: isUserProfileOpen,
+		onOpen: onOpenUserProfile,
+		onOpenChange: onOpenChangeUserProfile,
+		onClose: onCloseUserProfile,
+	} = useDisclosure();
+
+	const handleLoginSuccess = () => {
+		onCloseWhitePaper();
+		onOpenUserProfile();
+	};
+
+	const handleProfileComplete = () => {
+		onCloseUserProfile();
+		// Navigate to marketplace after profile completion
+		router.push("/marketplace");
+	};
 
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const toggleSidebar = () => {
@@ -173,7 +192,18 @@ const Header = () => {
 				backdrop='blur'
 				size='xl'
 			>
-				<WhitePaperModal onClose={onCloseWhitePaper} />
+				<WhitePaperModal onClose={onCloseWhitePaper} onLoginSuccess={handleLoginSuccess} />
+			</GeneralModal>
+
+			{/* User Profile Flow Modal */}
+			<GeneralModal
+				isOpen={isUserProfileOpen}
+				onOpenChange={onOpenChangeUserProfile}
+				onClose={onCloseUserProfile}
+				backdrop='blur'
+				size='xl'
+			>
+				<UserProfileFlowModal onClose={onCloseUserProfile} onComplete={handleProfileComplete} />
 			</GeneralModal>
 		</>
 	);

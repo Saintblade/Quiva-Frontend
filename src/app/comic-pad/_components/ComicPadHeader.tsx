@@ -3,13 +3,18 @@ import { FaBell, FaChevronDown, FaUserCircle } from "react-icons/fa";
 import { BiSolidBell } from "react-icons/bi";
 import Picture from "@/components/picture/Index";
 import { avatarImg } from "../../../../public/dev_images";
+import Link from "next/link";
 
 const ComicPadHeader = () => {
 	return (
 		<header
 			className={`fixed max-w-[1700px] px-2 w-[83%] grid grid-cols-3 min-h-20 lg:py-3 top-0 border-b dashed-border-strong drop-shadow-sm z-50 bg-black-200`}
 		>
-			<div className=''></div>
+			<div className='flex items-center'>
+				<Link href="/marketplace" className="text-white/70 hover:text-white transition text-sm">
+					← Back to Marketplace
+				</Link>
+			</div>
 
 			<div className='flex flex-col items-center justify-center'>
 				<h4 className='text-white text-sm lg:text-xl font-medium tracking-wider'>
