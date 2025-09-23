@@ -84,7 +84,7 @@ CAPTION: Another day in Metro City comes to an end.
 PANEL 2
 CLOSE UP on SARAH (20s, determined expression) looking up at a tall building.
 SARAH: This is it. Time to find the truth."
-                    className="w-full h-96 bg-gray-800 border border-gray-600 rounded-lg p-4 text-white placeholder:text-gray-400 resize-none focus:outline-none focus:border-orange-500 transition-colors"
+                    className="w-full h-96 bg-gray-900 border border-gray-700 rounded-lg p-4 text-orange-100 placeholder:text-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono tracking-wide leading-relaxed"
                   />
                   <div className="mt-2 text-right text-gray-400 text-sm">
                     {scriptContent.length} characters
