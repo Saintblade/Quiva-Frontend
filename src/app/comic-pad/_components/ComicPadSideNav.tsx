@@ -26,12 +26,12 @@ const ComicPadSideNav = () => {
 	];
 	return (
 		<div
-			className={`bg-black-200 w-[18%] h-full shadow-lg py-10 px-1 xl:pl-10 ${styles["inner-sidebar-scroll"]} border-r dashed-border-strong-3`}
+			className={`bg-black-200 w-[18%] hidden lg:block h-full shadow-lg py-10 px-1 lg:pl-3 xl:pl-10 ${styles["inner-sidebar-scroll"]} border-r dashed-border-strong-3`}
 		>
 			<QuivaLogo
 				showText
 				className={`invert lg:invert transition-[.4] !text-xl`}
-				logoClassName='!w-12'
+				logoClassName='!w-8 lg:!w-8 xl:!w-12'
 			/>
 
 			<div className='space-y-6 shrink-0 mt-12'>
@@ -53,7 +53,7 @@ const ComicPadSideNav = () => {
 					</a>
 				))}
 
-				<button className='text-black-200 bg-secondary-300 rounded-full px-5 py-2 font-medium hover:bg-secondary-300 transition-[.4] hover:scale-105'>
+				<button className='text-black-200 text-sm xl:text-base bg-secondary-300 rounded-full px-2 lg:px-5 py-2 font-medium hover:bg-secondary-300 transition-[.4] hover:scale-105'>
 					Create New Comic
 				</button>
 			</div>

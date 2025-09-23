@@ -26,12 +26,22 @@ const CreateComicCard = ({
 }: CreateComicCardProps) => {
 	return (
 		<div
-			className={`w-64 border dashed-border-strong-4 px-7 py-8 flex flex-col items-center text-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-200 ${className}`}
+			className={`w-full sm:w-56 md:w-60 lg:w-64 xl:w-72 lg:h-64 border dashed-border-strong-4 p-4 sm:p-6 md:px-7 md:py-8 flex flex-col items-center text-center gap-2 cursor-pointer hover:scale-105 transition-transform duration-200 ${className}`}
 			onClick={onClick}
 		>
-			<Picture src={imageSrc} className={imageClassName} alt={title} />
-			<h5 className={titleClassName}>{title}</h5>
-			<p className={descriptionClassName}>{description}</p>
+			<Picture
+				src={imageSrc}
+				className={`size-10 sm:size-14 md:size-16 ${imageClassName}`}
+				alt={title}
+			/>
+			<h5 className={`text-sm sm:text-base md:text-lg ${titleClassName}`}>
+				{title}
+			</h5>
+			<p
+				className={`text-xxs sm:text-sm text-gray-600 leading-tight ${descriptionClassName}`}
+			>
+				{description}
+			</p>
 		</div>
 	);
 };

@@ -1,6 +1,8 @@
 import { FiInstagram } from "react-icons/fi";
 import { RiTelegram2Fill, RiTwitterXFill, RiYoutubeFill } from "react-icons/ri";
 import { soloLevel } from "../../../public/dev_images";
+import { FaBook, FaCog, FaHome, FaMoneyBill } from "react-icons/fa";
+import { FcMoneyTransfer } from "react-icons/fc";
 
 export type NavLink = {
 	label: string;
@@ -17,6 +19,7 @@ export const MY_COMICS_DATA = [
 		views: 1245,
 		likes: 89,
 		lastUpdated: "2 days ago",
+		category: "Recent",
 	},
 	{
 		id: 2,
@@ -27,6 +30,7 @@ export const MY_COMICS_DATA = [
 		views: 2897,
 		likes: 156,
 		lastUpdated: "1 week ago",
+		category: "Popular",
 	},
 	{
 		id: 3,
@@ -37,6 +41,7 @@ export const MY_COMICS_DATA = [
 		views: 0,
 		likes: 0,
 		lastUpdated: "Just now",
+		category: "Free",
 	},
 	{
 		id: 4,
@@ -47,6 +52,7 @@ export const MY_COMICS_DATA = [
 		views: 3452,
 		likes: 287,
 		lastUpdated: "1 month ago",
+		category: "Paid",
 	},
 	{
 		id: 5,
@@ -57,6 +63,7 @@ export const MY_COMICS_DATA = [
 		views: 1876,
 		likes: 102,
 		lastUpdated: "3 days ago",
+		category: "Popular",
 	},
 	{
 		id: 6,
@@ -67,6 +74,7 @@ export const MY_COMICS_DATA = [
 		views: 2310,
 		likes: 198,
 		lastUpdated: "5 days ago",
+		category: "Free",
 	},
 	{
 		id: 7,
@@ -77,6 +85,7 @@ export const MY_COMICS_DATA = [
 		views: 0,
 		likes: 0,
 		lastUpdated: "Yesterday",
+		category: "Paid",
 	},
 ];
 
@@ -158,3 +167,37 @@ export const faqs = [
 
 export const phoneNum = "+1 (323) 275-1718";
 export const emailAddress = "hello@logoipsum.com";
+
+export const mobileHeaderLinkUrl = [
+	{
+		url: "/comic-pad",
+		link: "Comic Pad",
+		icon: (className: string) => <FaHome className={`${className} !text-lg`} />,
+	},
+	{
+		url: "/comic-pad/my-comics",
+		link: "My Comics",
+		icon: (className: string) => (
+			<FaBook className={`${className} !text-2xl`} />
+		),
+	},
+	{
+		url: "",
+		link: "",
+		icon: (className: string) => (
+			<FaMoneyBill className={`${className} text-lg`} />
+		),
+	},
+	{
+		url: "/comic-pad/earnings",
+		link: "Earnings",
+		icon: (className: string) => (
+			<FcMoneyTransfer className={`${className} !text-3xl`} />
+		),
+	},
+	{
+		url: "/comic-pad/settings",
+		link: "Settings",
+		icon: (className: string) => <FaCog className={`${className} !text-2xl`} />,
+	},
+];
