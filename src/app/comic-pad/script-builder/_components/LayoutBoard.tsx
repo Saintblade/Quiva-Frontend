@@ -95,7 +95,7 @@ const LayoutBoard = () => {
           <div className="w-full h-full border-2 border-dashed border-gray-300 rounded-lg relative">
             {/* Page dimensions indicator */}
             <div className="absolute -top-6 left-0 text-sm text-gray-500">
-              Page: 8.5" × 11"
+              Page: 8.5&quot; × 11&quot;
             </div>
 
             {/* Panels */}

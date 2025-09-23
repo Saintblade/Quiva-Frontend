@@ -101,7 +101,7 @@ const Step3ProfilePictureModal = ({
 
       {/* Title */}
       <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-center">
-        Let's Personalize Your Profile
+        Let&apos;s Personalize Your Profile
       </h3>
 
       {/* Progress Image */}
@@ -117,7 +117,7 @@ const Step3ProfilePictureModal = ({
 
       {/* Description */}
       <p className="text-white/70 text-base sm:text-lg leading-relaxed mb-8 text-center max-w-2xl mx-auto">
-        Fill out the profile info below to make it yours. You can always edit this later in account settings or by clicking the "Edit Profile" button on your profile page.
+        Fill out the profile info below to make it yours. You can always edit this later in account settings or by clicking the &quot;Edit Profile&quot; button on your profile page.
       </p>
 
       <div className="space-y-8">

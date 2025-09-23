@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { OrangeButton } from "@/components/button";
+import { oneClick } from "../../../../public/dev_images";
 
 interface UserProfileData {
   displayName?: string;
@@ -38,14 +40,14 @@ const Step5CompletionModal = ({
 
       {/* 1. Heading */}
       <h3 className="text-2xl sm:text-3xl font-bold mb-8">
-        You're ready to go!
+        You&apos;re ready to go!
       </h3>
 
       {/* 2. Image Banner */}
       <div className="flex justify-center mb-8">
         <Image
-          src="/dev_images/mobile-progress-5.png"
-          alt="You're ready to go!"
+          src={oneClick}
+          alt="You&apos;re ready to go!"
           width={400}
           height={300}
           className="rounded-2xl w-full max-w-lg h-auto"
@@ -53,12 +55,12 @@ const Step5CompletionModal = ({
       </div>
 
       {/* 3. Let's go Button */}
-      <button
+      <OrangeButton
         onClick={onComplete}
-        className="w-full max-w-md mx-auto bg-orange-500 hover:bg-orange-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition text-lg"
+        className="w-full max-w-md mx-auto py-4 px-8 text-lg"
       >
-        Let's go
-      </button>
+        Let&apos;s go
+      </OrangeButton>
     </div>
   );
 };

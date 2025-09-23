@@ -81,8 +81,8 @@ PANEL 3
       <div className="mt-6 bg-orange-500/10 border border-orange-500/20 rounded-xl p-4">
         <h4 className="text-orange-500 font-semibold mb-2">Script Writing Tips:</h4>
         <ul className="text-white/70 text-sm space-y-1">
-          <li>• Start each page with "PAGE [number]"</li>
-          <li>• Begin each panel with "PANEL [number]" and describe the shot</li>
+          <li>• Start each page with &quot;PAGE [number]&quot;</li>
+          <li>• Begin each panel with &quot;PANEL [number]&quot; and describe the shot</li>
           <li>• Use character names in ALL CAPS when they first speak</li>
           <li>• Add captions and dialogue to bring your story to life</li>
         </ul>

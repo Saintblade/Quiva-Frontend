@@ -46,6 +46,7 @@ const PublishingModal = ({ onClose }: PublishingModalProps) => {
     onClose();
   };
 
+<<<<<<< HEAD
   // Progress dots
   const StepDots = () => (
     <div className="flex justify-center gap-2 mb-8">
@@ -63,6 +64,21 @@ const PublishingModal = ({ onClose }: PublishingModalProps) => {
       ))}
     </div>
   );
+=======
+  const renderStep1 = () => (
+    <div className="max-w-3xl w-full mx-auto px-4 sm:px-6 pt-6 pb-10 text-white text-center">
+      {/* Step Dots */}
+      <div className="flex justify-center gap-2 mb-8">
+        {Array.from({ length: totalSteps }).map((_, i) => (
+          <div
+            key={i}
+            className={`w-3 h-3 rounded-full transition ${
+              i + 1 === currentStep ? "bg-secondary-300" : i + 1 < currentStep ? "bg-secondary-300/60" : "bg-white/40"
+            }`}
+          ></div>
+        ))}
+      </div>
+>>>>>>> d3c799bb12e64ee44cbdb21913956319d49d369c
 
   // Step 1 - Review
   const renderStep1 = () => (
@@ -93,7 +109,7 @@ const PublishingModal = ({ onClose }: PublishingModalProps) => {
       <div className="flex flex-col gap-4 max-w-md mx-auto">
         <button
           onClick={handleNext}
-          className="w-full bg-orange-500 hover:bg-orange-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition text-lg"
+          className="w-full bg-secondary-300 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition-none text-lg"
         >
           Next
         </button>
@@ -108,7 +124,59 @@ const PublishingModal = ({ onClose }: PublishingModalProps) => {
     </div>
   );
 
+<<<<<<< HEAD
   // Step Renderer
+=======
+  const renderStepPlaceholder = (stepNumber: number) => (
+    <div className="max-w-3xl w-full mx-auto px-4 sm:px-6 pt-6 pb-10 text-white text-center">
+      {/* Step Dots */}
+      <div className="flex justify-center gap-2 mb-8">
+        {Array.from({ length: totalSteps }).map((_, i) => (
+          <div
+            key={i}
+            className={`w-3 h-3 rounded-full transition ${
+              i + 1 === currentStep ? "bg-secondary-300" : i + 1 < currentStep ? "bg-secondary-300/60" : "bg-white/40"
+            }`}
+          ></div>
+        ))}
+      </div>
+
+      <h3 className="text-2xl sm:text-3xl font-bold mb-8">
+        Step {stepNumber} - Coming Soon
+      </h3>
+
+      <p className="text-white/70 text-base sm:text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
+        This step will be implemented next. For now, you can navigate between steps to see the flow.
+      </p>
+
+      <div className="flex flex-col gap-4 max-w-md mx-auto">
+        {stepNumber < totalSteps ? (
+          <button
+            onClick={handleNext}
+            className="w-full bg-secondary-300 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition-none text-lg"
+          >
+            Next
+          </button>
+        ) : (
+          <button
+            onClick={handleNext}
+            className="w-full bg-green-500 hover:bg-green-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition text-lg"
+          >
+            Publish Comic
+          </button>
+        )}
+        
+        <button
+          onClick={handleBack}
+          className="w-full bg-transparent hover:bg-white/10 text-white/70 hover:text-white font-medium py-4 px-8 rounded-2xl border border-white/20 transition"
+        >
+          Back
+        </button>
+      </div>
+    </div>
+  );
+
+>>>>>>> d3c799bb12e64ee44cbdb21913956319d49d369c
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 1:

@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { userOnbard } from "../../../../public/dev_images";
+import { OrangeButton } from "@/components/button";
 
 type Props = {
   onNext: () => void;
@@ -31,7 +33,7 @@ const Step1WelcomeModal = ({ onNext, totalSteps = 5, currentStep = 1 }: Props) =
       {/* Progress Image */}
       <div className="flex justify-center mb-6">
         <Image
-          src="/dev_images/mobile-progress-1.png"
+          src={userOnbard}
           alt="Welcome to Profile Creation"
           width={300}
           height={300}
@@ -46,12 +48,12 @@ const Step1WelcomeModal = ({ onNext, totalSteps = 5, currentStep = 1 }: Props) =
 
       {/* Buttons */}
       <div className="flex flex-col items-center gap-4">
-        <button
+        <OrangeButton
           onClick={onNext}
-          className="w-full sm:w-auto bg-orange-500 hover:bg-orange-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition min-w-[200px]"
+          className="py-4 px-8 text-lg min-w-[200px]"
         >
           Next
-        </button>
+        </OrangeButton>
       </div>
     </div>
   );

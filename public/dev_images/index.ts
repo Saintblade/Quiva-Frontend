@@ -35,8 +35,12 @@ import theNorthFace from "./the-north-face.png";
 import toolOne from "./tool-1.png";
 import envelopeImg from "./envelope.png";
 import soloLevel from "./solo-level.png";
-
+import userOnbard from "./userOnboard.jpg";
+import oneClick from "./oneClick.jpg";
+import comicpadImgCreator from "./comicImg.png";
 export {
+	userOnbard,
+	oneClick,
 	tonmicIcon,
 	soloLevel,
 	envelopeImg,
@@ -74,4 +78,5 @@ export {
 	mascotThree2,
 	heroBgImg,
 	footerImg,
+	comicpadImgCreator
 };

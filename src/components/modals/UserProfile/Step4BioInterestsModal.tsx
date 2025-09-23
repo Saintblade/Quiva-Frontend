@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { OrangeButton } from "@/components/button";
 
 const INTEREST_OPTIONS = [
   "Action & Adventure",
@@ -109,13 +110,13 @@ const Step4BioInterestsModal = ({
 
       {/* 4. Back and Next Buttons */}
       <div className="flex flex-col gap-4 max-w-md mx-auto">
-        <button
+        <OrangeButton
           onClick={handleNext}
           disabled={isLoading || selectedInterests.length === 0}
-          className="w-full bg-orange-500 hover:bg-orange-400 disabled:bg-orange-500/50 disabled:cursor-not-allowed text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition"
+          className="w-full py-4 px-8 text-lg"
         >
           {isLoading ? "Processing..." : "Next"}
-        </button>
+        </OrangeButton>
         
         <button
           onClick={onBack}

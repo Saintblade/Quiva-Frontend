@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { oneClick } from "../../../../public/dev_images";
+import { OrangeButton } from "@/components/button";
 
 interface BasicInfoFormValues {
   displayName: string;
@@ -50,7 +52,7 @@ const Step2BasicInfoModal = ({
       {/* Progress Image */}
       <div className="flex justify-center mb-6">
         <Image
-          src="/dev_images/mobile-progress-2.png"
+          src={oneClick}
           alt="1-click Buying"
           width={300}
           height={300}
@@ -71,12 +73,12 @@ const Step2BasicInfoModal = ({
         >
           Back
         </button>
-        <button
+        <OrangeButton
           onClick={handleNext}
-          className="w-full sm:w-auto bg-orange-500 hover:bg-orange-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition min-w-[150px]"
+          className="py-4 px-8 text-lg min-w-[150px]"
         >
           Next
-        </button>
+        </OrangeButton>
       </div>
     </div>
   );
