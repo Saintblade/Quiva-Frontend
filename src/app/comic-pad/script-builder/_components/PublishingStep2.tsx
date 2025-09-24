@@ -1,74 +1,121 @@
 "use client";
-import React from "react";
-import Image from "next/image";
+import React, { useState, useEffect } from "react";
 
-interface FormData {
-  title: string;
-  episodeTitle: string;
-  description: string;
-  coverUrl: string;
-  accessType: "Free" | "PayPerRead";
-  price: number;
-  nftEnabled: boolean;
-  nftEditionSize: number;
-  nftPrice: number;
-}
+const genres = [
+  "Action & Adventure",
+  "Fantasy",
+  "Science Fiction",
+  "Romance",
+  "Horror",
+  "Mystery & Thriller",
+  "Slice of Life",
+  "Historical & Biographical",
+  "Superheroes",
+  "Suspense",
+  "Drama",
+];
 
-interface PublishingStep2Props {
+interface Step2Props {
   onNext: () => void;
   onBack: () => void;
-  setFormData: (data: FormData | ((prev: FormData) => FormData)) => void;
-  formData: FormData;
+  formData: any;
+  setFormData: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const PublishingStep2 = ({ onNext, onBack, setFormData, formData }: PublishingStep2Props) => {
-  const handleNext = () => {
-    console.log("Step 2 - Moving to next step");
+const PublishingStep2 = ({ onNext, onBack, formData, setFormData }: Step2Props) => {
+  const [selectedGenres, setSelectedGenres] = useState<string[]>(formData.genres || []);
+  const [audience, setAudience] = useState(formData.audience || "All Ages");
+  const [title, setTitle] = useState(formData.title || "");
+  const [episodeTitle, setEpisodeTitle] = useState(formData.episodeTitle || "");
+  const [description, setDescription] = useState(formData.description || "");
+
+  // 🔄 Sync with parent data when navigating back
+  useEffect(() => {
+    setTitle(formData.title || "");
+    setEpisodeTitle(formData.episodeTitle || "");
+    setDescription(formData.description || "");
+    setAudience(formData.audience || "All Ages");
+    setSelectedGenres(formData.genres || []);
+  }, [formData]);
+
+  const toggleGenre = (genre: string) => {
+    if (selectedGenres.includes(genre)) {
+      setSelectedGenres(selectedGenres.filter((g) => g !== genre));
+    } else if (selectedGenres.length < 3) {
+      setSelectedGenres([...selectedGenres, genre]);
+    }
+  };
+
+  const handleNextClick = () => {
+    setFormData({
+      ...formData,
+      title,
+      episodeTitle,
+      description,
+      genres: selectedGenres,
+      audience,
+    });
     onNext();
   };
 
   return (
     <div className="max-w-3xl w-full mx-auto px-6 pt-8 pb-12 text-white animate-fadeIn">
-      {/* Step Dots */}
-      <div className="flex justify-center gap-2 mb-8">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div
-            key={i}
-            className={`w-3 h-3 rounded-full transition-none ${
-              i + 1 === 2
-                ? "bg-secondary-300 scale-110"
-                : i + 1 < 2
-                ? "bg-secondary-300/60"
-                : "bg-white/30"
-            }`}
-          ></div>
-        ))}
-      </div>
-
-      <h3 className="text-2xl sm:text-3xl font-bold mb-6 text-center">
-        Comic Details
+      {/* Heading */}
+      <p className="text-white text-sm font-medium tracking-wide mb-2">
+            PUBLISH YOUR COMIC | STEP 2 OF 4
+          </p>
+      <h3 className="text-2xl sm:text-3xl font-bold mb-2 text-center">
+        Tell the world about your story
       </h3>
+      <p className="text-white/60 text-center mb-8">
+        Help readers discover your comic. The more details, the better!
+      </p>
 
-      <div className="flex justify-center mb-8">
-        <Image
-          src="/dev_images/mobile-progress-2.png"
-          alt="Comic Details"
-          width={400}
-          height={300}
-          className="rounded-2xl w-full max-w-lg h-auto border border-white/20 shadow-lg"
+      {/* Form Fields */}
+      <div className="space-y-6">
+        <input
+          type="text"
+          placeholder="Comic Series Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="w-full p-4 rounded-xl bg-black/40 border border-white/20 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500"
         />
-      </div>
+        <input
+          type="text"
+          placeholder="Episode Title"
+          value={episodeTitle}
+          onChange={(e) => setEpisodeTitle(e.target.value)}
+          className="w-full p-4 rounded-xl bg-black/40 border border-white/20 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500"
+        />
+        <textarea
+          rows={3}
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="w-full p-4 rounded-xl bg-black/40 border border-white/20 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500"
+        ></textarea>
 
-      <div className="space-y-6 mb-8">
+        {/* Genre Selector */}
         <div>
-          <label className="block text-sm font-medium mb-2 text-white">Comic Title</label>
-          <input
-            type="text"
-            value={formData.title}
-            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-            placeholder="Enter your comic title"
-            className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:outline-none focus:border-secondary-300 text-white placeholder:text-white/50"
-          />
+          <label className="block text-white font-medium mb-2">
+            Select up to 3 genres
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {genres.map((genre) => (
+              <button
+                key={genre}
+                type="button"
+                onClick={() => toggleGenre(genre)}
+                className={`px-4 py-2 rounded-full text-sm border transition ${
+                  selectedGenres.includes(genre)
+                    ? "bg-orange-500 text-black border-orange-500"
+                    : "bg-black/40 text-white/70 border border-white/20 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                {genre}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div>
@@ -81,23 +128,12 @@ const PublishingStep2 = ({ onNext, onBack, setFormData, formData }: PublishingSt
             className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:outline-none focus:border-secondary-300 text-white placeholder:text-white/50"
           />
         </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2 text-white">Description</label>
-          <textarea
-            value={formData.description}
-            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            placeholder="Describe your comic..."
-            rows={4}
-            className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:outline-none focus:border-secondary-300 text-white placeholder:text-white/50 resize-none"
-          />
-        </div>
       </div>
 
       <div className="flex justify-center gap-4">
         <button
-          onClick={onBack}
-          className="px-8 py-3 bg-transparent text-white/70 font-medium rounded-lg border border-white/20 transition-none"
+          onClick={handleNextClick}
+          className="w-full bg-orange-500 hover:bg-orange-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition text-lg"
         >
           Back
         </button>

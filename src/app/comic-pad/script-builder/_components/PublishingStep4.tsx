@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 
 interface FormData {
@@ -21,9 +21,11 @@ interface PublishingStep4Props {
 }
 
 const PublishingStep4 = ({ onPublish, onBack, formData }: PublishingStep4Props) => {
+  const [showModal, setShowModal] = useState(false);
+
   const handlePublish = () => {
-    console.log("Publishing comic with data:", formData);
-    onPublish();
+    onPublish(); // backend logic
+    setShowModal(true); // open success modal
   };
 
   return (
@@ -81,29 +83,29 @@ const PublishingStep4 = ({ onPublish, onBack, formData }: PublishingStep4Props) 
             </p>
             {formData.accessType === "PayPerRead" && (
               <p>
-                <strong>Price:</strong> Pay-Per-Read ({formData.price} QUIV)
+                <strong>Reading Access:</strong> Pay-Per-Read ({formData.price} USDT)
               </p>
             )}
             {formData.nftEnabled && (
               <p>
-                <strong>NFT Edition:</strong> Yes · Size:{" "}
-                {formData.nftEditionSize} · Mint Price: {formData.nftPrice} QUIV
+                <strong>NFT Edition:</strong> Yes · Size: {formData.nftEditionSize} · Mint Price:{" "}
+                {formData.nftPrice} USDT
               </p>
             )}
           </div>
         </div>
       </div>
 
-      <p className="text-white/70 text-sm mb-6 text-center">
-        By clicking{" "}
-        <span className="text-secondary-300 font-semibold">PUBLISH COMIC</span>,
-        your comic will go live. This action cannot be easily undone.
+      {/* Warning */}
+      <p className="text-xs text-white/60 mb-6 text-center">
+        By clicking <span className="text-orange-400 font-semibold">PUBLISH COMIC</span>, your comic
+        will become live on the marketplace and cannot be easily undone.
       </p>
 
       <div className="flex flex-col gap-4 max-w-md mx-auto">
         <button
           onClick={handlePublish}
-          className="w-full bg-secondary-300 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition-none text-lg"
+          className="w-full bg-orange-500 hover:bg-orange-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition text-lg"
         >
           Publish Comic
         </button>
@@ -115,6 +117,51 @@ const PublishingStep4 = ({ onPublish, onBack, formData }: PublishingStep4Props) 
           Back
         </button>
       </div>
+
+      {/* Success Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fadeIn">
+          <div className="bg-neutral-900 rounded-2xl p-6 w-[420px] shadow-xl text-center">
+            {/* Logo / Brand */}
+            <div className="flex justify-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center text-white font-bold">
+                Q
+              </div>
+            </div>
+
+            {/* Cover Image */}
+            <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
+              <Image
+                src={formData.coverUrl || "/dev_images/placeholder.png"}
+                alt="Comic Cover"
+                fill
+                className="object-cover"
+              />
+            </div>
+
+            {/* Message */}
+            <h2 className="text-lg sm:text-xl font-semibold text-white mb-6">
+              Your comic <span className="text-orange-400">“{formData.title}”</span> is LIVE!
+            </h2>
+
+            {/* Buttons */}
+            <div className="space-y-3">
+              <button
+                onClick={() => alert("Redirect to comic page")}
+                className="w-full py-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-medium transition"
+              >
+                View comic
+              </button>
+              <button
+                onClick={() => alert("Share comic")}
+                className="w-full py-3 rounded-lg border border-gray-700 text-white hover:bg-gray-800 transition"
+              >
+                Share comic
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

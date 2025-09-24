@@ -1,19 +1,20 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import CreateComicCard from "./CreateComicCard";
 import { avatarImg, envelopeImg, toolOne } from "../../../../public/dev_images";
+import UploadModal from "../upload-comics/_components/UploadModal";
 
 const StartNewComicFast = () => {
 	const router = useRouter();
+	const [showUploadModal, setShowUploadModal] = useState(false);
 
 	const handleStartNewProject = () => {
 		router.push("/comic-pad/script-builder");
 	};
 
 	const handleUploadFiles = () => {
-		// TODO: Implement file upload functionality
-		console.log("Upload files clicked");
+		setShowUploadModal(true); // 🔥 open modal
 	};
 
 	return (
@@ -35,6 +36,9 @@ const StartNewComicFast = () => {
 					onClick={handleUploadFiles}
 				/>
 			</div>
+
+			{/* Upload Modal */}
+      {showUploadModal && <UploadModal onClose={() => setShowUploadModal(false)} />}
 		</div>
 	);
 };
