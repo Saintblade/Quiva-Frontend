@@ -52,7 +52,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 		onSubmit: async (values) => {
 			setEmailValue(values.email);
 			try {
-				await dispatch(sendOtpEmail({ email: values.email })).unwrap();
+				await dispatch(sendOtpEmail({ email: values.email } as any)).unwrap();
 			} catch (error) {
 				console.error('Failed to send OTP:', error);
 			}
@@ -66,7 +66,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 		// If form has email value, submit it
 		if (emailValue.trim()) {
 			try {
-				await dispatch(sendOtpEmail({ email: emailValue })).unwrap();
+				await dispatch(sendOtpEmail({ email: emailValue } as any)).unwrap();
 			} catch (error) {
 				console.error('Failed to send OTP:', error);
 			}
@@ -83,7 +83,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 				const response = await dispatch(verifyOtpEmail({ 
 					email: sentEmail || emailValue, 
 					code: otp 
-				})).unwrap();
+				} as any)).unwrap();
 				console.log('OTP verification response:', response);
 			} catch (error) {
 				console.error('Failed to verify OTP:', error);
@@ -95,7 +95,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 	const handleResendOtp = async () => {
 		if (sentEmail || emailValue) {
 			try {
-				await dispatch(sendOtpEmail({ email: sentEmail || emailValue })).unwrap();
+				await dispatch(sendOtpEmail({ email: sentEmail || emailValue } as any)).unwrap();
 			} catch (error) {
 				console.error('Failed to resend OTP:', error);
 			}
