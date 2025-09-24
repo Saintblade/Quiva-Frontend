@@ -160,7 +160,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 
 					{/* Email Notice */}
 					<p className='text-center text-sm text-white/80 mb-6'>
-						We've sent a verification code to <br />
+						We&apos;ve sent a verification code to <br />
 						<span className='font-semibold text-white'>
 							{sentEmail || emailValue}
 						</span>
@@ -201,7 +201,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 
 					{/* Resend Code */}
 					<p className='text-center text-xs text-white/60'>
-						Didn't receive a code? Check spam or <br />
+						Didn&apos;t receive a code? Check spam or <br />
 						<button 
 							className='hover:text-primary-100 font-medium hover:underline transition-[.3] underline-offset-4 disabled:opacity-50'
 							onClick={handleResendOtp}
