@@ -11,6 +11,7 @@ import {
 } from "../../../../public/dev_images";
 import { motion } from "framer-motion";
 import Picture from "@/components/picture/Index";
+// import { RainbowConnect } from "@/components/modals/ConnectWalletModal";
 
 const Hero = () => {
 	return (
@@ -42,6 +43,7 @@ const Hero = () => {
 						<SecondaryAnchorButton href={`${process.env.NEXT_LOCAL_WEBSITE_URL || 'https://quiva.app'}/waitlist`} className='bg-transparent capitalize'>
 							join creators Waitlist 
 						</SecondaryAnchorButton>
+						{/* <RainbowConnect /> */}
 					</div>
 				</div>
 				<div className='col-span-4 mt-5 lg:mt-0 lg:grid place-items-center'>

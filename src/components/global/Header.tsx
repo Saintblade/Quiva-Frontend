@@ -1,5 +1,5 @@
 "use client";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { QuivaLogo } from "../utils/function";
 import { MainButton } from "../button";
@@ -15,6 +15,8 @@ import UserProfileFlowModal from "../modals/UserProfile/UserProfileFlowModal";
 const Header = () => {
 	const [search, setSearch] = useState("");
 	const [isScrolled, setIsScrolled] = useState(false);
+	const [modalPage, setModalPage] = useState<string | null>(null);
+	const searchParams = useSearchParams();
 	const pathname = usePathname();
 	const router = useRouter();
 
@@ -60,6 +62,18 @@ const Header = () => {
 		window.addEventListener("scroll", handleScroll);
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
+
+useEffect(() => {
+		if(searchParams.get("modal")){
+			if (searchParams.get("modal") === "whitepaper") {
+				setModalPage("whitepaper");
+			}
+			if (searchParams.get("modal") === "otp") {
+				setModalPage("otp");
+			}
+			onOpenWhitePaper();
+		}
+	}, [searchParams]);
 
 	const handleSearch = () => {
 		if (pathname === "/search") {
@@ -192,7 +206,12 @@ const Header = () => {
 				backdrop='blur'
 				size='xl'
 			>
-				<WhitePaperModal onClose={onCloseWhitePaper} onLoginSuccess={handleLoginSuccess} />
+				<WhitePaperModal 
+				onClose={onCloseWhitePaper}
+				//  onLoginSuccess={handleLoginSuccess} 
+				 modalPage={modalPage}
+				 setModalPage={setModalPage}
+				 />
 			</GeneralModal>
 
 			{/* User Profile Flow Modal */}

@@ -1,86 +1,65 @@
 "use client";
 import React from "react";
-import { ArrowLeft, HelpCircle } from "lucide-react";
-import Image from "next/image";
+import { X, Wallet } from "lucide-react";
+// import { CustomConnectButton } from "@/providers/WalletProvider";
 
-type Props = {
-  onBack?: () => void;
-  onSelectWallet?: (wallet: string) => void;
-};
+interface SelectWalletModalProps {
+  onClose: () => void;
+}
 
-const ConnectWalletModal = ({ onBack, onSelectWallet }: Props) => {
-  const wallets = [
-    { name: "Phantom", tag: "Popular", logo: "/phantom.png" },
-    { name: "MetaMask", tag: "Recommend", logo: "/metamask.png" },
-    { name: "Trust Wallet", logo: "/trust.png" },
-    { name: "Wallet Connect", logo: "/walletconnect.png" },
-  ];
-
+const SelectWalletModal = ({ onClose }: SelectWalletModalProps) => {
   return (
-    <div className="max-w-4xl w-full mx-auto px-4 sm:px-6 pt-6 pb-10 text-white">
-      {/* Header */}
-      <div className="flex items-center justify-center relative mb-6">
-        {/* Back Arrow */}
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-zinc-950 border border-white/20 rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+        {/* Close button */}
         <button
-          onClick={onBack}
-          className="absolute left-0 p-2 text-white hover:text-gray-300"
+          onClick={onClose}
+          className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors"
         >
-          <ArrowLeft size={22} />
+          <X size={20} />
         </button>
 
-        {/* Title + Help */}
-        <h3 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-          Select your wallet
-        </h3>
+        {/* Header */}
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Wallet size={32} className="text-black" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">
+            Connect Wallet
+          </h2>
+          <p className="text-white/70">
+            Connect your wallet to access all Quiva features
+          </p>
+        </div>
 
-        <HelpCircle
-          size={20}
-          className="absolute right-0 text-white/70 cursor-pointer"
-        />
+        {/* Wallet Connection */}
+        <div className="space-y-4">
+          {/* <CustomConnectButton /> */}
+
+          <div className="text-center">
+            <p className="text-white/50 text-sm">
+              By connecting, you agree to our{" "}
+              <a
+                href="/terms"
+                className="text-secondary-300 hover:underline"
+              >
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a
+                href="/privacy"
+                className="text-secondary-300 hover:underline"
+              >
+                Privacy Policy
+              </a>
+            </p>
+          </div>
+        </div>
       </div>
-
-      {/* Wallet Options */}
-      <div className="grid gap-4 mb-8">
-        {wallets.map((wallet) => (
-          <button
-            key={wallet.name}
-            onClick={() => onSelectWallet?.(wallet.name)}
-            className="flex items-center justify-between border border-white/20 bg-white/5 hover:bg-white/10 transition rounded-xl px-4 py-3 sm:px-6 sm:py-4"
-          >
-            <div className="flex items-center gap-3">
-              <Image
-                src={wallet.logo}
-                alt={wallet.name}
-                width={40}
-                height={40}
-                className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
-              />
-              <span className="font-semibold text-lg">{wallet.name}</span>
-            </div>
-            {wallet.tag && (
-              <span className="text-xs sm:text-sm px-3 py-1 rounded-full bg-yellow-500 text-black font-bold">
-                {wallet.tag}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Disclaimer */}
-      <p className="text-center text-white/60 text-xs sm:text-sm leading-relaxed">
-        If you have not logged in before, you will create a new Quiva account.
-        By proceeding, you agree to our{" "}
-        <span className="font-bold cursor-pointer hover:underline">
-          Terms of Service
-        </span>{" "}
-        &{" "}
-        <span className="font-bold cursor-pointer hover:underline">
-          Privacy Policy
-        </span>
-        .
-      </p>
     </div>
   );
 };
 
-export default ConnectWalletModal;
+export default SelectWalletModal;
+
+

@@ -1,120 +1,173 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
+import Image from "next/image";
+
+interface FormData {
+  title: string;
+  episodeTitle: string;
+  description: string;
+  coverUrl: string;
+  accessType: "Free" | "PayPerRead";
+  price: number;
+  nftEnabled: boolean;
+  nftEditionSize: number;
+  nftPrice: number;
+}
 
 interface PublishingStep3Props {
   onNext: () => void;
   onBack: () => void;
+  setFormData: (data: FormData | ((prev: FormData) => FormData)) => void;
+  formData: FormData;
 }
 
-const PublishingStep3 = ({ onNext, onBack }: PublishingStep3Props) => {
-  const [readingAccess, setReadingAccess] = useState("free");
-  const [usdtAmount, setUsdtAmount] = useState("");
-  const [mintAsNFT, setMintAsNFT] = useState(false);
-  const [copies, setCopies] = useState("");
-  const [price, setPrice] = useState("");
+const PublishingStep3 = ({ onNext, onBack, setFormData, formData }: PublishingStep3Props) => {
+  const handleNext = () => {
+    console.log("Step 3 - Moving to next step");
+    onNext();
+  };
 
   return (
-    <div className="max-w-2xl w-full mx-auto px-6 pt-8 pb-12 text-white animate-fadeIn">
-      <div className="text-center mb-8">
-        <h3 className="text-sm uppercase tracking-wider text-white/60 mb-2">
-          Publish Your Comic: Step 3 of 4
-        </h3>
-        <h2 className="text-2xl sm:text-3xl font-bold mb-2">
-          Choose your path to prosperity
-        </h2>
-        <p className="text-white/60 text-sm sm:text-base">
-          Decide how you want to share and potentially earn from your comic.
-        </p>
+    <div className="max-w-3xl w-full mx-auto px-6 pt-8 pb-12 text-white animate-fadeIn">
+      {/* Step Dots */}
+      <div className="flex justify-center gap-2 mb-8">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className={`w-3 h-3 rounded-full transition-none ${
+              i + 1 === 3
+                ? "bg-secondary-300 scale-110"
+                : i + 1 < 3
+                ? "bg-secondary-300/60"
+                : "bg-white/30"
+            }`}
+          ></div>
+        ))}
       </div>
 
-      {/* Reading Access */}
-      <div className="mb-8">
-        <h4 className="font-semibold mb-3">Reading Access</h4>
-        <div className="flex items-center gap-6 mb-4">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="access"
-              value="free"
-              checked={readingAccess === "free"}
-              onChange={() => setReadingAccess("free")}
-              className="accent-orange-500"
-            />
-            <span>Free to read</span>
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="access"
-              value="paid"
-              checked={readingAccess === "paid"}
-              onChange={() => setReadingAccess("paid")}
-              className="accent-orange-500"
-            />
-            <span>Pay Per Read 💰</span>
-          </label>
+      <h3 className="text-2xl sm:text-3xl font-bold mb-6 text-center">
+        Pricing & Access
+      </h3>
+
+      <div className="flex justify-center mb-8">
+        <Image
+          src="/dev_images/mobile-progress-3.png"
+          alt="Pricing & Access"
+          width={400}
+          height={300}
+          className="rounded-2xl w-full max-w-lg h-auto border border-white/20 shadow-lg"
+        />
+      </div>
+
+      <div className="space-y-6 mb-8">
+        <div>
+          <label className="block text-sm font-medium mb-4 text-white">Access Type</label>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setFormData(prev => ({ ...prev, accessType: "Free" }))}
+              className={`flex-1 py-3 px-4 rounded-lg border transition-none ${
+                formData.accessType === "Free"
+                  ? "bg-secondary-300 text-black border-secondary-300"
+                  : "bg-white/5 text-white border-white/20"
+              }`}
+            >
+              Free
+            </button>
+            <button
+              onClick={() => setFormData(prev => ({ ...prev, accessType: "PayPerRead" }))}
+              className={`flex-1 py-3 px-4 rounded-lg border transition-none ${
+                formData.accessType === "PayPerRead"
+                  ? "bg-secondary-300 text-black border-secondary-300"
+                  : "bg-white/5 text-white border-white/20"
+              }`}
+            >
+              Pay Per Read
+            </button>
+          </div>
         </div>
 
-        {readingAccess === "paid" && (
-          <input
-            type="number"
-            placeholder="Enter USDT amount"
-            value={usdtAmount}
-            onChange={(e) => setUsdtAmount(e.target.value)}
-            className="w-full p-3 rounded-xl bg-black/40 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-orange-500 mb-4"
-          />
+        {formData.accessType === "PayPerRead" && (
+          <div>
+            <label className="block text-sm font-medium mb-2 text-white">Price (QUIV)</label>
+            <input
+              type="number"
+              value={formData.price}
+              onChange={(e) => setFormData(prev => ({ ...prev, price: Number(e.target.value) }))}
+              placeholder="Enter price"
+              min="0"
+              step="0.01"
+              className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:outline-none focus:border-secondary-300 text-white placeholder:text-white/50"
+            />
+          </div>
         )}
-      </div>
 
-      {/* NFT Option */}
-      <div className="mb-8">
-        <h4 className="font-semibold mb-3">
-          Turn Your Comic into a Collectible NFT!
-        </h4>
-        <label className="flex items-center gap-2 mb-4 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={mintAsNFT}
-            onChange={() => setMintAsNFT(!mintAsNFT)}
-            className="accent-orange-500"
-          />
-          <span>Mint this comic episode as a limited NFT Edition.</span>
-        </label>
+        <div>
+          <label className="block text-sm font-medium mb-4 text-white">NFT Edition (Optional)</label>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setFormData(prev => ({ ...prev, nftEnabled: false }))}
+              className={`flex-1 py-3 px-4 rounded-lg border transition-none ${
+                !formData.nftEnabled
+                  ? "bg-secondary-300 text-black border-secondary-300"
+                  : "bg-white/5 text-white border-white/20"
+              }`}
+            >
+              No NFT
+            </button>
+            <button
+              onClick={() => setFormData(prev => ({ ...prev, nftEnabled: true }))}
+              className={`flex-1 py-3 px-4 rounded-lg border transition-none ${
+                formData.nftEnabled
+                  ? "bg-secondary-300 text-black border-secondary-300"
+                  : "bg-white/5 text-white border-white/20"
+              }`}
+            >
+              Enable NFT
+            </button>
+          </div>
+        </div>
 
-        {mintAsNFT && (
-          <div className="space-y-4">
-            <input
-              type="number"
-              placeholder="How many copies?"
-              value={copies}
-              onChange={(e) => setCopies(e.target.value)}
-              className="w-full p-3 rounded-xl bg-black/40 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-orange-500"
-            />
-            <input
-              type="number"
-              placeholder="Mint price (USDT per NFT)"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              className="w-full p-3 rounded-xl bg-black/40 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-orange-500"
-            />
+        {formData.nftEnabled && (
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2 text-white">Edition Size</label>
+              <input
+                type="number"
+                value={formData.nftEditionSize}
+                onChange={(e) => setFormData(prev => ({ ...prev, nftEditionSize: Number(e.target.value) }))}
+                placeholder="100"
+                min="1"
+                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:outline-none focus:border-secondary-300 text-white placeholder:text-white/50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-white">Mint Price (QUIV)</label>
+              <input
+                type="number"
+                value={formData.nftPrice}
+                onChange={(e) => setFormData(prev => ({ ...prev, nftPrice: Number(e.target.value) }))}
+                placeholder="0.1"
+                min="0"
+                step="0.01"
+                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:outline-none focus:border-secondary-300 text-white placeholder:text-white/50"
+              />
+            </div>
           </div>
         )}
       </div>
 
-      {/* Actions */}
-      <div className="flex flex-col gap-4 max-w-sm mx-auto">
-        <button
-          onClick={onNext}
-          className="w-full bg-orange-500 hover:bg-orange-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition text-lg"
-        >
-          Next
-        </button>
-
+      <div className="flex justify-center gap-4">
         <button
           onClick={onBack}
-          className="w-full bg-transparent hover:bg-white/10 text-white/70 hover:text-white font-medium py-4 px-8 rounded-2xl border border-white/20 transition"
+          className="px-8 py-3 bg-transparent text-white/70 font-medium rounded-lg border border-white/20 transition-none"
         >
-          Go back
+          Back
+        </button>
+        <button
+          onClick={handleNext}
+          className="px-8 py-3 bg-secondary-300 text-black font-bold rounded-lg transition-none"
+        >
+          Next
         </button>
       </div>
     </div>

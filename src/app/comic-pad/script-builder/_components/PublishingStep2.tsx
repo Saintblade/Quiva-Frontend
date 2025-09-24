@@ -1,137 +1,111 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
+import Image from "next/image";
 
-const genres = [
-  "Action & Adventure",
-  "Fantasy",
-  "Science Fiction",
-  "Romance",
-  "Horror",
-  "Mystery & Thriller",
-  "Slice of Life",
-  "Historical & Biographical",
-  "Superheroes",
-  "Suspense",
-  "Drama",
-];
+interface FormData {
+  title: string;
+  episodeTitle: string;
+  description: string;
+  coverUrl: string;
+  accessType: "Free" | "PayPerRead";
+  price: number;
+  nftEnabled: boolean;
+  nftEditionSize: number;
+  nftPrice: number;
+}
 
-const PublishingStep2 = ({ onNext, onBack }: { onNext: () => void; onBack: () => void }) => {
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-  const [audience, setAudience] = useState("All Ages");
+interface PublishingStep2Props {
+  onNext: () => void;
+  onBack: () => void;
+  setFormData: (data: FormData | ((prev: FormData) => FormData)) => void;
+  formData: FormData;
+}
 
-  const toggleGenre = (genre: string) => {
-    if (selectedGenres.includes(genre)) {
-      setSelectedGenres(selectedGenres.filter((g) => g !== genre));
-    } else if (selectedGenres.length < 3) {
-      setSelectedGenres([...selectedGenres, genre]);
-    }
+const PublishingStep2 = ({ onNext, onBack, setFormData, formData }: PublishingStep2Props) => {
+  const handleNext = () => {
+    console.log("Step 2 - Moving to next step");
+    onNext();
   };
 
   return (
     <div className="max-w-3xl w-full mx-auto px-6 pt-8 pb-12 text-white animate-fadeIn">
-      {/* Heading */}
-      <h3 className="text-2xl sm:text-3xl font-bold mb-2 text-center">
-        Tell the world about your story
+      {/* Step Dots */}
+      <div className="flex justify-center gap-2 mb-8">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className={`w-3 h-3 rounded-full transition-none ${
+              i + 1 === 2
+                ? "bg-secondary-300 scale-110"
+                : i + 1 < 2
+                ? "bg-secondary-300/60"
+                : "bg-white/30"
+            }`}
+          ></div>
+        ))}
+      </div>
+
+      <h3 className="text-2xl sm:text-3xl font-bold mb-6 text-center">
+        Comic Details
       </h3>
-      <p className="text-white/60 text-center mb-8">
-        Help readers discover your comic. The more details, the better!
-      </p>
 
-      {/* Form Fields */}
-      <div className="space-y-6">
-        <input
-          type="text"
-          placeholder="Comic Series Title"
-          className="w-full p-4 rounded-xl bg-black/40 border border-white/20 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500"
+      <div className="flex justify-center mb-8">
+        <Image
+          src="/dev_images/mobile-progress-2.png"
+          alt="Comic Details"
+          width={400}
+          height={300}
+          className="rounded-2xl w-full max-w-lg h-auto border border-white/20 shadow-lg"
         />
-        <input
-          type="text"
-          placeholder="Episode Title"
-          className="w-full p-4 rounded-xl bg-black/40 border border-white/20 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500"
-        />
-        <textarea
-          rows={3}
-          placeholder="Description"
-          className="w-full p-4 rounded-xl bg-black/40 border border-white/20 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500"
-        ></textarea>
+      </div>
 
-        {/* Genre Selector */}
+      <div className="space-y-6 mb-8">
         <div>
-          <label className="block text-white font-medium mb-2">
-            Select up to 3 genres
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {genres.map((genre) => (
-              <button
-                key={genre}
-                type="button"
-                onClick={() => toggleGenre(genre)}
-                className={`px-4 py-2 rounded-full text-sm border transition ${
-                  selectedGenres.includes(genre)
-                    ? "bg-orange-500 text-black border-orange-500"
-                    : "bg-black/40 text-white/70 border border-white/20 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                {genre}
-              </button>
-            ))}
-          </div>
+          <label className="block text-sm font-medium mb-2 text-white">Comic Title</label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+            placeholder="Enter your comic title"
+            className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:outline-none focus:border-secondary-300 text-white placeholder:text-white/50"
+          />
         </div>
 
-        {/* Audience Selector */}
         <div>
-          <label className="block text-white font-medium mb-2">
-            Who is this comic for?
-          </label>
-          <div className="flex gap-6">
-            {["All Ages", "Teen (13+)", "Mature (18+)"].map((option) => (
-              <label key={option} className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="audience"
-                  value={option}
-                  checked={audience === option}
-                  onChange={() => setAudience(option)}
-                  className="accent-orange-500"
-                />
-                <span className="text-white/80">{option}</span>
-              </label>
-            ))}
-          </div>
+          <label className="block text-sm font-medium mb-2 text-white">Episode Title</label>
+          <input
+            type="text"
+            value={formData.episodeTitle}
+            onChange={(e) => setFormData(prev => ({ ...prev, episodeTitle: e.target.value }))}
+            placeholder="Enter episode title"
+            className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:outline-none focus:border-secondary-300 text-white placeholder:text-white/50"
+          />
         </div>
 
-        {/* Cover + Thumbnail Upload */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="border-2 border-dashed border-white/20 rounded-xl p-6 flex flex-col items-center justify-center bg-black/40 hover:border-orange-500 transition cursor-pointer">
-            <span className="text-white/70 mb-2">Cover Art</span>
-            <input type="file" className="hidden" />
-            <button className="px-4 py-2 bg-orange-500 text-black font-medium rounded-lg hover:bg-orange-400 transition">
-              Choose File
-            </button>
-          </div>
-          <div className="border-2 border-dashed border-white/20 rounded-xl p-6 flex flex-col items-center justify-center bg-black/40 hover:border-orange-500 transition cursor-pointer">
-            <span className="text-white/70 mb-2">Thumbnail</span>
-            <input type="file" className="hidden" />
-            <button className="px-4 py-2 bg-orange-500 text-black font-medium rounded-lg hover:bg-orange-400 transition">
-              Choose File
-            </button>
-          </div>
+        <div>
+          <label className="block text-sm font-medium mb-2 text-white">Description</label>
+          <textarea
+            value={formData.description}
+            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            placeholder="Describe your comic..."
+            rows={4}
+            className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:outline-none focus:border-secondary-300 text-white placeholder:text-white/50 resize-none"
+          />
         </div>
       </div>
 
-      {/* Buttons */}
-      <div className="flex flex-col gap-4 max-w-md mx-auto mt-10">
-        <button
-          onClick={onNext}
-          className="w-full bg-orange-500 hover:bg-orange-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition text-lg"
-        >
-          Next
-        </button>
+      <div className="flex justify-center gap-4">
         <button
           onClick={onBack}
-          className="w-full bg-transparent hover:bg-white/10 text-white/70 hover:text-white py-4 px-8 rounded-2xl border border-white/20 transition"
+          className="px-8 py-3 bg-transparent text-white/70 font-medium rounded-lg border border-white/20 transition-none"
         >
-          Go back
+          Back
+        </button>
+        <button
+          onClick={handleNext}
+          className="px-8 py-3 bg-secondary-300 text-black font-bold rounded-lg transition-none"
+        >
+          Next
         </button>
       </div>
     </div>

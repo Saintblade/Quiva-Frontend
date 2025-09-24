@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MainButton, MainButton2 } from "../button";
 import TextInput from "../TextAreaInput/TextInput";
 import { Form, FormikProvider, useFormik } from "formik";
@@ -11,322 +11,284 @@ import Picture from "../picture/Index";
 import { FaArrowLeft } from "react-icons/fa";
 import { HiEnvelope } from "react-icons/hi2";
 import { InputOtp } from "@heroui/react";
+import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { sendOtpEmail, verifyOtpEmail, resetOtpStates, clearErrors } from "@/redux/slices/authSlice";
 
 interface WhitePaperModalProps {
 	onClose: () => void;
-	onLoginSuccess?: () => void;
+	modalPage: string | null;
+	setModalPage: (page: string | null) => void;
 }
 
 interface LoginFormValues {
 	email: string;
-	password: string;
 }
 
-const WhitePaperModal = ({ onClose, onLoginSuccess }: WhitePaperModalProps) => {
-	const [showPassword, setShowPassword] = useState(false);
-	const [isLogIn, setIsLogIn] = useState(false);
-	const [isRegister, setIsRegister] = useState(false);
+const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalProps) => {
 	const [isVerificationCode, setIsVerificationCode] = useState(false);
-	const [isVerifying, setIsVerifying] = useState(false);
 	const [otpValue, setOtpValue] = useState("");
+	const [emailValue, setEmailValue] = useState("");
+	
+	const router = useRouter();
+	const dispatch = useAppDispatch();
+	
+	// Redux state selectors
+	const { 
+		sendOtp: { isLoading: isSendingOtp, error: sendOtpError, success: sendOtpSuccess, email: sentEmail },
+		verifyOtp: { isLoading: isVerifyingOtp, error: verifyOtpError, success: verifyOtpSuccess },
+		user: { isAuthenticated }
+	} = useAppSelector((state) => state.auth);
 
-	const handlePasswordVisibility = () => {
-		setShowPassword(!showPassword);
-	};
-
+	// Form validation
 	const LoginValues: LoginFormValues = {
 		email: "",
-		password: "",
 	};
-	const loginformik = useFormik({
+
+	const formik = useFormik({
 		initialValues: LoginValues,
 		validationSchema: LoginSchema,
 		enableReinitialize: true,
 		onSubmit: async (values) => {
-			console.log("value", values);
-			// TODO: Replace with actual API call
-			// Simulate login success
-			await new Promise(resolve => setTimeout(resolve, 1000));
-			onClose();
-			onLoginSuccess?.();
+			setEmailValue(values.email);
+			try {
+				await dispatch(sendOtpEmail({ email: values.email } as any)).unwrap();
+			} catch (error) {
+				console.error('Failed to send OTP:', error);
+			}
 		},
 	});
 
-	const handleLogin = () => {
-		setIsLogIn(true);
-		setIsRegister(false);
-	};
-	const handleRegister = () => {
-		setIsLogIn(false);
-		setIsRegister(true);
-	};
-
+	// Handle email form submission
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!isVerificationCode) {
-			// Send verification code logic
-			setIsVerificationCode(true);
+		
+		// If form has email value, submit it
+		if (emailValue.trim()) {
+			try {
+				await dispatch(sendOtpEmail({ email: emailValue } as any)).unwrap();
+			} catch (error) {
+				console.error('Failed to send OTP:', error);
+			}
 		} else {
-			// Handle email verification completion
-			if (otpValue.length === 6) {
-				setIsVerifying(true);
-				// TODO: Verify OTP with API
-				await new Promise(resolve => setTimeout(resolve, 2000));
-				setIsVerifying(false);
-				onClose();
-				onLoginSuccess?.();
+			formik.handleSubmit();
+		}
+	};
+
+	// Handle OTP verification
+	const handleOtpComplete = async (otp: string) => {
+		console.log('OTP entered:', otp);
+		if (otp.length === 6) {
+			setOtpValue(otp);
+			try {
+				const response = await dispatch(verifyOtpEmail({ 
+					email: sentEmail || emailValue, 
+					code: otp 
+				} as any)).unwrap();
+				console.log('OTP verification response:', response);
+			} catch (error) {
+				console.error('Failed to verify OTP:', error);
 			}
 		}
 	};
 
+	// Handle resend OTP
+	const handleResendOtp = async () => {
+		if (sentEmail || emailValue) {
+			try {
+				await dispatch(sendOtpEmail({ email: sentEmail || emailValue } as any)).unwrap();
+			} catch (error) {
+				console.error('Failed to resend OTP:', error);
+			}
+		}
+	};
+
+	// Effect to handle OTP send success
+	useEffect(() => {
+		if (sendOtpSuccess) {
+			setIsVerificationCode(true);
+		}
+	}, [sendOtpSuccess]);
+
+	// Effect to handle OTP verification success
+	useEffect(() => {
+		if (verifyOtpSuccess && isAuthenticated) {
+			router.push("/marketplace");
+			// setModalPage("user-profile");
+			onClose(); // Close modal on success
+		}
+	}, [verifyOtpSuccess, isAuthenticated, router, onClose]);
+
+	// Effect to clear errors when modal closes
+	useEffect(() => {
+		return () => {
+			dispatch(clearErrors());
+		};
+	}, [dispatch]);
+
+	// Handle back button in verification view
+	const handleBackToEmail = () => {
+		setIsVerificationCode(false);
+		setOtpValue("");
+		dispatch(resetOtpStates());
+	};
+
 	return (
 		<>
-			{isRegister ? (
-				<div className='mx-auto px-2 pt-12 pb-10 text-white w-[90%]'>
-					<div className='space-y-2 text-center w-[80%] mx-auto'>
-						<h3 className='text-xl sm:text-2xl font-bold'>
-							Register for Quiva
+			{isVerificationCode ? (
+				<div className='w-full max-w-md mx-auto text-white py-8 sm:py-12 space-y-4 lg:space-y-8'>
+					<div className='grid grid-cols-5 items-center w-full gap-0 px-2'>
+						{/* Back Button */}
+						<div className='col-span-1'>
+							<FaArrowLeft
+								className='text-white/50 text-xl hover:text-white/90 cursor-pointer transition-[.3] hover:-translate-x-1'
+								onClick={handleBackToEmail}
+							/>
+						</div>
+
+						{/* Title */}
+						<h3 className='text-sm sm:text-xl text-center font-bold col-span-3'>
+							Confirm verification code
 						</h3>
-						<p className='text-xs sm:text-sm text-white/80'>
-							Where stories earn rewards, and every reader counts.
-						</p>
-					</div>
-				</div>
-			) : isLogIn ? (
-				<div className='mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-8 sm:pb-10 text-white w-full'>
-					{/* Header Section */}
-					<div className='space-y-2 text-center w-full sm:w-[80%] mx-auto'>
-						<h3 className='text-xl sm:text-2xl font-bold'>Log in to Quiva</h3>
-						<p className='text-xs sm:text-sm text-white/80'>
-							Where stories earn rewards, and every reader counts.
-						</p>
+						<div className='col-span-1'></div>
 					</div>
 
-					{/* Form Section */}
-					<FormikProvider value={loginformik}>
-						<Form className='space-y-4 sm:space-y-5 w-full sm:w-[80%] mt-4 sm:mt-5 mx-auto'>
-							{/* Email Field */}
-							<div className='space-y-1'>
-								<TextInput
-									id='email'
-									label='Enter your email'
-									type='text'
-									className={`w-full px-3 py-3 sm:py-3.5 text-sm sm:text-base border ${
-										loginformik.touched.email && loginformik.errors.email
-											? "border-red-500"
-											: "border-white/20"
-									} focus:border-primary-100 bg-transparent rounded-md outline-none text-white placeholder:text-white/80`}
-									placeholder='your@email.com'
-									{...loginformik.getFieldProps("email")}
-								/>
-								{loginformik.touched.email && loginformik.errors.email && (
-									<div className='text-red-400 text-xs sm:text-sm mt-1'>
-										{loginformik.errors.email}
-									</div>
-								)}
-							</div>
+					{/* Mail Icon */}
+					<div className='flex justify-center mb-4'>
+						<div className='w-12 h-12 flex items-center justify-center rounded-full bg-secondary-300/90'>
+							<HiEnvelope className='text-black-100 text-3xl' />
+						</div>
+					</div>
 
-							{/* Password Field */}
-							<div className='space-y-1'>
-								<TextInput
-									id='password'
-									label='Enter Password'
-									type={showPassword ? "text" : "password"}
-									className={`w-full px-3 py-3 sm:py-3.5 text-sm sm:text-base border ${
-										loginformik.touched.password && loginformik.errors.password
-											? "border-red-500"
-											: "border-white/20"
-									} focus:border-primary-100 bg-transparent rounded-md outline-none text-white placeholder:text-white/80`}
-									placeholder=''
-									passwordIconClassname='top-3 sm:top-3.5'
-									showPasswordIcon
-									showPassword={showPassword}
-									togglePasswordVisibility={handlePasswordVisibility}
-									{...loginformik.getFieldProps("password")}
-								/>
-								{loginformik.touched.password &&
-									loginformik.errors.password && (
-										<div className='text-red-400 text-xs sm:text-sm mt-1'>
-											{loginformik.errors.password}
-										</div>
-									)}
-							</div>
+					{/* Email Notice */}
+					<p className='text-center text-sm text-white/80 mb-6'>
+						We&apos;ve sent a verification code to <br />
+						<span className='font-semibold text-white'>
+							{sentEmail || emailValue}
+						</span>
+					</p>
 
-							{/* Submit Button */}
-							<MainButton
-								type='submit'
-								className='w-full rounded-full font-semibold py-3 sm:py-3.5 text-sm sm:text-base'
-							>
-								{loginformik.isSubmitting ? (
-									<span className='inline-flex items-center justify-center'>
-										<svg
-											className='animate-spin -ml-1 mr-2 h-4 w-4 text-white'
-											xmlns='http://www.w3.org/2000/svg'
-											fill='none'
-											viewBox='0 0 24 24'
-										>
-											<circle
-												className='opacity-25'
-												cx='12'
-												cy='12'
-												r='10'
-												stroke='currentColor'
-												strokeWidth='4'
-											></circle>
-											<path
-												className='opacity-75'
-												fill='currentColor'
-												d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
-											></path>
-										</svg>
-										Logging in...
-									</span>
-								) : (
-									"Log in"
-								)}
-							</MainButton>
-						</Form>
-					</FormikProvider>
+					{/* Error Display */}
+					{verifyOtpError && (
+						<div className='text-red-500 text-center text-sm mb-4'>
+							{typeof verifyOtpError === 'string' ? verifyOtpError : 'Failed to verify OTP. Please try again.'}
+						</div>
+					)}
 
-					{/* Sign Up Prompt */}
-					<div className='text-center text-xs sm:text-sm text-white/80 border-t border-white/10 pt-4 mt-6 w-full sm:w-[70%] mx-auto'>
-						Don&apos;t have an account?{" "}
-						<button
-							onClick={handleRegister}
-							className='text-secondary-200 font-semibold cursor-pointer underline-offset-4 hover:underline transition duration-200 focus:outline-none'
+					{/* Code Input Boxes */}
+					<InputOtp
+						length={6}
+						variant='faded'
+						size='lg'
+						color='warning'
+						className='mx-auto'
+						value={otpValue}
+						onValueChange={setOtpValue}
+						onComplete={handleOtpComplete}
+						isDisabled={isVerifyingOtp}
+						classNames={{
+							base: "gap-12",
+							input:
+								"w-12 h-14 text-center text-lg font-bold rounded-md text-white bg-black-100 border border-white/20 focus:border-secondary focus:ring-1 focus:ring-secondary placeholder:text-white/40",
+						}}
+						autoComplete='one-time-code'
+					/>
+
+					{/* Loading Indicator */}
+					{isVerifyingOtp && (
+						<div className='flex justify-center'>
+							<ImSpinner2 className='animate-spin text-white text-xl' />
+						</div>
+					)}
+
+					{/* Resend Code */}
+					<p className='text-center text-xs text-white/60'>
+						Didn&apos;t receive a code? Check spam or <br />
+						<button 
+							className='hover:text-primary-100 font-medium hover:underline transition-[.3] underline-offset-4 disabled:opacity-50'
+							onClick={handleResendOtp}
+							disabled={isSendingOtp}
 						>
-							Sign Up
+							{isSendingOtp ? 'Sending...' : 'Re-send Code'}
 						</button>
-					</div>
+					</p>
 				</div>
 			) : (
-				<>
-					{isVerificationCode ? (
-						<div className='w-full max-w-md mx-auto text-white py-8 sm:py-12 space-y-4 lg:space-y-8'>
-							<div className='grid grid-cols-5 items-center w-full gap-0 px-2'>
-								{/* Back Button */}
-								<div className='col-span-1'>
-									<FaArrowLeft
-										className='text-white/50 text-xl hover:text-white/90 cursor-pointer transition-[.3] hover:-translate-x-1'
-										onClick={() => setIsVerificationCode(false)}
-									/>
-								</div>
-
-								{/* Title */}
-								<h3 className='text-sm sm:text-xl text-center font-bold col-span-3'>
-									Confirm verification code
-								</h3>
-								<div className='col-span-1'></div>
-							</div>
-
-							{/* Mail Icon */}
-							<div className='flex justify-center mb-4'>
-								<div className='w-12 h-12 flex items-center justify-center rounded-full bg-secondary-300/90'>
-									<HiEnvelope className='text-black-100 text-3xl' />
-								</div>
-							</div>
-
-							{/* Email Notice */}
-							<p className='text-center text-sm text-white/80 mb-6'>
-								We’ve sent a verification code to <br />
-								<span className='font-semibold text-white'>
-									marysokoh4@gmail.com
-								</span>
-							</p>
-
-							{/* Code Input Boxes */}
-							<InputOtp
-								length={6}
-								variant='faded'
-								size='lg'
-								color='warning'
-								className='mx-auto'
-								// value={code}
-								// onChange={(value: any) => setCode(value)}
-								onComplete={(value: any) => {
-									if (value.length === 6) {
-										// Set OTP value and trigger verification logic
-										setOtpValue(value);
-										// Handle OTP completion directly
-										const completeOTP = async () => {
-											setIsVerifying(true);
-											// TODO: Verify OTP with API
-											await new Promise(resolve => setTimeout(resolve, 2000));
-											setIsVerifying(false);
-											onClose();
-											onLoginSuccess?.();
-										};
-										completeOTP();
-									}
-								}}
-								classNames={{
-									base: "gap-12",
-									input:
-										"w-12 h-14 text-center text-lg font-bold rounded-md text-white bg-black-100 border border-white/20 focus:border-secondary focus:ring-1 focus:ring-secondary placeholder:text-white/40",
-								}}
-								autoComplete='one-time-code'
-							/>
-
-							{/* Resend Code */}
-							<p className='text-center text-xs text-white/60'>
-								Didn’t receive a code? Check spam or <br />
-								<button className='hover:text-primary-100 font-medium hover:underline transition-[.3] underline-offset-4'>
-									Re-send Code
-								</button>
-							</p>
+				<FormikProvider value={formik}>
+					<Form className='w-full mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8 text-white'>
+						{/* Welcome Header */}
+						<div className='space-y-2 text-center w-full sm:w-[80%] mx-auto'>
+							<h3 className='text-lg sm:text-2xl font-bold'>
+								Login or Sign up
+							</h3>
 						</div>
-					) : (
-						<form
-							onSubmit={handleSubmit}
-							className='w-full mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8 text-white'
-						>
-							{/* Welcome Header */}
-							<div className='space-y-2 text-center w-full sm:w-[80%] mx-auto'>
-								<h3 className='text-lg sm:text-2xl font-bold'>
-									Login or Sign up
-								</h3>
-							</div>
 
-							{/* Email Input */}
-							<div className='mt-6 relative flex items-center'>
-								<input
-									type='email'
-									placeholder='Enter your email'
-									className='w-full px-3 py-4 lg:py-6 text-white/90 bg-gray-300 rounded-md hover:border-primary-100 focus:border-primary-100 focus:outline-none transition-colors duration-200 placeholder:text-white/70 text-base'
-									onSubmit={() => handleSubmit}
-								/>
+						{/* Error Display */}
+						{sendOtpError && (
+							<div className='text-red-500 text-center text-sm'>
+								{typeof sendOtpError === 'string' ? sendOtpError : 'Failed to send OTP. Please try again.'}
+							</div>
+						)}
+
+						{/* Email Input */}
+						<div className='mt-6 relative flex items-center'>
+							<input
+								type='email'
+								name='email'
+								placeholder='Enter your email'
+								value={formik.values.email}
+								onChange={(e) => {
+									formik.handleChange(e);
+									setEmailValue(e.target.value);
+								}}
+								onBlur={formik.handleBlur}
+								className='w-full px-3 py-4 lg:py-6 text-white/90 bg-gray-300 rounded-md hover:border-primary-100 focus:border-primary-100 focus:outline-none transition-colors duration-200 placeholder:text-white/70 text-base'
+								disabled={isSendingOtp}
+							/>
+							
+							{isSendingOtp ? (
+								<ImSpinner2 className='absolute text-2xl text-white/70 right-3 animate-spin' />
+							) : (
 								<FaCircleRight
-									className='absolute text-2xl lg:text-3xl text-white/70 right-3 cursor-pointer'
+									className='absolute text-2xl lg:text-3xl text-white/70 right-3 cursor-pointer hover:text-white transition-colors'
 									onClick={handleSubmit}
 								/>
+							)}
+						</div>
+
+						{/* Form Validation Error */}
+						{formik.touched.email && formik.errors.email && (
+							<div className='text-red-500 text-sm mt-1'>
+								{formik.errors.email}
 							</div>
+						)}
 
-							{/* Divider with "Or" */}
-							<div className='relative text-center my-6'>
-								<div className='w-full h-px bg-white/10' />
-								<span className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black-500 font-semibold px-3 text-xs sm:text-sm text-white/70'>
-									Or
-								</span>
-							</div>
+						{/* Divider with "Or" */}
+						<div className='relative text-center my-6'>
+							<div className='w-full h-px bg-white/10' />
+							<span className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black-500 font-semibold px-3 text-xs sm:text-sm text-white/70'>
+								Or
+							</span>
+						</div>
 
-							{/* Connect Wallet Button */}
-
+						{/* Connect Wallet Button */}
+						<div className='cursor-pointer hover:opacity-80 transition-opacity'>
 							<Picture
 								src={walletImg}
-								alt='home bg'
+								alt='Connect Wallet'
 								loading='eager'
 								className='w-full sm:h-full object-cover lg:object-fill grayscale'
 							/>
+						</div>
 
-							{/* Terms */}
-							<h4 className='text-white/60 text-center text-xs sm:text-sm mt-6 leading-relaxed'>
-								If you have not logged in before, you will create a new Quiva
-								account. By proceeding, you agree to our <br />
-								<b className='text-white'>Terms of Service & Privacy Policy.</b>
-							</h4>
-						</form>
-					)}
-				</>
+						{/* Terms */}
+						<h4 className='text-white/60 text-center text-xs sm:text-sm mt-6 leading-relaxed'>
+							If you have not logged in before, you will create a new Quiva
+							account. By proceeding, you agree to our <br />
+							<b className='text-white'>Terms of Service & Privacy Policy.</b>
+						</h4>
+					</Form>
+				</FormikProvider>
 			)}
 		</>
 	);

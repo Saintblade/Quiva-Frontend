@@ -12,6 +12,7 @@ interface AppLayoutProps {
 const AppLayout = ({ children, bgClassName, className }: AppLayoutProps) => {
 	return (
 		<>
+		
 			<Header />
 			<main
 				className={`relative w-full min-h-screen ${className} ${bgClassName}`}

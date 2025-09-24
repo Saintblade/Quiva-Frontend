@@ -5,6 +5,10 @@ import Step2BasicInfoModal from "./Step2BasicInfoModal";
 import Step3ProfilePictureModal from "./Step3ProfilePictureModal";
 import Step4BioInterestsModal from "./Step4BioInterestsModal";
 import Step5CompletionModal from "./Step5CompletionModal";
+import { Router } from "lucide-react";
+// import { useRouter } from "next/router";
+
+// const router = useRouter();
 
 interface UserProfileData {
   displayName?: string;
@@ -70,6 +74,7 @@ const UserProfileFlowModal = ({ onClose, onComplete }: UserProfileFlowModalProps
     
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
+    // router.push("/marketplace");
     
     // Complete the flow
     onComplete();
