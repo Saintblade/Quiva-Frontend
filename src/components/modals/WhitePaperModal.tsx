@@ -113,15 +113,12 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 	// Effect to handle OTP verification success
 	useEffect(() => {
 		if (verifyOtpSuccess && isAuthenticated) {
-<<<<<<< HEAD
+
 			router.push("/marketplace");
 			// setModalPage("user-profile");
-=======
-			router.push("/comic-pad");
->>>>>>> a04bede114823f403511dbb8a1b3c030933b0683
-			onClose(); // Close modal on success
-		}
-	}, [verifyOtpSuccess, isAuthenticated, router, onClose]);
+
+
+	}}, [verifyOtpSuccess, isAuthenticated, router, onClose]);
 
 	// Effect to clear errors when modal closes
 	useEffect(() => {

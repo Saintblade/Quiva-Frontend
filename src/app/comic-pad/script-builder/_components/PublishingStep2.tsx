@@ -138,7 +138,7 @@ const PublishingStep2 = ({ onNext, onBack, formData, setFormData }: Step2Props) 
           Back
         </button>
         <button
-          onClick={handleNext}
+          onClick={handleNextClick}
           className="px-8 py-3 bg-secondary-300 text-black font-bold rounded-lg transition-none"
         >
           Next

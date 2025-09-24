@@ -16,12 +16,9 @@ const Header = () => {
 	const [search, setSearch] = useState("");
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [modalPage, setModalPage] = useState<string | null>(null);
-<<<<<<< HEAD
 	const searchParams = useSearchParams();
-=======
->>>>>>> a04bede114823f403511dbb8a1b3c030933b0683
 	const pathname = usePathname();
-	const searchParams = useSearchParams();
+	
 	const router = useRouter();
 
 	const {
@@ -67,11 +64,9 @@ const Header = () => {
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
-<<<<<<< HEAD
-useEffect(() => {
-=======
+
 	useEffect(() => {
->>>>>>> a04bede114823f403511dbb8a1b3c030933b0683
+
 		if(searchParams.get("modal")){
 			if (searchParams.get("modal") === "whitepaper") {
 				setModalPage("whitepaper");
@@ -218,7 +213,7 @@ useEffect(() => {
 				size='xl'
 			>
 				<WhitePaperModal 
-<<<<<<< HEAD
+
 				onClose={onCloseWhitePaper}
 				//  onLoginSuccess={handleLoginSuccess} 
 				 modalPage={modalPage}
@@ -235,11 +230,7 @@ useEffect(() => {
 				size='xl'
 			>
 				<UserProfileFlowModal onClose={onCloseUserProfile} onComplete={handleProfileComplete} />
-=======
-				onClose={onCloseWhitePaper} 
-				modalPage={modalPage}
-				setModalPage={setModalPage} />
->>>>>>> a04bede114823f403511dbb8a1b3c030933b0683
+
 			</GeneralModal>
 		</>
 	);
