@@ -4,7 +4,7 @@ import { AxiosStatic } from "axios";
 
 export default function setupAxios(axios: AxiosStatic, store: any) {
 	const QuivaComicAPI = process.env.NEXT_PUBLIC_API_URL || "";
-	axios.defaults.headers.common["Accept"] = "																				/json";
+	axios.defaults.headers.common["Accept"] = "application/json";
 	axios.interceptors.request.use(
 		(config: any) => {
 			const {
