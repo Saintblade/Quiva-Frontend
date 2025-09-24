@@ -77,6 +77,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 
 	// Handle OTP verification
 	const handleOtpComplete = async (otp: string) => {
+		console.log('OTP entered:', otp);
 		if (otp.length === 6) {
 			setOtpValue(otp);
 			try {
