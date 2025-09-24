@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const genres = [
   "Action & Adventure",
@@ -15,9 +15,28 @@ const genres = [
   "Drama",
 ];
 
-const PublishingStep2 = ({ onNext, onBack }: { onNext: () => void; onBack: () => void }) => {
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-  const [audience, setAudience] = useState("All Ages");
+interface Step2Props {
+  onNext: () => void;
+  onBack: () => void;
+  formData: any;
+  setFormData: React.Dispatch<React.SetStateAction<any>>;
+}
+
+const PublishingStep2 = ({ onNext, onBack, formData, setFormData }: Step2Props) => {
+  const [selectedGenres, setSelectedGenres] = useState<string[]>(formData.genres || []);
+  const [audience, setAudience] = useState(formData.audience || "All Ages");
+  const [title, setTitle] = useState(formData.title || "");
+  const [episodeTitle, setEpisodeTitle] = useState(formData.episodeTitle || "");
+  const [description, setDescription] = useState(formData.description || "");
+
+  // 🔄 Sync with parent data when navigating back
+  useEffect(() => {
+    setTitle(formData.title || "");
+    setEpisodeTitle(formData.episodeTitle || "");
+    setDescription(formData.description || "");
+    setAudience(formData.audience || "All Ages");
+    setSelectedGenres(formData.genres || []);
+  }, [formData]);
 
   const toggleGenre = (genre: string) => {
     if (selectedGenres.includes(genre)) {
@@ -25,6 +44,18 @@ const PublishingStep2 = ({ onNext, onBack }: { onNext: () => void; onBack: () =>
     } else if (selectedGenres.length < 3) {
       setSelectedGenres([...selectedGenres, genre]);
     }
+  };
+
+  const handleNextClick = () => {
+    setFormData({
+      ...formData,
+      title,
+      episodeTitle,
+      description,
+      genres: selectedGenres,
+      audience,
+    });
+    onNext();
   };
 
   return (
@@ -42,16 +73,22 @@ const PublishingStep2 = ({ onNext, onBack }: { onNext: () => void; onBack: () =>
         <input
           type="text"
           placeholder="Comic Series Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           className="w-full p-4 rounded-xl bg-black/40 border border-white/20 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500"
         />
         <input
           type="text"
           placeholder="Episode Title"
+          value={episodeTitle}
+          onChange={(e) => setEpisodeTitle(e.target.value)}
           className="w-full p-4 rounded-xl bg-black/40 border border-white/20 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500"
         />
         <textarea
           rows={3}
           placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           className="w-full p-4 rounded-xl bg-black/40 border border-white/20 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500"
         ></textarea>
 
@@ -99,30 +136,12 @@ const PublishingStep2 = ({ onNext, onBack }: { onNext: () => void; onBack: () =>
             ))}
           </div>
         </div>
-
-        {/* Cover + Thumbnail Upload */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="border-2 border-dashed border-white/20 rounded-xl p-6 flex flex-col items-center justify-center bg-black/40 hover:border-orange-500 transition cursor-pointer">
-            <span className="text-white/70 mb-2">Cover Art</span>
-            <input type="file" className="hidden" />
-            <button className="px-4 py-2 bg-orange-500 text-black font-medium rounded-lg hover:bg-orange-400 transition">
-              Choose File
-            </button>
-          </div>
-          <div className="border-2 border-dashed border-white/20 rounded-xl p-6 flex flex-col items-center justify-center bg-black/40 hover:border-orange-500 transition cursor-pointer">
-            <span className="text-white/70 mb-2">Thumbnail</span>
-            <input type="file" className="hidden" />
-            <button className="px-4 py-2 bg-orange-500 text-black font-medium rounded-lg hover:bg-orange-400 transition">
-              Choose File
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* Buttons */}
       <div className="flex flex-col gap-4 max-w-md mx-auto mt-10">
         <button
-          onClick={onNext}
+          onClick={handleNextClick}
           className="w-full bg-orange-500 hover:bg-orange-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition text-lg"
         >
           Next
