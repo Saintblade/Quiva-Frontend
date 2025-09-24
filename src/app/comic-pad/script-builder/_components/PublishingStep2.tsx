@@ -61,6 +61,9 @@ const PublishingStep2 = ({ onNext, onBack, formData, setFormData }: Step2Props) 
   return (
     <div className="max-w-3xl w-full mx-auto px-6 pt-8 pb-12 text-white animate-fadeIn">
       {/* Heading */}
+      <p className="text-white text-sm font-medium tracking-wide mb-2">
+            PUBLISH YOUR COMIC | STEP 2 OF 4
+          </p>
       <h3 className="text-2xl sm:text-3xl font-bold mb-2 text-center">
         Tell the world about your story
       </h3>

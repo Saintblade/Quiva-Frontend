@@ -1,7 +1,8 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { ArrowLeft, Eye, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
+import PublishingModal from "./PublishingModal";
 
 type BoardType = "script" | "draw" | "layout" | "dialogue";
 
@@ -9,7 +10,6 @@ interface ScriptBuilderLayoutProps {
   children: React.ReactNode;
   currentBoard: BoardType;
   onBoardChange: (board: BoardType) => void;
-  onPublish: () => void;
   onPreview: () => void;
 }
 
@@ -17,10 +17,10 @@ const ScriptBuilderLayout = ({
   children,
   currentBoard,
   onBoardChange,
-  onPublish,
   onPreview,
 }: ScriptBuilderLayoutProps) => {
   const router = useRouter();
+  const [showPublishModal, setShowPublishModal] = useState(false);
 
   const boards = [
     { id: "script" as BoardType, label: "Script Editor" },
@@ -73,9 +73,7 @@ const ScriptBuilderLayout = ({
           {/* Right side - Pages, Preview, and Publish buttons */}
           <div className="flex items-center gap-4">
             {/* Pages indicator */}
-            <div className="text-white/70 text-sm">
-              Page 1 of 1
-            </div>
+            <div className="text-white/70 text-sm">Page 1 of 1</div>
 
             {/* Preview button */}
             <button
@@ -88,7 +86,7 @@ const ScriptBuilderLayout = ({
 
             {/* Publish button */}
             <button
-              onClick={onPublish}
+              onClick={() => setShowPublishModal(true)}
               className="flex items-center gap-2 px-6 py-2 bg-orange-500 hover:bg-orange-400 text-black font-semibold rounded-lg transition"
             >
               <Upload size={18} />
@@ -99,9 +97,12 @@ const ScriptBuilderLayout = ({
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 p-6">
-        {children}
-      </div>
+      <div className="flex-1 p-6">{children}</div>
+
+      {/* Publishing Modal */}
+      {showPublishModal && (
+        <PublishingModal onClose={() => setShowPublishModal(false)} />
+      )}
     </div>
   );
 };

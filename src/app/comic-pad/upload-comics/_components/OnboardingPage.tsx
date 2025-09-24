@@ -5,7 +5,7 @@ import { useState } from "react"
 import ComicPublisher from "./ComicPublisher";
 
 export default function OnboardingPage() {
-  const [selectedOption, setSelectedOption] = useState("free")
+  const [selectedOption, setSelectedOption] = useState("free");
   const [showForm, setShowForm] = useState(false);
 
   return (
