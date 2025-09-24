@@ -63,6 +63,28 @@
 		z-index: 51;
 	}
 
+	/* For screen widths lower than 768px */
+	@media (max-width: 768px) {
+		/* Adjust Scrollbar size and color */
+		::-webkit-scrollbar {
+			width: 2px; /* Smaller width */
+		}
+
+		/* Adjust Track color */
+		::-webkit-scrollbar-track:hover {
+			background: transparent; /* Lighter background */
+		}
+
+		/* Adjust Handle color */
+		::-webkit-scrollbar-thumb {
+			background: #bac4d4; /* Lighter handle */
+		}
+
+		::-webkit-scrollbar-thumb:hover {
+			background: #98a2b3; /* Darker on hover */
+		}
+	}
+
 	.swiper-pagination-bullet {
 		background: #faa31e;
 	}

@@ -17,9 +17,18 @@ const RecentFile = () => {
 		label: "Sort by",
 	};
 
+	const RECENT_ITEMS = [
+		{ title: "The North Face", imageSrc: theNorthFace },
+		{ title: "Patagonia", imageSrc: theNorthFace },
+		{ title: "Columbia Sportswear", imageSrc: theNorthFace },
+		{ title: "Arc'teryx", imageSrc: theNorthFace },
+		{ title: "Marmot", imageSrc: theNorthFace },
+		{ title: "Mountain Hardwear", imageSrc: theNorthFace },
+	];
+
 	return (
 		<div className='mt-8'>
-			<h5 className={`text-white text-sm lg:text-xl font-medium`}>Recent</h5>
+			<h5 className={`text-white text-base lg:text-xl font-medium`}>Recent</h5>
 			<div className='mt-2 flex items-center gap-4'>
 				<h6 className='text-sm text-white'>Sort By:</h6>
 
@@ -30,7 +39,7 @@ const RecentFile = () => {
 						console.log("Selected sort:", value);
 					}}
 				>
-					<div className='relative w-32'>
+					<div className='relative w-24'>
 						<Listbox.Button
 							className={`w-full rounded-full border-2 border-gray-300 dark:border-gray-600 px-4 py-2 text-sm text-white dark:text-white bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200`}
 							aria-label='Sort By'
@@ -67,8 +76,10 @@ const RecentFile = () => {
 					</div>
 				</Listbox>
 			</div>
-			<div className='mt-4'>
-				<RecentCard title='The North Face' imageSrc={theNorthFace} />
+			<div className='mt-4 grid grid-cols-2 sm:flex gap-3 flex-wrap justify-center sm:justify-start'>
+				{RECENT_ITEMS.map((item, index) => (
+					<RecentCard key={index} title={item.title} imageSrc={item.imageSrc} />
+				))}
 			</div>
 		</div>
 	);
