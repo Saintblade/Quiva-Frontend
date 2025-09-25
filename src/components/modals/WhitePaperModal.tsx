@@ -68,6 +68,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage, onLoginSuccess }: W
 		if (emailValue.trim()) {
 			try {
 				await dispatch(sendOtpEmail({ email: emailValue } as any)).unwrap();
+				setModalPage("modal");
 			} catch (error) {
 				console.error('Failed to send OTP:', error);
 			}
@@ -86,6 +87,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage, onLoginSuccess }: W
 					email: sentEmail || emailValue, 
 					code: otp 
 				} as any)).unwrap();
+				setModalPage("whitepaper");
 				console.log('OTP verification response:', response);
 			} catch (error) {
 				console.error('Failed to verify OTP:', error);
@@ -149,7 +151,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage, onLoginSuccess }: W
 
 	return (
 		<>
-			{isVerificationCode ? (
+			{isVerificationCode || modalPage === "otp" ? (
 				<div className='w-full max-w-md mx-auto text-white py-8 sm:py-12 space-y-4 lg:space-y-8'>
 					<div className='grid grid-cols-5 items-center w-full gap-0 px-2'>
 						{/* Back Button */}

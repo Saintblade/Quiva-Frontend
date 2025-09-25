@@ -160,6 +160,7 @@ const authSlice = createSlice({
                 
                 // Set user data if verification includes auth data
                 if (action.payload.token) {
+                    console.log(action.payload);
                     state.user.token = action.payload.token;
                     state.user.data = action.payload.user;
                     state.user.isAuthenticated = true;
