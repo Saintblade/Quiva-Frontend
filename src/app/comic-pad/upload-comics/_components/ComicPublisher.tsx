@@ -2,15 +2,20 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { X } from "lucide-react";
+import { Router, X } from "lucide-react";
 import { ComicNotification } from "./ComicNotification";
+import { useRouter } from "next/navigation";
+
 
 export default function ComicPublisher() {
   const [isOpen, setIsOpen] = useState(true)
   const [showForm, setShowForm] = useState(false);
 
+  const router = useRouter();
+
   const handlePublish = () => {
     console.log("Publishing comic...")
+    // router.push("/comic-pad/my-comics")
     setIsOpen(false)
   }
 

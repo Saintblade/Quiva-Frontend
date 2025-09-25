@@ -19,13 +19,14 @@ interface WhitePaperModalProps {
 	onClose: () => void;
 	modalPage: string | null;
 	setModalPage: (page: string | null) => void;
+	onLoginSuccess?: () => void;
 }
 
 interface LoginFormValues {
 	email: string;
 }
 
-const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalProps) => {
+const WhitePaperModal = ({ onClose, modalPage, setModalPage, onLoginSuccess }: WhitePaperModalProps) => {
 	const [isVerificationCode, setIsVerificationCode] = useState(false);
 	const [otpValue, setOtpValue] = useState("");
 	const [emailValue, setEmailValue] = useState("");
@@ -110,15 +111,27 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 		}
 	}, [sendOtpSuccess]);
 
-	// Effect to handle OTP verification success
-	useEffect(() => {
+	// // Effect to handle OTP verification success
+	// useEffect(() => {
+	// 	if (verifyOtpSuccess && isAuthenticated) {
+
+	// 		router.push("/marketplace");
+	// 		// setModalPage("user-profile");
+
+
+	// }}, [verifyOtpSuccess, isAuthenticated, router, onClose]);
+
+		useEffect(() => {
 		if (verifyOtpSuccess && isAuthenticated) {
-
-			router.push("/marketplace");
-			// setModalPage("user-profile");
-
-
-	}}, [verifyOtpSuccess, isAuthenticated, router, onClose]);
+			// Instead of routing to marketplace, trigger the user profile flow
+			if (onLoginSuccess) {
+				onLoginSuccess(); // This will trigger opening the user profile modal
+			} else {
+				// Fallback to direct routing if callback not provided
+				router.push("/marketplace");
+			}
+		}
+	}, [verifyOtpSuccess, isAuthenticated, router, onLoginSuccess]);
 
 	// Effect to clear errors when modal closes
 	useEffect(() => {

@@ -80,7 +80,7 @@ export function ComicNotification() {
 
       {/* Action buttons */}
       <div className="space-y-3">
-        <Link href="/comic/darling">
+        <Link href="/comic-pad/my-comics">
           <button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-full transition">
             View comic
           </button>

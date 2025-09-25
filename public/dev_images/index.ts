@@ -38,7 +38,9 @@ import soloLevel from "./solo-level.png";
 import userOnbard from "./userOnboard.jpg";
 import oneClick from "./oneClick.jpg";
 import comicpadImgCreator from "./comicImg.png";
+import canna from "./image.png"
 export {
+	canna,
 	userOnbard,
 	oneClick,
 	tonmicIcon,

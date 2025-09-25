@@ -39,6 +39,7 @@ const Header = () => {
 		onCloseWhitePaper();
 		onOpenUserProfile();
 	};
+	 
 
 	const handleProfileComplete = () => {
 		onCloseUserProfile();
@@ -215,7 +216,7 @@ const Header = () => {
 				<WhitePaperModal 
 
 				onClose={onCloseWhitePaper}
-				//  onLoginSuccess={handleLoginSuccess} 
+				 onLoginSuccess={handleLoginSuccess} 
 				 modalPage={modalPage}
 				 setModalPage={setModalPage}
 				 />
