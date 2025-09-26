@@ -42,7 +42,6 @@ const EarningOverview = () => {
 					)}
 				</div>
 			</div>
-
 			{/* Right: Account balance */}
 			<div className='flex flex-col items-end space-y-4 col-span-3'>
 				<div className='flex items-center gap-3 text-amber-400 text-xl font-semibold'>
