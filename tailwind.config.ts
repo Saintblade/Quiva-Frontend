@@ -123,7 +123,7 @@ const config: Config = {
     			xxs: '10px'
     		},
     		borderRadius: {
-    			lg: 'var(--radius)', #HDD
+    			lg: 'var(--radius)', //HDD
     			md: 'calc(var(--radius) - 2px)',
     			sm: 'calc(var(--radius) - 4px)'
     		}
