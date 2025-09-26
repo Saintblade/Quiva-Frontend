@@ -35,11 +35,13 @@ import theNorthFace from "./the-north-face.png";
 import toolOne from "./tool-1.png";
 import envelopeImg from "./envelope.png";
 import soloLevel from "./solo-level.png";
+import image3 from "./image_3.png";
 
 export {
 	tonmicIcon,
 	soloLevel,
 	envelopeImg,
+	image3,
 	toolOne,
 	theNorthFace,
 	walletImg,
