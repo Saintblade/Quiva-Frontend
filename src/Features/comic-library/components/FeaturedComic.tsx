@@ -187,11 +187,7 @@ export function FeaturedComic({ comics }: FeaturedComicProps) {
                         ))}
                       </div>
                     )}
-
-                    {/* Action Button */}
-                    {/* <Button className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-2 rounded-lg transition-all duration-200 hover:scale-105">
-                      Explore Collection
-                    </Button> */}
+                    
                   </div>
                 </div>
               </div>

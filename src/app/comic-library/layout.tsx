@@ -17,7 +17,7 @@ export default function MainPage({children}) {
     }
 
     return (
-        <div className="min-h-screen bg-gray-900 w-full font-recursive">
+        <div className="min-h-screen bg-gray-900 w-full font-recursive ">
             {/* Mobile Layout */}
             <div className="lg:hidden">
                 <Header
@@ -36,7 +36,7 @@ export default function MainPage({children}) {
             </div>
 
             {/* Desktop Layout */}
-            <div className="hidden lg:grid lg:grid-cols-[280px_1fr] min-h-screen w-full">
+            <div className="hidden lg:grid lg:grid-cols-[280px_1fr] min-h-screen w-full ">
                 <div>
                     <Sidebar isMobileMenuOpen={false} onMobileMenuClose={() => {}}/>
                 </div>
