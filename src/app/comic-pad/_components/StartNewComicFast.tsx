@@ -1,20 +1,23 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import CreateComicCard from "./CreateComicCard";
-import { avatarImg, envelopeImg, toolOne } from "../../../../public/dev_images";
+import { envelopeImg, toolOne } from "../../../../public/dev_images";
 import UploadModal from "../upload-comics/_components/UploadModal";
+import { useDisclosure } from "@heroui/react";
+import GeneralModal from "@/components/modals/GeneralModal";
 
 const StartNewComicFast = () => {
 	const router = useRouter();
-	const [showUploadModal, setShowUploadModal] = useState(false);
+	const {
+		isOpen: isOpenUploadModal,
+		onOpen: onOpenUploadModal,
+		onOpenChange: onOpenChangeUploadModal,
+		onClose: onCloseUploadModal,
+	} = useDisclosure();
 
 	const handleStartNewProject = () => {
-		router.push("/comic-pad/script-builder");
-	};
-
-	const handleUploadFiles = () => {
-		setShowUploadModal(true); // 🔥 open modal
+		// router.push("/comic-pad/script-builder");
 	};
 
 	return (
@@ -27,18 +30,29 @@ const StartNewComicFast = () => {
 					imageSrc={toolOne}
 					title='Start New Project'
 					description='Begin your creative journey with a blank canvas.'
+					className='!cursor-not-allowed'
 					onClick={handleStartNewProject}
 				/>
 				<CreateComicCard
 					imageSrc={envelopeImg}
 					title='Upload Comic Files'
 					description='Already have pages ready? Upload and mint them into NFTs.'
-					onClick={handleUploadFiles}
+					onClick={onOpenUploadModal}
 				/>
 			</div>
 
 			{/* Upload Modal */}
-      {showUploadModal && <UploadModal onClose={() => setShowUploadModal(false)} />}
+
+			{/* White paper */}
+			<GeneralModal
+				isOpen={isOpenUploadModal}
+				onOpenChange={onOpenChangeUploadModal}
+				onClose={onCloseUploadModal}
+				backdrop='blur'
+				size='xl'
+			>
+				<UploadModal onClose={onCloseUploadModal} />
+			</GeneralModal>
 		</div>
 	);
 };

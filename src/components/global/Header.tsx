@@ -18,7 +18,7 @@ const Header = () => {
 	const [modalPage, setModalPage] = useState<string | null>(null);
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
-	
+
 	const router = useRouter();
 
 	const {
@@ -39,7 +39,6 @@ const Header = () => {
 		onCloseWhitePaper();
 		onOpenUserProfile();
 	};
-	 
 
 	const handleProfileComplete = () => {
 		onCloseUserProfile();
@@ -65,10 +64,8 @@ const Header = () => {
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
-
 	useEffect(() => {
-
-		if(searchParams.get("modal")){
+		if (searchParams.get("modal")) {
 			if (searchParams.get("modal") === "whitepaper") {
 				setModalPage("whitepaper");
 			}
@@ -104,7 +101,9 @@ const Header = () => {
 					<ul className='flex gap-6 xl:gap-8 mx-auto text-white py-3 font-spaceGrotesk col-span-4'>
 						{NAV_LINKS.map((link) => {
 							const isSectionLink =
-								link.href === "/products" || link.href === "/community" || link.href === "/roadmap";
+								link.href === "/products" ||
+								link.href === "/community" ||
+								link.href === "/roadmap";
 							const isExternalLink = !link.href.startsWith("/"); // Check for external URLs
 							const sectionId = link.href.substring(1);
 							const currentPath =
@@ -172,10 +171,14 @@ const Header = () => {
 					</ul>
 
 					<div className='flex justify-end col-span-1'>
-						<MainButton onClick={() => {
-							router.push("?modal=whitepaper");
-							onOpenWhitePaper()
-						}}>Login</MainButton>
+						<MainButton
+							onClick={() => {
+								router.push("?modal=whitepaper");
+								onOpenWhitePaper();
+							}}
+						>
+							Login
+						</MainButton>
 					</div>
 				</nav>
 
@@ -213,13 +216,12 @@ const Header = () => {
 				backdrop='blur'
 				size='xl'
 			>
-				<WhitePaperModal 
-
-				onClose={onCloseWhitePaper}
-				 onLoginSuccess={handleLoginSuccess} 
-				 modalPage={modalPage}
-				 setModalPage={setModalPage}
-				 />
+				<WhitePaperModal
+					onClose={onCloseWhitePaper}
+					onLoginSuccess={handleLoginSuccess}
+					modalPage={modalPage}
+					setModalPage={setModalPage}
+				/>
 			</GeneralModal>
 
 			{/* User Profile Flow Modal */}
@@ -230,8 +232,10 @@ const Header = () => {
 				backdrop='blur'
 				size='xl'
 			>
-				<UserProfileFlowModal onClose={onCloseUserProfile} onComplete={handleProfileComplete} />
-
+				<UserProfileFlowModal
+					onClose={onCloseUserProfile}
+					onComplete={handleProfileComplete}
+				/>
 			</GeneralModal>
 		</>
 	);

@@ -39,13 +39,16 @@ import image3 from "./image_3.png";
 import userOnbard from "./userOnboard.jpg";
 import oneClick from "./oneClick.jpg";
 import comicpadImgCreator from "./comicImg.png";
-import canna from "./image.png";import demonSlayer from "./demon-slayer.png";
+import canna from "./image.png";
+import demonSlayer from "./demon-slayer.png";
 import kakashi from "./kakashi.png";
 import goofyFriend from "./goofy-friend.png";
 import hinataPicture from "./hinata-picture.png";
+import UploadImage from "../upload-img.png";
 
 export {
 	canna,
+	UploadImage,
 	userOnbard,
 	oneClick,
 	tonmicIcon,
@@ -90,8 +93,5 @@ export {
 	demonSlayer,
 	kakashi,
 	goofyFriend,
-	hinataPicture
+	hinataPicture,
 };
-
-
-
