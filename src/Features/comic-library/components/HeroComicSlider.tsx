@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { MainButton } from '@/components/button'
 
@@ -27,6 +26,7 @@ export function HeroComicSlider({
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
 
   // Auto-advance slides
+  
   useEffect(() => {
     if (!isAutoPlaying || comics.length <= 1) return
 
@@ -86,12 +86,12 @@ export function HeroComicSlider({
           )}
 
           {/* Title */}
-          <h1 className="text-white text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+          <h1 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight line-clamp-3">
             {currentComic.title}
           </h1>
 
           {/* Description */}
-          <p className="text-white/90 text-lg md:text-xl mb-8 max-w-3xl leading-relaxed">
+          <p className="text-white/90 text-sm md:text-lg lg:text-xl mb-8 max-w-3xl leading-relaxed line-clamp-3">
             {currentComic.description}
           </p>
 
@@ -116,8 +116,8 @@ export function HeroComicSlider({
               onClick={() => goToSlide(index)}
               className={`transition-all duration-300 ${
                 index === currentSlide 
-                  ? 'w-8 h-4 bg-white rounded-full' 
-                  : 'w-4 h-4 bg-white/40 hover:bg-white/60 rounded-full'
+                  ? 'w-4 md:w-8 h-2 md:h-4 bg-white rounded-full' 
+                  : 'w-2 md:w-4 h-2 md:h-4 bg-white/40 hover:bg-white/60 rounded-full'
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />
