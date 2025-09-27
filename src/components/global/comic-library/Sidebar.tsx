@@ -1,28 +1,125 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
+import { QuivaLogo } from '@/components/utils/function'
+import { X } from 'lucide-react'
+import { useRouter, usePathname } from 'next/navigation'
 
-export function Sidebar() {
+export function Sidebar({ isMobileMenuOpen, onMobileMenuClose }) {
+  const router = useRouter()
+  const pathname = usePathname()
+
+  // Navigation items
+  const navigationItems = [
+    {
+      label: 'Explore',
+      path: '/comic-library',
+      isActive: pathname === '/comic-library'
+    },
+    {
+      label: 'My Library', 
+      path: '/comic-library/library',
+      isActive: pathname === '/comic-library/library'
+    }
+  ]
+
+  const handleNavigation = (path) => {
+    router.push(path)
+    onMobileMenuClose()
+  }
+
+  const handleBecomeCreator = () => {
+    router.push('/comic-pad')
+    onMobileMenuClose()
+  }
+
   return (
-    <aside className="w-64 bg-black border-r border-gray-800 px-4 py-6 flex flex-col">
-      {/* Navigation Menu */}
-      <nav className="space-y-2 mb-8">
-        <Button 
-          variant="ghost" 
-          className="w-full justify-start text-white hover:bg-gray-800 font-medium"
-        >
-          Explore
-        </Button>
-        <Button 
-          variant="ghost" 
-          className="w-full justify-start text-gray-400 hover:bg-gray-800 hover:text-white"
-        >
-          My Library
-        </Button>
-      </nav>
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex w-[280px] h-screen fixed bg-black-200 border-r border-dashed border-white/30 px-4 py-6 flex-col z-40">
+        {/* Logo */}
+        <div className="flex items-center justify-left mb-8 pt-2">
+          <QuivaLogo showText className="invert" />
+        </div>
 
-      {/* Become a Creator Button */}
-      <Button className="bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-full">
-        Become a Creator
-      </Button>
-    </aside>
+        {/* Navigation Menu */}
+        <nav className="space-y-2 mb-8">
+          {navigationItems.map((item) => (
+            <Button 
+              key={item.path}
+              variant="ghost" 
+              className={`w-full justify-start font-medium transition-colors hover:text-white ${
+                item.isActive 
+                  ? 'text-white bg-black-400 hover:bg-black-300 ' 
+                  : 'text-white/40 hover:bg-black-400 '
+              }`}
+              onClick={() => handleNavigation(item.path)}
+            >
+              {item.label}
+            </Button>
+          ))}
+        </nav>
+
+        {/* Become a Creator Button */}
+        <Button 
+          className="bg-secondary-200 hover:bg-orange-600 text-white font-medium rounded-full transition-colors"
+          onClick={handleBecomeCreator}
+        >
+          Become a Creator
+        </Button>
+      </aside>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 z-50 bg-black/50" 
+          onClick={onMobileMenuClose} 
+        />
+      )}
+
+      {/* Mobile Sidebar */}
+      <aside className={`lg:hidden fixed top-0 left-0 h-full w-[280px] bg-black-200 border-r border-dashed border-white/30 px-4 py-6 flex flex-col z-50 transform transition-transform duration-300 ease-in-out ${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        {/* Logo and Close Button */}
+        <div className="flex justify-between items-center mb-8">
+          <QuivaLogo showText className="invert" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-white hover:bg-black-400"
+            onClick={onMobileMenuClose}
+          >
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+
+        {/* Navigation Menu */}
+        <nav className="space-y-2 mb-8">
+          {navigationItems.map((item) => (
+            <Button 
+              key={item.path}
+              variant="ghost" 
+              className={`w-full justify-start font-medium transition-colors hover:text-white ${
+                item.isActive 
+                  ? 'text-white bg-black-400 hover:bg-black-300' 
+                  : 'text-white/40 hover:bg-black-400 '
+              }`}
+              onClick={() => handleNavigation(item.path)}
+            >
+              {item.label}
+            </Button>
+          ))}
+        </nav>
+
+        {/* Become a Creator Button */}
+        <Button 
+          className="bg-secondary-200 hover:bg-orange-600 text-white font-medium rounded-full transition-colors"
+          onClick={handleBecomeCreator}
+        >
+          Become a Creator
+        </Button>
+      </aside>
+    </>
   )
 }

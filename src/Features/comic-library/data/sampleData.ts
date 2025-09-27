@@ -1,0 +1,237 @@
+// import { FeaturedComicData } from "../components/FeaturedComic"
+
+export const trendingComics = [
+  {
+    id: '1',
+    title: 'Rise of the Slayer',
+    subtitle: '3 USDT',
+    image: "https://images.unsplash.com/photo-1606112219348-204d7d8b94ee?auto=format&fit=crop&w=800&q=80",
+    premium: true
+  },
+  {
+    id: '2',
+    title: 'Goofy Friend',
+    description: 'The Goofy Friend is an issue of the best comics containing goofy characters.',
+    image: "https://cdn.marvel.com/content/1x/asm2025001_dimeo.jpg",
+    buttonText: 'Explore Issue'
+  },
+  {
+    id: '3',
+    title: 'Kakashi',
+    subtitle: '5 USDT',
+    image: "https://i.ebayimg.com/images/g/b6oAAOSwez5l-jYm/s-l1200.jpg",
+    premium: true
+  },
+  {
+    id: '4',
+    title: 'Rise of the Slayer',
+    subtitle: '3 USDT',
+    image: "https://images.unsplash.com/photo-1606112219348-204d7d8b94ee?auto=format&fit=crop&w=800&q=80",
+    premium: true
+  },
+  {
+    id: '5',
+    title: 'Goofy Friend',
+    description: 'The Goofy Friend is an issue of the best comics containing goofy characters.',
+    image: "https://cdn.marvel.com/content/1x/asm2025001_dimeo.jpg",
+    buttonText: 'Explore Issue'
+  },
+  {
+    id: '6',
+    title: 'Kakashi',
+    subtitle: '5 USDT',
+    image: "https://i.ebayimg.com/images/g/b6oAAOSwez5l-jYm/s-l1200.jpg",
+    premium: true
+  }
+]
+
+
+export const featuredComics = [
+  {
+    id: '1',
+    title: 'Rise of the Slayer by Young Geek',
+    price: 'Floor Price: 0.07 USDT',
+    subtitle: '24h Vol: 15,694 USDT',
+    image: 'https://i.ebayimg.com/images/g/b6oAAOSwez5l-jYm/s-l1200.jpg',
+    premium: true
+  },
+  {
+    id: '2',
+    title: 'Rise of the Slayer by Young Geek',
+    price: 'Floor Price: 0.07 USDT', 
+    subtitle: '24h Vol: 15,694 USDT',
+    image: 'https://i.ebayimg.com/images/g/b6oAAOSwez5l-jYm/s-l1200.jpg',
+    premium: true
+  },
+  {
+    id: '3',
+    title: 'Rise of the Slayer by Young Geek',
+    price: 'Floor Price: 0.07 USDT',
+    subtitle: '24h Vol: 15,694 USDT', 
+    image: 'https://i.ebayimg.com/images/g/b6oAAOSwez5l-jYm/s-l1200.jpg',
+    premium: true
+  },
+  {
+    id: '4',
+    title: 'Rise of the Slayer by Young Geek',
+    price: 'Floor Price: 0.07 USDT',
+    subtitle: '24h Vol: 15,694 USDT',
+    image: 'https://i.ebayimg.com/images/g/b6oAAOSwez5l-jYm/s-l1200.jpg',
+    premium: true
+  }
+]
+
+export const upcomingComics = [
+  {
+    id: '1',
+    title: 'By Young Geek',
+    description: 'Rise of the Slayer - Issue #2',
+    price: 'Mint Date: 20/10/25',
+    subtitle: 'Mint Price: 10 USDT',
+    image: 'https://i.ebayimg.com/images/g/b6oAAOSwez5l-jYm/s-l1200.jpg',
+    buttonText: 'Notify Me',
+    buttonVariant: 'outline' as const
+  },
+  {
+    id: '2', 
+    title: 'Goofy Friend',
+    description: 'The Goofy Friend is an issue of the best comics containing goofy characters.',
+    image: 'https://i.ebayimg.com/images/g/b6oAAOSwez5l-jYm/s-l1200.jpg',
+    buttonText: 'Notify Me',
+    buttonVariant: 'outline' as const
+  },
+  {
+    id: '3',
+    title: 'By Young Geek',
+    description: 'Rise of the Slayer - Issue #3',
+    price: 'Mint Date: 20/10/25',
+    subtitle: 'Mint Price: 10 USDT', 
+    image: 'https://i.ebayimg.com/images/g/b6oAAOSwez5l-jYm/s-l1200.jpg',
+    buttonText: 'Notify Me',
+    buttonVariant: 'outline' as const
+  }
+]
+
+export const mintComics = [
+  {
+    id: '1',
+    title: 'Rise of the Slayer',
+    subtitle: '5 USDT',
+    image: 'https://i.ebayimg.com/images/g/b6oAAOSwez5l-jYm/s-l1200.jpg',
+    premium: true
+  },
+  {
+    id: '2',
+    title: 'Goofy Friend',
+    description: 'The Goofy Friend is an issue of the best comics containing goofy characters.',
+    image: 'https://i.ebayimg.com/images/g/b6oAAOSwez5l-jYm/s-l1200.jpg',
+    buttonText: 'Explore Issue'
+  },
+  {
+    id: '3',
+    title: 'Kakashi',
+    subtitle: '5 USDT',
+    image: 'https://i.ebayimg.com/images/g/b6oAAOSwez5l-jYm/s-l1200.jpg'
+  }
+]
+
+export const topComics = [
+  {
+    rank: 1,
+    title: 'NaruHina',
+    author: 'NaruHina',
+    floorPrice: '8 USDT',
+    priceChange: 5.65,
+    copies: 500,
+    sales: 30,
+    volume: '300k USDT',
+    image: "https://cdn.marvel.com/content/1x/asm2025001_dimeo.jpg"
+  },
+  {
+    rank: 2,
+    title: 'NaruHina', 
+    author: 'NaruHina',
+    floorPrice: '8 USDT',
+    priceChange: -4.65,
+    copies: 500,
+    sales: 30,
+    volume: '300k USDT',
+    image: "https://cdn.marvel.com/content/1x/asm2025001_dimeo.jpg"
+  },
+  {
+    rank: 3,
+    title: 'NaruHina',
+    author: 'NaruHina', 
+    floorPrice: '8 USDT',
+    priceChange: 5.65,
+    copies: 500,
+    sales: 30,
+    volume: '300k USDT',
+    image: "https://cdn.marvel.com/content/1x/asm2025001_dimeo.jpg"
+  },
+  {
+    rank: 4,
+    title: 'NaruHina',
+    author: 'NaruHina',
+    floorPrice: '8 USDT', 
+    priceChange: -4.65,
+    copies: 500,
+    sales: 30,
+    volume: '300k USDT',
+    image: "https://cdn.marvel.com/content/1x/asm2025001_dimeo.jpg"
+  },
+  {
+    rank: 5,
+    title: 'NaruHina',
+    author: 'NaruHina',
+    floorPrice: '8 USDT',
+    priceChange: 5.65,
+    copies: 500,
+    sales: 30, 
+    volume: '300k USDT',
+    image: "https://cdn.marvel.com/content/1x/asm2025001_dimeo.jpg"
+  }
+]
+
+export const creators = [
+  { id: '1', name: 'Auntmae', stories: 5, readers: '1.2k', avatar: '' },
+  { id: '2', name: 'John Smith', stories: 12, readers: '1.5k', avatar: '' },
+  { id: '3', name: 'Jane Doe', stories: 8, readers: '1.2k', avatar: '' },
+  { id: '4', name: 'Mike Johnson', stories: 15, readers: '2.1k', avatar: '' },
+  { id: '5', name: 'Sarah Wilson', stories: 9, readers: '980', avatar: '' },
+  { id: '6', name: 'David Brown', stories: 7, readers: '1.8k', avatar: '' },
+]
+
+
+export const FeaturesComics = [
+    {
+      title: "Hinata Story Releaved",
+      author: "Masashi Kishimoto",
+      floorPrice: "0.013 ETH",
+      items: "9,989",
+      mintPrice: "10.23 USDT",
+      countdown: "64 :10 :03 :01",
+      tags: ["Romance", "Drama", "Slice of Life"],
+      image: "https://images.unsplash.com/photo-1606112219348-204d7d8b94ee?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      title: "Demon Slayer Chronicles",
+      author: "Koyoharu Gotouge",
+      floorPrice: "0.025 ETH",
+      items: "7,500",
+      mintPrice: "15.50 USDT",
+      countdown: "48 :05 :22 :15",
+      tags: ["Action", "Supernatural", "Adventure"],
+      image: "https://cdn.marvel.com/content/1x/asm2025001_dimeo.jpg"
+    },
+    {
+      title: "My Hero Academia",
+      author: "Kohei Horikoshi",
+      floorPrice: "0.018 ETH",
+      items: "12,000",
+      mintPrice: "8.75 USDT",
+      countdown: "72 :18 :45 :30",
+      tags: ["Superhero", "School", "Action"],
+      image: "https://i.ebayimg.com/images/g/b6oAAOSwez5l-jYm/s-l1200.jpg"
+    }
+  ]
