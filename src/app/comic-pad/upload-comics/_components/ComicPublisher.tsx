@@ -79,8 +79,8 @@ export default function ComicPublisher({ onclose }: ComicPublisherProps) {
 							</div>
 
 							<p className='mt-3 text-sm text-white/80 tracking-wide leading-relaxed'>
-								By clicking "<b>PUBLISH COMIC!</b>", your comic will become live
-								on Quiva and cannot be easily undone.
+								By clicking &quot;<b>PUBLISH COMIC!</b>&quot;, your comic will
+								become live on Quiva and cannot be easily undone.
 							</p>
 						</div>
 					</div>
