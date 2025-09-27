@@ -74,7 +74,7 @@ export function ComicNotification() {
       {/* Status text */}
       <div className="text-center mb-6">
         <p className="text-white text-lg font-medium">
-          Your comic <span className="text-orange-400">"Darling"</span> is LIVE!
+          Your comic <span className="text-orange-400">&quot;Darling&quot;</span> is LIVE!
         </p>
       </div>
 

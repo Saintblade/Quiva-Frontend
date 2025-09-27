@@ -18,9 +18,9 @@ export function ComicPreviewModal({
   onNext,
   onBackToEditor,
 }: ComicPreviewModalProps) {
-  if (!isOpen) return null;
   const [showForm, setShowForm] = useState(false);
-
+  if (!isOpen) return null;
+  
   return (
     <>
       {/* If not showing form, show preview */}
@@ -55,7 +55,7 @@ export function ComicPreviewModal({
                 Give your masterpiece one last look
               </h2>
               <p className="text-gray-200 text-sm leading-relaxed">
-                Great things take time! Here's your final. This is exactly how it
+                Great things take time! Here&apos;s your final. This is exactly how it
                 will look when published to your blog and shared with the world.
               </p>
             </div>
