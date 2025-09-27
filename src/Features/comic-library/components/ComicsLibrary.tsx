@@ -101,3 +101,6 @@ export function ComicsLibrary({
         </section>
     )
 }
+
+
+export default ComicsLibrary
