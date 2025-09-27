@@ -159,16 +159,16 @@ const authSlice = createSlice({
                 state.verifyOtp.success = true;
                 
                 // Set user data if verification includes auth data
-                if (action.payload.data.token) {
-                    state.user.token = action.payload.data.token;
-                    state.user.data = action.payload.data.user;
-                    state.user.expiresAt = action.payload.data.expiresAt;
+                if (action.payload.token) {
+                    console.log(action.payload);
+                    state.user.token = action.payload.token;
+                    state.user.data = action.payload.user;
                     state.user.isAuthenticated = true;
                     
                     // Store in localStorage
                     if (typeof window !== 'undefined') {
-                        localStorage.setItem('userData', JSON.stringify(action.payload.data));
-                        localStorage.setItem('token', action.payload.data.token);
+                        localStorage.setItem('userData', JSON.stringify(action.payload));
+                        localStorage.setItem('token', action.payload.token);
                     }
                 }
             })

@@ -1,20 +1,19 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
+import { OrangeButton } from "@/components/button";
+import { comicpadImgCreator } from "../../../public/dev_images";
 
 type Props = {
   onNext?: () => void;
   onSkip?: () => void;
   totalSteps?: number;
+  currentStep?: number;
 };
 
-const DashboarddModal = ({ onNext, onSkip, totalSteps = 6 }: Props) => {
-  const [currentStep, setCurrentStep] = useState(1);
+const DashboarddModal = ({ onNext, onSkip, totalSteps = 6, currentStep = 1 }: Props) => {
 
   const handleNext = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
-    }
     if (onNext) onNext();
   };
 
@@ -23,7 +22,7 @@ const DashboarddModal = ({ onNext, onSkip, totalSteps = 6 }: Props) => {
       {/* Image */}
       <div className="flex justify-center mb-6">
         <Image
-          src="/mobile-progress-6.png"
+          src={comicpadImgCreator}
           alt="Mobile Progress"
           width={300}
           height={300}
@@ -55,12 +54,12 @@ const DashboarddModal = ({ onNext, onSkip, totalSteps = 6 }: Props) => {
 
       {/* Buttons */}
       <div className="flex flex-col items-center gap-4">
-        <button
+        <OrangeButton
           onClick={handleNext}
-          className="w-full sm:w- bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-4 px-8 rounded-2xl shadow-lg transition"
+          className="w-full sm:w-auto py-4 px-8 text-lg min-w-[200px]"
         >
           Got it!
-        </button>
+        </OrangeButton>
       </div>
     </div>
   );

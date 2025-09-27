@@ -10,13 +10,15 @@ import Sidebar from "./Sidebar";
 import { useDisclosure } from "@heroui/react";
 import WhitePaperModal from "../modals/WhitePaperModal";
 import GeneralModal from "../modals/GeneralModal";
+import UserProfileFlowModal from "../modals/UserProfile/UserProfileFlowModal";
 
 const Header = () => {
 	const [search, setSearch] = useState("");
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [modalPage, setModalPage] = useState<string | null>(null);
-	const pathname = usePathname();
 	const searchParams = useSearchParams();
+	const pathname = usePathname();
+	
 	const router = useRouter();
 
 	const {
@@ -25,6 +27,25 @@ const Header = () => {
 		onOpenChange: onOpenChangeWhitePaper,
 		onClose: onCloseWhitePaper,
 	} = useDisclosure();
+
+	const {
+		isOpen: isUserProfileOpen,
+		onOpen: onOpenUserProfile,
+		onOpenChange: onOpenChangeUserProfile,
+		onClose: onCloseUserProfile,
+	} = useDisclosure();
+
+	const handleLoginSuccess = () => {
+		onCloseWhitePaper();
+		onOpenUserProfile();
+	};
+	 
+
+	const handleProfileComplete = () => {
+		onCloseUserProfile();
+		// Navigate to marketplace after profile completion
+		router.push("/marketplace");
+	};
 
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const toggleSidebar = () => {
@@ -44,7 +65,9 @@ const Header = () => {
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
+
 	useEffect(() => {
+
 		if(searchParams.get("modal")){
 			if (searchParams.get("modal") === "whitepaper") {
 				setModalPage("whitepaper");
@@ -191,9 +214,24 @@ const Header = () => {
 				size='xl'
 			>
 				<WhitePaperModal 
-				onClose={onCloseWhitePaper} 
-				modalPage={modalPage}
-				setModalPage={setModalPage} />
+
+				onClose={onCloseWhitePaper}
+				 onLoginSuccess={handleLoginSuccess} 
+				 modalPage={modalPage}
+				 setModalPage={setModalPage}
+				 />
+			</GeneralModal>
+
+			{/* User Profile Flow Modal */}
+			<GeneralModal
+				isOpen={isUserProfileOpen}
+				onOpenChange={onOpenChangeUserProfile}
+				onClose={onCloseUserProfile}
+				backdrop='blur'
+				size='xl'
+			>
+				<UserProfileFlowModal onClose={onCloseUserProfile} onComplete={handleProfileComplete} />
+
 			</GeneralModal>
 		</>
 	);

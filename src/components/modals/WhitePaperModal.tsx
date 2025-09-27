@@ -19,13 +19,14 @@ interface WhitePaperModalProps {
 	onClose: () => void;
 	modalPage: string | null;
 	setModalPage: (page: string | null) => void;
+	onLoginSuccess?: () => void;
 }
 
 interface LoginFormValues {
 	email: string;
 }
 
-const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalProps) => {
+const WhitePaperModal = ({ onClose, modalPage, setModalPage, onLoginSuccess }: WhitePaperModalProps) => {
 	const [isVerificationCode, setIsVerificationCode] = useState(false);
 	const [otpValue, setOtpValue] = useState("");
 	const [emailValue, setEmailValue] = useState("");
@@ -52,7 +53,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 		onSubmit: async (values) => {
 			setEmailValue(values.email);
 			try {
-				await dispatch(sendOtpEmail({ email: values.email })).unwrap();
+				await dispatch(sendOtpEmail({ email: values.email } as any)).unwrap();
 			} catch (error) {
 				console.error('Failed to send OTP:', error);
 			}
@@ -66,7 +67,8 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 		// If form has email value, submit it
 		if (emailValue.trim()) {
 			try {
-				await dispatch(sendOtpEmail({ email: emailValue })).unwrap();
+				await dispatch(sendOtpEmail({ email: emailValue } as any)).unwrap();
+				setModalPage("modal");
 			} catch (error) {
 				console.error('Failed to send OTP:', error);
 			}
@@ -77,13 +79,15 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 
 	// Handle OTP verification
 	const handleOtpComplete = async (otp: string) => {
+		console.log('OTP entered:', otp);
 		if (otp.length === 6) {
 			setOtpValue(otp);
 			try {
 				const response = await dispatch(verifyOtpEmail({ 
 					email: sentEmail || emailValue, 
 					code: otp 
-				})).unwrap();
+				} as any)).unwrap();
+				setModalPage("whitepaper");
 				console.log('OTP verification response:', response);
 			} catch (error) {
 				console.error('Failed to verify OTP:', error);
@@ -95,7 +99,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 	const handleResendOtp = async () => {
 		if (sentEmail || emailValue) {
 			try {
-				await dispatch(sendOtpEmail({ email: sentEmail || emailValue })).unwrap();
+				await dispatch(sendOtpEmail({ email: sentEmail || emailValue } as any)).unwrap();
 			} catch (error) {
 				console.error('Failed to resend OTP:', error);
 			}
@@ -109,13 +113,27 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 		}
 	}, [sendOtpSuccess]);
 
-	// Effect to handle OTP verification success
-	useEffect(() => {
+	// // Effect to handle OTP verification success
+	// useEffect(() => {
+	// 	if (verifyOtpSuccess && isAuthenticated) {
+
+	// 		router.push("/marketplace");
+	// 		// setModalPage("user-profile");
+
+
+	// }}, [verifyOtpSuccess, isAuthenticated, router, onClose]);
+
+		useEffect(() => {
 		if (verifyOtpSuccess && isAuthenticated) {
-			router.push("/comic-pad");
-			onClose(); // Close modal on success
+			// Instead of routing to marketplace, trigger the user profile flow
+			if (onLoginSuccess) {
+				onLoginSuccess(); // This will trigger opening the user profile modal
+			} else {
+				// Fallback to direct routing if callback not provided
+				router.push("/marketplace");
+			}
 		}
-	}, [verifyOtpSuccess, isAuthenticated, router, onClose]);
+	}, [verifyOtpSuccess, isAuthenticated, router, onLoginSuccess]);
 
 	// Effect to clear errors when modal closes
 	useEffect(() => {
@@ -133,7 +151,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 
 	return (
 		<>
-			{isVerificationCode ? (
+			{isVerificationCode || modalPage === "otp" ? (
 				<div className='w-full max-w-md mx-auto text-white py-8 sm:py-12 space-y-4 lg:space-y-8'>
 					<div className='grid grid-cols-5 items-center w-full gap-0 px-2'>
 						{/* Back Button */}
@@ -160,7 +178,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 
 					{/* Email Notice */}
 					<p className='text-center text-sm text-white/80 mb-6'>
-						We've sent a verification code to <br />
+						We&apos;ve sent a verification code to <br />
 						<span className='font-semibold text-white'>
 							{sentEmail || emailValue}
 						</span>
@@ -201,7 +219,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 
 					{/* Resend Code */}
 					<p className='text-center text-xs text-white/60'>
-						Didn't receive a code? Check spam or <br />
+						Didn&apos;t receive a code? Check spam or <br />
 						<button 
 							className='hover:text-primary-100 font-medium hover:underline transition-[.3] underline-offset-4 disabled:opacity-50'
 							onClick={handleResendOtp}
