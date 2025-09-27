@@ -1,69 +1,212 @@
 'use client'
 
-import { Search, Bell, User, Menu } from 'lucide-react'
+import { Search, Bell, User, Menu, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { useState, useEffect, useRef } from 'react'
 import { QuivaLogo } from '@/components/utils/function'
-import { useState } from 'react'
 
-export function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [notifications, setNotifications] = useState([
+    { id: 1, message: "New comic release: Spider-Man #1", read: false, timestamp: Date.now() - 300000 },
+    { id: 2, message: "Your favorite creator posted", read: false, timestamp: Date.now() - 600000 },
+    { id: 3, message: "Weekly digest available", read: true, timestamp: Date.now() - 86400000 }
+  ])
+  const [showNotifications, setShowNotifications] = useState(false)
+  const notificationRef = useRef(null)
+
+  // Count unread notifications
+  const unreadCount = notifications.filter(n => !n.read).length
+
+  // Mark notification as read
+  const markAsRead = (id) => {
+    setNotifications(prev => 
+      prev.map(n => n.id === id ? { ...n, read: true } : n)
+    )
+  }
+
+  // Mark all notifications as read
+  const markAllAsRead = () => {
+    setNotifications(prev => 
+      prev.map(n => ({ ...n, read: true }))
+    )
+  }
+
+  // Format timestamp
+  const formatTime = (timestamp) => {
+    const diff = Date.now() - timestamp
+    const minutes = Math.floor(diff / 60000)
+    const hours = Math.floor(diff / 3600000)
+    const days = Math.floor(diff / 86400000)
+    
+    if (days > 0) return `${days}d ago`
+    if (hours > 0) return `${hours}h ago`
+    return `${minutes}m ago`
+  }
+
+  // Close notifications when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotifications(false)
+      }
+    }
+
+    if (showNotifications) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showNotifications])
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      console.log('Searching for:', searchQuery)
+    }
+  }
 
   return (
-    <>
-      <header className="bg-[#1A1A1A] border-b border-dashed border-white/30 px-4 lg:px-6 py-3 flex items-center justify-between">
-        {/* Mobile Menu Button + Logo */}
-        <div className="flex items-center space-x-3">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="lg:hidden text-white"
-            onClick={() => setIsMobileMenuOpen(true)}
-          >
-            <Menu className="w-5 h-5" />
-          </Button>
-          <div className="flex items-center space-x-3">
-            <QuivaLogo showText className='invert' />
+    <header className="bg-black-200 border-b border-dashed border-white/30 sticky top-0 z-30">
+      <div className="px-4 lg:px-6 py-3">
+        <div className="flex items-center justify-between">
+          {/* Mobile Menu Button & Logo */}
+          <div className="flex items-center space-x-3 lg:hidden">
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden text-white hover:bg-black-300"
+              onClick={onMobileMenuToggle}
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
+
+            {/* Logo - Mobile Only */}
+            <div className="lg:hidden">
+              <QuivaLogo showText className="invert" />
+            </div>
+          </div>
+
+          {/* Desktop Search Bar */}
+          <div className="hidden md:flex flex-1 max-w-md mx-8">
+            <form onSubmit={handleSearch} className="relative w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
+              <Input
+                type="text"
+                placeholder="Search comics, creators..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-black-200 border-white/25 text-white placeholder-gray-400 focus:border-secondary-200 focus:ring-secondary-200/20 rounded-2xl"
+              />
+            </form>
+          </div>
+
+          {/* User Actions */}
+          <div className="flex items-center space-x-2 lg:space-x-3">
+            {/* Mobile Search Button */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="md:hidden text-white hover:text-white hover:bg-black-300"
+            >
+              <Search className="w-5 h-5" />
+            </Button>
+
+            {/* Notification Bell */}
+            <div className="relative" ref={notificationRef}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="text-white hover:text-white hover:bg-black-300 relative"
+                onClick={() => setShowNotifications(!showNotifications)}
+              >
+                <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
+                {unreadCount > 0 && (
+                  <Badge 
+                    variant="destructive" 
+                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center bg-red-500"
+                  >
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </Badge>
+                )}
+              </Button>
+
+              {/* Notification Dropdown */}
+              {showNotifications && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-black-200 border border-white/70 rounded-lg shadow-xl z-50">
+                  <div className="p-4 border-b border-white/70 flex justify-between items-center">
+                    <h3 className="text-white font-semibold">Notifications</h3>
+                    {unreadCount > 0 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={markAllAsRead}
+                        className="text-xs text-white/60 hover:text-white hover:bg-black-300"
+                      >
+                        Mark all read
+                      </Button>
+                    )}
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="p-4 text-center text-white/40">
+                        No notifications
+                      </div>
+                    ) : (
+                      notifications.map(notification => (
+                        <div
+                          key={notification.id}
+                          className={`p-4 border-b border-black-300 hover:bg-black-300 cursor-pointer transition-colors ${
+                            !notification.read ? 'bg-black-300/50' : ''
+                          }`}
+                          onClick={() => markAsRead(notification.id)}
+                        >
+                          <div className="flex justify-between items-start">
+                            <p className={`text-sm ${notification.read ? 'text-white/40' : 'text-white'}`}>
+                              {notification.message}
+                            </p>
+                            {!notification.read && (
+                              <div className="w-2 h-2 bg-blue-500 rounded-full ml-2 mt-1 flex-shrink-0" />
+                            )}
+                          </div>
+                          <p className="text-xs text-white/50 mt-1">
+                            {formatTime(notification.timestamp)}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Avatar */}
+            <Avatar className="w-7 h-7 lg:w-8 lg:h-8 border border-secondary-200/50">
+              <AvatarImage src="https://github.com/shadcn.png" alt="User Avatar" />
+              <AvatarFallback className="bg-secondary-200 text-white text-xs font-medium">
+                GA
+              </AvatarFallback>
+            </Avatar>
           </div>
         </div>
 
-        {/* Search Bar - Hidden on mobile, shown on tablet+ */}
-        <div className="hidden md:flex flex-1 max-w-md mx-4 lg:mx-8 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input 
-            placeholder="Search comics, creators..."
-            className="!bg-transparent border-[#242424] text-white pl-10 focus:border-white/50"
-          />
-        </div>
-
-        {/* Mobile Search Button */}
-        <div className="md:hidden">
-          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
-            <Search className="w-5 h-5" />
-          </Button>
-        </div>
-
-        {/* User Actions */}
-        <div className="flex items-center space-x-2 lg:space-x-3">
-          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
-            <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
-          </Button>
-          <div className="w-7 h-7 lg:w-8 lg:h-8 bg-orange-500 rounded-full flex items-center justify-center">
-            <User className="w-3 h-3 lg:w-4 lg:h-4 text-white" />
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Search Bar - Shows below header on mobile */}
-      <div className="md:hidden bg-[#1A1A1A] border-b border-dashed border-white/30 px-4 pb-3">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input 
-            placeholder="Search comics, creators..."
-            className="!bg-transparent border-[#242424] text-white pl-10 focus:border-white/50"
-          />
+        {/* Mobile Search Bar */}
+        <div className="md:hidden mt-3">
+          <form onSubmit={handleSearch} className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white" />
+            <Input
+              type="text"
+              placeholder="Search comics, creators..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-black-300/50 border-black-100 text-white placeholder-gray-400 focus:border-secondary-200 focus:ring-secondary-200/20"
+            />
+          </form>
         </div>
       </div>
-    </>
+    </header>
   )
 }

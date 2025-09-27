@@ -96,7 +96,7 @@
 
 // export default Webd;
 
-import Waitlist from '@/Features/waitlist/components/waitlist-view'
+import Waitlist from '@/features/waitlist/components/waitlist-view'
 import React from 'react'
 
 function page() {

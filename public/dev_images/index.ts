@@ -35,6 +35,10 @@ import theNorthFace from "./the-north-face.png";
 import toolOne from "./tool-1.png";
 import envelopeImg from "./envelope.png";
 import soloLevel from "./solo-level.png";
+import demonSlayer from "./demon-slayer.png";
+import kakashi from "./kakashi.png";
+import goofyFriend from "./goofy-friend.png";
+import hinataPicture from "./hinata-picture.png";
 
 export {
 	tonmicIcon,
@@ -74,4 +78,11 @@ export {
 	mascotThree2,
 	heroBgImg,
 	footerImg,
+	demonSlayer,
+	kakashi,
+	goofyFriend,
+	hinataPicture
 };
+
+
+

@@ -1,4 +1,4 @@
-import Verify from '@/Features/waitlist/components/verify-view'
+import Verify from '@/features/waitlist/components/verify-view'
 import React from 'react'
 
 function page() {
