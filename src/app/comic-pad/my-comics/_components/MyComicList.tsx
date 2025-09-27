@@ -84,16 +84,27 @@ const MyComicList = () => {
 		<div className='mt-6'>
 			{/* Comic-style Tabs */}
 			<motion.div
-				className='flex flex-wrap gap-5 mb-6'
+				className='flex gap-2 lg:gap-5 mb-6 overflow-x-auto pb-3 scrollbar-hide'
 				initial='hidden'
 				animate='visible'
 				variants={containerVariants}
+				style={{
+					scrollbarWidth: "none", // Firefox
+					msOverflowStyle: "none", // IE/Edge
+				}}
 			>
+				{/* Hide scrollbar for Webkit browsers */}
+				<style jsx>{`
+					.scrollbar-hide::-webkit-scrollbar {
+						display: none;
+					}
+				`}</style>
+
 				{TABS.map((tab) => (
 					<motion.button
 						key={tab}
 						onClick={() => setActiveTab(tab)}
-						className={`px-4 lg:w-fit py-0.5 rounded-full border-2 border-yellow-700 text-sm text-black-100 sm:text-lg font-bold relative overflow-hidden ${
+						className={`flex-shrink-0 px-4 py-0.5 rounded-full border-2 border-yellow-700 text-sm text-black-100 font-bold relative overflow-hidden ${
 							activeTab === tab
 								? "bg-yellow-700 !text-white"
 								: "text-yellow-700 bg-white"
@@ -104,7 +115,7 @@ const MyComicList = () => {
 						whileHover='hover'
 						whileTap='tap'
 						style={{
-							fontFamily: "'Bangers', cursive, sans-serif", // Comic-style font
+							fontFamily: "'Bangers', cursive, sans-serif",
 						}}
 					>
 						{tab}
