@@ -6,8 +6,8 @@ interface ComicUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
   onNext: () => void;   // 👈 add this prop
-  file: File;
-  preview: string | null;
+  file?: File;
+  preview?: string | null;
 }
 
 export function ComicUploadModal({ isOpen, onClose, onNext, file, preview }: ComicUploadModalProps) {
