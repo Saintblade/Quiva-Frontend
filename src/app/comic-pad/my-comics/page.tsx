@@ -5,8 +5,10 @@ import AppMenu from "@/components/global/AppMenu";
 
 const page = () => {
 	return (
-		<ComicPadlayout className='text-white pt-24 sm:pt-28 pb-20 sm:pb-12 w-full'>
-			<MyComicList />
+		<ComicPadlayout className='text-white w-full'>
+			<div className='px-2 sm:px-8 pt-2 sm:pt-0 pb-20 sm:pb-12'>
+				<MyComicList />
+			</div>
 			<AppMenu />
 		</ComicPadlayout>
 	);

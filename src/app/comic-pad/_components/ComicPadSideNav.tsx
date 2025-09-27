@@ -1,11 +1,17 @@
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 import styles from "../../css/Scrollbar.module.css";
 import { QuivaLogo } from "@/components/utils/function";
 import { usePathname } from "next/navigation";
 
 const ComicPadSideNav = () => {
 	const pathname = usePathname();
+	const router = useRouter();
+
+	const handleCreateNewComic = () => {
+		router.push("/comic-pad/script-builder");
+	};
 
 	const NAV_ITEMS = [
 		{
@@ -53,11 +59,19 @@ const ComicPadSideNav = () => {
 					</a>
 				))}
 
-				<button className='text-black-200 text-sm xl:text-base bg-secondary-300 rounded-full px-2 lg:px-5 py-2 font-medium hover:bg-secondary-300 transition-[.4] hover:scale-105'>
+
+				<button 
+					onClick={handleCreateNewComic}
+					className='text-black-200 bg-secondary-300 rounded-full px-5 py-2 font-medium hover:bg-secondary-300 transition-[.4] hover:scale-105'
+				>
+                {/* </button> */}
+				{/* <button className='text-black-200 text-sm xl:text-base bg-secondary-300 rounded-full px-2 lg:px-5 py-2 font-medium hover:bg-secondary-300 transition-[.4] hover:scale-105'> */}
+
 					Create New Comic
 				</button>
 			</div>
 		</div>
+		
 	);
 };
 

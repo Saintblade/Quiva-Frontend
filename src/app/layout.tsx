@@ -8,30 +8,7 @@ import { HeroUIProvider } from "@heroui/react";
 import { Metadata } from "next";
 import { SEO_CONFIG } from "@/components/utils/seoContants";
 import ReduxProviders from '@/redux/Provider';
-
-// const outfit = Outfit({
-// 	subsets: ["latin-ext"],
-// 	weight: ["100", "300", "400", "500", "700", "900"],
-// 	style: ["normal"],
-// });
-
-// const spaceGrotesk = Space_Grotesk({
-// 	subsets: ["latin-ext"],
-// 	weight: ["300", "400", "500", "700"],
-// 	style: ["normal"],
-// });
-
-// const recursive = Recursive({
-// 	subsets: ["latin-ext"],
-// 	weight: ["300", "400", "500", "700", "800", "900"],
-// 	style: ["normal"],
-// });
-
-// const poppins = Poppins({
-// 	subsets: ["latin-ext"],
-// 	weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-// 	style: ["normal"],
-// });
+// import RainbowProvider from '@/providers/RainbowProvider';
 
 const { description, keywords, title, url } = SEO_CONFIG.default;
 export const metadata: Metadata = {
@@ -57,14 +34,18 @@ export default function RootLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<html lang='en'>
-			<body className={`max-w-[1700px] mx-auto relative`}>
+		<html lang='en' className="bg-black">
+			<body className={`max-w-[1700px] mx-auto relative bg-black`}>
+				
 				<ReduxProviders>
+					{/* <RainbowProvider> */}
 					<HeroUIProvider>
 						{children}
 					</HeroUIProvider>
+					{/* </RainbowProvider> */}
 				</ReduxProviders>
 			</body>
 		</html>
 	);
 }
+		

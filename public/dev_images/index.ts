@@ -35,15 +35,23 @@ import theNorthFace from "./the-north-face.png";
 import toolOne from "./tool-1.png";
 import envelopeImg from "./envelope.png";
 import soloLevel from "./solo-level.png";
-import demonSlayer from "./demon-slayer.png";
+import image3 from "./image_3.png";
+import userOnbard from "./userOnboard.jpg";
+import oneClick from "./oneClick.jpg";
+import comicpadImgCreator from "./comicImg.png";
+import canna from "./image.png";import demonSlayer from "./demon-slayer.png";
 import kakashi from "./kakashi.png";
 import goofyFriend from "./goofy-friend.png";
 import hinataPicture from "./hinata-picture.png";
 
 export {
+	canna,
+	userOnbard,
+	oneClick,
 	tonmicIcon,
 	soloLevel,
 	envelopeImg,
+	image3,
 	toolOne,
 	theNorthFace,
 	walletImg,
@@ -78,6 +86,7 @@ export {
 	mascotThree2,
 	heroBgImg,
 	footerImg,
+	comicpadImgCreator,
 	demonSlayer,
 	kakashi,
 	goofyFriend,

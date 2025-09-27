@@ -75,3 +75,41 @@ export const SecondaryAnchorButton = ({
     </a>
   );
 };
+
+export const GradientButton = ({
+  children,
+  onClick,
+  className = "",
+  type = "button",
+  disabled = false,
+}: MainButtonProps & { disabled?: boolean }) => {
+  return (
+    <button
+      onClick={onClick}
+      type={type}
+      disabled={disabled}
+      className={`bg-secondary-300 disabled:bg-secondary-300/50 disabled:cursor-not-allowed text-black font-bold rounded-xl shadow-lg transition-none ${className}`}
+    >
+      {children}
+    </button>
+  );
+};
+
+export const OrangeButton = ({
+  children,
+  onClick,
+  className = "",
+  type = "button",
+  disabled = false,
+}: MainButtonProps & { disabled?: boolean }) => {
+  return (
+    <button
+      onClick={onClick}
+      type={type}
+      disabled={disabled}
+      className={`bg-secondary-300 disabled:bg-secondary-300/50 disabled:cursor-not-allowed text-black font-bold rounded-xl shadow-lg transition-none ${className}`}
+    >
+      {children}
+    </button>
+  );
+};

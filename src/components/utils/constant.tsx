@@ -1,4 +1,4 @@
-import { FiInstagram } from "react-icons/fi";
+import { FiArrowDown, FiArrowUp, FiInstagram } from "react-icons/fi";
 import { RiTelegram2Fill, RiTwitterXFill, RiYoutubeFill } from "react-icons/ri";
 import { soloLevel } from "../../../public/dev_images";
 import { FaBook, FaCog, FaHome, FaMoneyBill } from "react-icons/fa";
@@ -199,5 +199,26 @@ export const mobileHeaderLinkUrl = [
 		url: "/comic-pad/settings",
 		link: "Settings",
 		icon: (className: string) => <FaCog className={`${className} !text-2xl`} />,
+	},
+];
+
+export const OVERVIEW_CARDS = [
+	{
+		id: "readers",
+		title: "Readers",
+		value: "1024",
+		change: "35.8k",
+		changeColor: "text-red-500",
+		changeBg: "bg-red-900/30",
+		Icon: FiArrowUp,
+	},
+	{
+		id: "income",
+		title: "Income",
+		value: "256K",
+		change: "38.8k",
+		changeColor: "text-amber-300",
+		changeBg: "bg-amber-900/30",
+		Icon: FiArrowDown,
 	},
 ];

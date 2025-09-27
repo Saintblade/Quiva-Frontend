@@ -19,13 +19,14 @@ interface WhitePaperModalProps {
 	onClose: () => void;
 	modalPage: string | null;
 	setModalPage: (page: string | null) => void;
+	onLoginSuccess?: () => void;
 }
 
 interface LoginFormValues {
 	email: string;
 }
 
-const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalProps) => {
+const WhitePaperModal = ({ onClose, modalPage, setModalPage, onLoginSuccess }: WhitePaperModalProps) => {
 	const [isVerificationCode, setIsVerificationCode] = useState(false);
 	const [otpValue, setOtpValue] = useState("");
 	const [emailValue, setEmailValue] = useState("");
@@ -67,6 +68,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 		if (emailValue.trim()) {
 			try {
 				await dispatch(sendOtpEmail({ email: emailValue } as any)).unwrap();
+				setModalPage("modal");
 			} catch (error) {
 				console.error('Failed to send OTP:', error);
 			}
@@ -85,6 +87,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 					email: sentEmail || emailValue, 
 					code: otp 
 				} as any)).unwrap();
+				setModalPage("whitepaper");
 				console.log('OTP verification response:', response);
 			} catch (error) {
 				console.error('Failed to verify OTP:', error);
@@ -110,13 +113,27 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 		}
 	}, [sendOtpSuccess]);
 
-	// Effect to handle OTP verification success
-	useEffect(() => {
+	// // Effect to handle OTP verification success
+	// useEffect(() => {
+	// 	if (verifyOtpSuccess && isAuthenticated) {
+
+	// 		router.push("/marketplace");
+	// 		// setModalPage("user-profile");
+
+
+	// }}, [verifyOtpSuccess, isAuthenticated, router, onClose]);
+
+		useEffect(() => {
 		if (verifyOtpSuccess && isAuthenticated) {
-			router.push("/comic-pad");
-			onClose(); // Close modal on success
+			// Instead of routing to marketplace, trigger the user profile flow
+			if (onLoginSuccess) {
+				onLoginSuccess(); // This will trigger opening the user profile modal
+			} else {
+				// Fallback to direct routing if callback not provided
+				router.push("/marketplace");
+			}
 		}
-	}, [verifyOtpSuccess, isAuthenticated, router, onClose]);
+	}, [verifyOtpSuccess, isAuthenticated, router, onLoginSuccess]);
 
 	// Effect to clear errors when modal closes
 	useEffect(() => {
@@ -134,7 +151,7 @@ const WhitePaperModal = ({ onClose, modalPage, setModalPage }: WhitePaperModalPr
 
 	return (
 		<>
-			{isVerificationCode ? (
+			{isVerificationCode || modalPage === "otp" ? (
 				<div className='w-full max-w-md mx-auto text-white py-8 sm:py-12 space-y-4 lg:space-y-8'>
 					<div className='grid grid-cols-5 items-center w-full gap-0 px-2'>
 						{/* Back Button */}
