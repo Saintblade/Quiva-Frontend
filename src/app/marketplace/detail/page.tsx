@@ -1,6 +1,6 @@
 'use client'
 
-import ComicDetail from '@/features_temp/comic-library/components/ComicDetail'
+import ComicDetail from '@/features/comic-library/components/ComicDetail'
 
 function page() {
    const sampleComic = {

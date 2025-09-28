@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button'
-import { ComicSection } from '@/features_temp/comic-library/components/ComicSection'
-import { CreatorsSection } from '@/features_temp/comic-library/components/CreatorsSection'
-import { FeaturedComic } from '@/features_temp/comic-library/components/FeaturedComic'
-import { HeroComicSlider } from '@/features_temp/comic-library/components/HeroComicSlider'
-import { TopComicsTable } from '@/features_temp/comic-library/components/TopComicsTable'
-import { trendingComics, featuredComics, upcomingComics, creators, topComics, mintComics, FeaturesComics, heroComics } from '@/features_temp/comic-library/data/sampleData'
+import { ComicSection } from '@/features/comic-library/components/ComicSection'
+import { CreatorsSection } from '@/features/comic-library/components/CreatorsSection'
+import { FeaturedComic } from '@/features/comic-library/components/FeaturedComic'
+import { HeroComicSlider } from '@/features/comic-library/components/HeroComicSlider'
+import { TopComicsTable } from '@/features/comic-library/components/TopComicsTable'
+import { trendingComics, featuredComics, upcomingComics, creators, topComics, mintComics, FeaturesComics, heroComics } from '@/features/comic-library/data/sampleData'
 
 
 
