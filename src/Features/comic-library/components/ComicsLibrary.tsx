@@ -5,10 +5,10 @@ import {ChevronDown} from "lucide-react"
 import {useState} from "react"
 import EmptyState from "../utils/EmptyState"
 
-export function ComicsLibrary({
+const ComicsLibrary = ({
     comics,
     title = "All"
-}) {
+}) => {
     const [filterBy,
         setFilterBy] = useState("All")
     const [sortBy,

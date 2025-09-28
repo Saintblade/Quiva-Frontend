@@ -39,7 +39,7 @@ interface ComicDetailProps {
   onEnlargeCover?: () => void
 }
 
-export function ComicDetail({
+const ComicDetail = ({
   title,
   issueNumber,
   author,
@@ -53,7 +53,7 @@ export function ComicDetail({
   onReadIssue,
   onPreviewIssue,
   onEnlargeCover
-}: ComicDetailProps) {
+}: ComicDetailProps) => {
   return (
     <div className="min-h-screen bg-black-500 text-white p-4 md:p-6 lg:p-8">
       {/* Header */}
