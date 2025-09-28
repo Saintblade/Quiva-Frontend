@@ -1,4 +1,4 @@
-import { ComicsLibrary } from '@/features/comic-library/components/ComicsLibrary'
+import ComicsLibrary from '@/features/comic-library/components/ComicsLibrary'
 import { trendingComics } from '@/features/comic-library/data/sampleData'
 import React from 'react'
 
