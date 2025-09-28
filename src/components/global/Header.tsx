@@ -173,9 +173,10 @@ const Header = () => {
 
 					<div className='flex justify-end col-span-1'>
 						<MainButton onClick={() => {
-							router.push("?modal=whitepaper");
-							onOpenWhitePaper()
-						}}>Login</MainButton>
+							// router.push("?modal=whitepaper");
+							// onOpenWhitePaper()
+							router.push("/marketplace");
+						}}>Getting Started</MainButton>
 					</div>
 				</nav>
 
@@ -216,10 +217,10 @@ const Header = () => {
 				<WhitePaperModal 
 
 				onClose={onCloseWhitePaper}
-				 onLoginSuccess={handleLoginSuccess} 
-				 modalPage={modalPage}
-				 setModalPage={setModalPage}
-				 />
+					onLoginSuccess={handleLoginSuccess} 
+					modalPage={modalPage}
+					setModalPage={setModalPage}
+				/>
 			</GeneralModal>
 
 			{/* User Profile Flow Modal */}
