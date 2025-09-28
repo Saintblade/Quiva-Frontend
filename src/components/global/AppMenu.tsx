@@ -59,22 +59,6 @@ const AppMenu = () => {
 										/>
 										{menuItem.icon(iconClassName)}
 									</div>
-									{/* <span
-										className={`font-comic text-center font-bold tracking-wide transition-all duration-300 ${
-											isActive
-												? "text-yellow-300 scale-105 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]"
-												: "text-white/90 group-hover:text-white"
-										}`}
-									>
-										{menuItem.link}
-									</span> */}
-
-									{/* Hover effect - comic style underline */}
-									{/* <div
-										className={`h-0.5 bg-yellow-400 rounded-full transition-all duration-300 ${
-											isActive ? "w-full scale-100" : "w-0 group-hover:w-3/4"
-										}`}
-									/> */}
 								</Link>
 							);
 						})}
@@ -103,26 +87,26 @@ const AppMenu = () => {
 								/>
 							</svg>
 
-							<div className='absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300'>
-								<div className='absolute -inset-1 bg-yellow-400 rounded-full blur-sm animate-ping' />
-							</div>
+							{/* <div className='absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300'>
+								<div className='absolute -inset-1 bg-yellow-400 rounded-full blur-sm animate-blink' />
+							</div> */}
 						</Link>
 					</div>
 
 					{/* Comic-style speech bubble tip at the top */}
-					<div className='absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-2 bg-inherit clip-comic-bubble' />
+					{/* <div className='absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-2 bg-inherit clip-comic-bubble' /> */}
 				</div>
 			</div>
 
 			{/* Add custom styles for comic bubble */}
-			<style jsx>{`
+			{/* <style jsx>{`
 				.clip-comic-bubble {
 					clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
 				}
 				.font-comic {
 					font-family: "Comic Neue", "Comic Sans MS", cursive, sans-serif;
 				}
-			`}</style>
+			`}</style> */}
 		</>
 	);
 };
