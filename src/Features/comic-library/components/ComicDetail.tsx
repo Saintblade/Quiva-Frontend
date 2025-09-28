@@ -1,6 +1,6 @@
 'use client'
 
-
+// updating folder name
 import React from 'react'
 import {  User, Calendar, BookOpen, FileText, ChevronLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
