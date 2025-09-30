@@ -1,6 +1,17 @@
 import { useState } from "react";
-import { Upload, X } from "lucide-react";
+import { X } from "lucide-react";
 import OnboardingPage from "./OnboardingPage";
+import Picture from "@/components/picture/Index";
+
+interface ExtractedFile {
+	name: string;
+	blob: Blob;
+	preview: string;
+}
+
+interface ComicCreationFormProps {
+	extractedFiles: ExtractedFile[];
+}
 
 const genres = [
 	"Science Fiction",
@@ -17,16 +28,18 @@ const genres = [
 	"Sports",
 ];
 
-export function ComicCreationForm() {
+export function ComicCreationForm({ extractedFiles }: ComicCreationFormProps) {
 	const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-	const [ageRating, setAgeRating] = useState("all-ages");
+	const [tags, setTags] = useState<string[]>([]);
+	const [tagInput, setTagInput] = useState("");
 	const [formData, setFormData] = useState({
-		seriesTitle: "",
-		episodeTitle: "",
+		title: "",
 		description: "",
 	});
-	const [coverImage, setCoverImage] = useState<string | null>(null);
-	const [showForm, setShowForm] = useState(false);
+	const [coverImage, setCoverImage] = useState<File | null>(null);
+	const [coverPreview, setCoverPreview] = useState<string | null>(null);
+	const [ageRating, setAgeRating] = useState<string>("all-ages");
+	const [showOnboarding, setShowOnboarding] = useState(false);
 
 	const toggleGenre = (genre: string) => {
 		if (selectedGenres.includes(genre)) {
@@ -40,24 +53,68 @@ export function ComicCreationForm() {
 		setFormData((prev) => ({ ...prev, [field]: value }));
 	};
 
+	const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === 'Enter' && tagInput.trim()) {
+			e.preventDefault();
+			if (!tags.includes(tagInput.trim())) {
+				setTags([...tags, tagInput.trim()]);
+			}
+			setTagInput("");
+		}
+	};
+
+	const removeTag = (tagToRemove: string) => {
+		setTags(tags.filter(tag => tag !== tagToRemove));
+	};
+
 	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (file) {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				setCoverImage(reader.result as string);
-			};
-			reader.readAsDataURL(file);
+			setCoverImage(file);
+			setCoverPreview(URL.createObjectURL(file));
 		}
 	};
 
 	const removeCoverImage = () => {
+		if (coverPreview) {
+			URL.revokeObjectURL(coverPreview);
+		}
 		setCoverImage(null);
+		setCoverPreview(null);
 	};
+
+	const handleContinue = () => {
+		// Validate required fields
+		if (!formData.title.trim()) {
+			alert("Please enter a comic title");
+			return;
+		}
+		if (!formData.description.trim()) {
+			alert("Please enter a description");
+			return;
+		}
+		if (selectedGenres.length === 0) {
+			alert("Please select at least one genre");
+			return;
+		}
+
+		setShowOnboarding(true);
+	};
+
+	// Prepare the form data object to pass to next step
+	const getComicData = () => ({
+		title: formData.title,
+		description: formData.description,
+		genre: selectedGenres,
+		tags: tags,
+		ageRating: ageRating,
+		coverImage: coverImage,
+		pages: extractedFiles,
+	});
 
 	return (
 		<>
-			{!showForm && (
+			{!showOnboarding && (
 				<div className='px-2 py-3 text-white space-y-4 overflow-y-auto max-h-[80vh]'>
 					{/* Header */}
 					<div className='text-center space-y-1'>
@@ -76,34 +133,26 @@ export function ComicCreationForm() {
 					<div className='space-y-4'>
 						<input
 							type='text'
-							placeholder='Comic Series Title'
-							value={formData.seriesTitle}
-							onChange={(e) => handleInputChange("seriesTitle", e.target.value)}
+							placeholder='Comic Title *'
+							value={formData.title}
+							onChange={(e) => handleInputChange("title", e.target.value)}
 							className='w-full rounded-full border border-white/80 bg-transparent px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500'
-						/>
-
-						<input
-							type='text'
-							placeholder='Episode Title'
-							value={formData.episodeTitle}
-							onChange={(e) =>
-								handleInputChange("episodeTitle", e.target.value)
-							}
-							className='w-full rounded-full border border-white/80 bg-transparent px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500'
+							required
 						/>
 
 						<textarea
-							placeholder='Description'
+							placeholder='Description *'
 							value={formData.description}
 							onChange={(e) => handleInputChange("description", e.target.value)}
 							className='w-full min-h-[100px] resize-none rounded-md border border-white/80 bg-transparent px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500'
+							required
 						/>
 					</div>
 
 					{/* Genre Selection */}
 					<div className='space-y-3'>
 						<h3 className='text-base tracking-wider text-white/80 font-bold'>
-							Select up to 3 genres
+							Select up to 3 genres *
 						</h3>
 						<div className='flex items-center flex-wrap gap-2'>
 							{genres.map((genre) => (
@@ -127,7 +176,7 @@ export function ComicCreationForm() {
 					{/* Age Rating */}
 					<div className='space-y-3'>
 						<h3 className='text-base tracking-wider text-white/80 font-bold'>
-							Who is this comic for?
+							Who is this comic for? *
 						</h3>
 						<div className='flex flex-wrap gap-6'>
 							{[
@@ -144,22 +193,59 @@ export function ComicCreationForm() {
 										value={value}
 										checked={ageRating === value}
 										onChange={() => setAgeRating(value)}
-										className='accent-orange-500'
+										className='accent-orange-500 w-4 h-4'
 									/>
-									<span className='text-sm tracking-wider'>{label}</span>
+									<span className='text-sm tracking-wider text-white'>{label}</span>
 								</label>
 							))}
+						</div>
+					</div>
+
+					{/* Tags Input */}
+					<div className='space-y-3'>
+						<h3 className='text-base tracking-wider text-white/80 font-bold'>
+							Tags (optional)
+						</h3>
+						<div className='space-y-2'>
+							<input
+								type='text'
+								placeholder='Add tags (press Enter)'
+								value={tagInput}
+								onChange={(e) => setTagInput(e.target.value)}
+								onKeyDown={handleAddTag}
+								className='w-full rounded-full border border-white/80 bg-transparent px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500'
+							/>
+							{tags.length > 0 && (
+								<div className='flex flex-wrap gap-2'>
+									{tags.map((tag) => (
+										<span
+											key={tag}
+											className='inline-flex items-center gap-1 bg-white/10 text-white px-3 py-1 rounded-full text-sm'
+										>
+											{tag}
+											<button
+												onClick={() => removeTag(tag)}
+												className='hover:text-red-400'
+											>
+												<X className='h-3 w-3' />
+											</button>
+										</span>
+									))}
+								</div>
+							)}
 						</div>
 					</div>
 
 					{/* Cover Art */}
 					<div className='space-y-3'>
 						<div className='flex items-center justify-between'>
-							<h3 className='text-sm font-medium'>Cover Art</h3>
-							<span className='text-xs text-gray-400'>Thumbnail</span>
+							<h3 className='text-sm font-medium'>Cover Art (optional)</h3>
+							<span className='text-xs text-gray-400'>
+								{coverImage ? 'Custom cover' : 'First page will be used'}
+							</span>
 						</div>
 
-						{!coverImage ? (
+						{!coverPreview ? (
 							<label className='block border-2 border-dashed border-light-200 bg-gray-400 p-10 rounded-lg text-center cursor-pointer hover:border-orange-500 transition'>
 								<input
 									type='file'
@@ -167,20 +253,21 @@ export function ComicCreationForm() {
 									onChange={handleFileUpload}
 									className='hidden'
 								/>
-								<button className='text-sm text-white/80 font-medium hover:bg-secondary-200/60 transition-[.3] py-2 px-4 rounded-full border border-light-200'>
-									Choose file
-								</button>
+								<div className='text-sm text-white/80 font-medium hover:bg-secondary-200/60 transition-[.3] py-2 px-4 rounded-full border border-light-200 inline-block'>
+									Choose cover image
+								</div>
 							</label>
 						) : (
 							<div className='relative'>
 								<img
-									src={coverImage}
+									src={coverPreview}
 									alt='Cover preview'
-									className='w-full rounded-lg object-cover border border-gray-700'
+									className='w-full max-h-64 rounded-lg object-cover border border-gray-700'
 								/>
 								<button
+									type='button'
 									onClick={removeCoverImage}
-									className='absolute top-2 right-2 bg-black/70 p-2 rounded-full hover:bg-black/90'
+									className='absolute top-2 right-2 bg-black/70 p-2 rounded-full hover:bg-black/90 transition'
 								>
 									<X className='h-4 w-4 text-white' />
 								</button>
@@ -188,23 +275,38 @@ export function ComicCreationForm() {
 						)}
 					</div>
 
+					{/* Page Count Info */}
+					<div className='bg-white/5 rounded-lg p-3 border border-white/10'>
+						<p className='text-white/70 text-sm'>
+							<span className='font-semibold text-orange-400'>{extractedFiles.length}</span> page{extractedFiles.length !== 1 ? 's' : ''} will be uploaded as Chapter 1
+						</p>
+					</div>
+
 					{/* Action Buttons */}
 					<div className='flex gap-3 pt-2'>
-						<button className='flex-1 rounded-full border border-light-200 bg-gray-400 py-3 text-white font-medium hover:bg-gray-700 transition'>
+						<button 
+							type='button'
+							className='flex-1 rounded-full border border-light-200 bg-gray-400 py-3 text-white font-medium hover:bg-gray-700 transition'
+						>
 							Save Draft
 						</button>
 						<button
-							onClick={() => setShowForm(true)}
+							type='button'
+							onClick={handleContinue}
 							className='flex-1 rounded-full border border-gray-700 bg-secondary-200 py-3 text-gray-300 font-medium hover:bg-secondary-200/80 transition'
 						>
-							Publish
+							Continue
 						</button>
 					</div>
 				</div>
 			)}
 
-			{/* If "Continue" clicked, show page instead */}
-			{showForm && <OnboardingPage onclose={() => setShowForm(true)} />}
+			{showOnboarding && (
+				<OnboardingPage 
+					onclose={() => setShowOnboarding(false)} 
+					comicData={getComicData()}
+				/>
+			)}
 		</>
 	);
 }

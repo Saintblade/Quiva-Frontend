@@ -1,23 +1,53 @@
 "use client";
 
-import { X } from "lucide-react";
 import { useState } from "react";
 import ComicPublisher from "./ComicPublisher";
 
-interface OnboardingPageProps {
-	onclose: () => void;
+interface ExtractedFile {
+	name: string;
+	blob: Blob;
+	preview: string;
 }
 
-export default function OnboardingPage({ onclose }: OnboardingPageProps) {
-	const [selectedOption, setSelectedOption] = useState("free");
-	const [showForm, setShowForm] = useState(false);
+interface ComicData {
+	title: string;
+	description: string;
+	genre: string[];
+	tags: string[];
+	ageRating: string;
+	coverImage: File | null;
+	pages: ExtractedFile[];
+}
+
+interface OnboardingPageProps {
+	onclose: () => void;
+	comicData: ComicData;
+}
+
+export default function OnboardingPage({ onclose, comicData }: OnboardingPageProps) {
+	const [publishType, setPublishType] = useState<"free" | "paid">("free");
+	const [price, setPrice] = useState<string>("");
+	const [showPublisher, setShowPublisher] = useState(false);
+
+	const handleContinue = () => {
+		if (publishType === "paid" && (!price || parseFloat(price) <= 0)) {
+			alert("Please enter a valid price for paid content");
+			return;
+		}
+		setShowPublisher(true);
+	};
+
+	const getMonetizationData = () => ({
+		publishType,
+		price: publishType === "paid" ? parseFloat(price) : undefined,
+	});
 
 	return (
 		<>
-			{!showForm && (
-				<div className=''>
+			{!showPublisher && (
+				<div className='px-4 py-6'>
 					{/* Header */}
-					<div className='text-center mb-8 py-3'>
+					<div className='text-center mb-8'>
 						<p className='text-white/80 text-sm font-medium tracking-widest uppercase mb-1'>
 							PUBLISH YOUR COMIC: Step 3 of 4
 						</p>
@@ -35,29 +65,53 @@ export default function OnboardingPage({ onclose }: OnboardingPageProps) {
 							Reading Access
 						</h2>
 
-						<div className='flex items-center gap-3'>
-							<label className='flex items-center gap-1 cursor-pointer'>
+						<div className='space-y-4'>
+							<label className='flex items-start gap-3 cursor-pointer p-4 rounded-lg border border-white/20 hover:border-orange-500/50 transition'>
 								<input
 									type='radio'
 									name='reading-access'
 									value='free'
-									checked={selectedOption === "free"}
-									onChange={() => setSelectedOption("free")}
-									className='accent-orange-500'
+									checked={publishType === "free"}
+									onChange={() => setPublishType("free")}
+									className='accent-orange-500 mt-1'
 								/>
-								<h4 className='text-white'>Free to read</h4>
+								<div>
+									<h4 className='text-white font-semibold'>Free to read</h4>
+									<p className='text-white/60 text-sm mt-1'>
+										Make your comic available to everyone at no cost. Perfect for building an audience.
+									</p>
+								</div>
 							</label>
 
-							<label className='flex items-center gap-1 cursor-pointer'>
+							<label className='flex items-start gap-3 cursor-pointer p-4 rounded-lg border border-white/20 hover:border-orange-500/50 transition'>
 								<input
 									type='radio'
 									name='reading-access'
 									value='pay-per-read'
-									checked={selectedOption === "pay-per-read"}
-									onChange={() => setSelectedOption("pay-per-read")}
-									className='accent-orange-500'
+									checked={publishType === "paid"}
+									onChange={() => setPublishType("paid")}
+									className='accent-orange-500 mt-1'
 								/>
-								<h4 className='text-white'>Pay Per Read</h4>
+								<div className='flex-1'>
+									<h4 className='text-white font-semibold'>Pay Per Read</h4>
+									<p className='text-white/60 text-sm mt-1'>
+										Readers pay to access your comic. Set your own price.
+									</p>
+									
+									{publishType === "paid" && (
+										<div className='mt-3'>
+											<input
+												type='number'
+												placeholder='Enter price (USD)'
+												value={price}
+												onChange={(e) => setPrice(e.target.value)}
+												min='0.01'
+												step='0.01'
+												className='w-full rounded-full border border-white/80 bg-transparent px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500'
+											/>
+										</div>
+									)}
+								</div>
 							</label>
 						</div>
 					</div>
@@ -65,20 +119,29 @@ export default function OnboardingPage({ onclose }: OnboardingPageProps) {
 					{/* Action Buttons */}
 					<div className='space-y-3'>
 						<button
-							onClick={() => setShowForm(true)}
-							className='w-full bg-secondary-200/80 hover:bg-secondary-200 text-black font-semibold py-3 rounded-full transition disabled:cursor-not-allowed disabled:opacity-50'
+							onClick={handleContinue}
+							className='w-full bg-secondary-200/80 hover:bg-secondary-200 text-black font-semibold py-3 rounded-full transition'
 						>
 							Next
 						</button>
 
-						<button className='w-full border border-white/20 text-white/70 hover:text-white hover:bg-white/5 py-3 rounded-full transition'>
+						<button 
+							onClick={onclose}
+							className='w-full border border-white/20 text-white/70 hover:text-white hover:bg-white/5 py-3 rounded-full transition'
+						>
 							Go back
 						</button>
 					</div>
 				</div>
 			)}
 
-			{showForm && <ComicPublisher onclose={() => setShowForm(true)} />}
+			{showPublisher && (
+				<ComicPublisher 
+					onclose={() => setShowPublisher(false)} 
+					comicData={comicData}
+					monetizationData={getMonetizationData()}
+				/>
+			)}
 		</>
 	);
 }
