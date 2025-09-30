@@ -7,7 +7,8 @@ interface WalletAuthResponse {
 }
 
 interface WalletVerifyResponse {
-  token: string;
+  accessToken: string;
+  refreshToken:string;
   user: any;
 }
 
@@ -27,6 +28,7 @@ interface WalletAuthState {
   error: string | null;
   message: string | null;
   token: string | null;
+  refreshToken: string | null;
   user: any | null;
   isAuthenticated: boolean;
   walletAddress: `0x${string}` | null;
@@ -39,6 +41,7 @@ const initialState: WalletAuthState = {
   error: null,
   message: null,
   token: null,
+  refreshToken: null,
   user: null,
   isAuthenticated: false,
   walletAddress: null,
@@ -51,8 +54,6 @@ export const walletAuth = createAsyncThunk<
   { rejectValue: string }
 >("auth/walletAuth", async ({ walletAddress }, { rejectWithValue }) => {
   try {
-    console.log(walletAddress);
-    console.log("I am in slice");
     const response = await axiosInstance.post("/wallet/message", {
       walletAddress,
     });
@@ -73,14 +74,13 @@ export const walletVerifyAuth = createAsyncThunk<
 >("auth/walletVerifyAuth", async (payload, { rejectWithValue }) => {
   try {
     const response = await axiosInstance.post("/wallet/verify", payload);
-    console.log(`Wallet verification response: ${JSON.stringify(response.data)}`);
     
     // Store token in localStorage if needed
-    if (response.data.token) {
-      localStorage.setItem('authToken', response.data.token);
+    if (response.data.data.accessToken) {
+      localStorage.setItem('authToken', response.data.data.accessToken);
     }
     
-    return response.data;
+    return response.data.data;
   } catch (error: any) {
     return rejectWithValue(
       error.response?.data?.message ||
@@ -137,7 +137,8 @@ const walletAuthSlice = createSlice({
       })
       .addCase(walletVerifyAuth.fulfilled, (state, action) => {
         state.isVerifying = false;
-        state.token = action.payload.token;
+        state.token = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
         state.user = action.payload.user;
         state.isAuthenticated = true;
         state.error = null;

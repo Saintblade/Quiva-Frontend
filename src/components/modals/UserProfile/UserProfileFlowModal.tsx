@@ -1,10 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import Step1WelcomeModal from "./Step1WelcomeModal";
-import Step2BasicInfoModal from "./Step2BasicInfoModal";
-import Step3ProfilePictureModal from "./Step3ProfilePictureModal";
-import Step4BioInterestsModal from "./Step4BioInterestsModal";
+import Step4ManageAudienceModal from './Step4ManageAudience';
+import Step3UnlockRevenueModal from './Step3UnlockRevenue';
+import Step2CraftAndPublishModal from './Step2CraftAndPublish';
 import Step5CompletionModal from "./Step5CompletionModal";
+
 import { Router } from "lucide-react";
 // import { useRouter } from "next/router";
 
@@ -36,31 +37,27 @@ const UserProfileFlowModal = ({ onClose, onComplete }: UserProfileFlowModalProps
     onComplete();
   };
 
-  const handleStep1Next = () => {
-    setCurrentStep(2);
-  };
+  // const handleStep2Next = (data: { displayName: string; username: string }) => {
+  //   setUserData(prev => ({ ...prev, ...data }));
+  //   setCurrentStep(3);
+  // };
 
-  const handleStep2Next = (data: { displayName: string; username: string }) => {
-    setUserData(prev => ({ ...prev, ...data }));
-    setCurrentStep(3);
-  };
+  // const handleStep3Next = (data: { 
+  //   username?: string; 
+  //   profileImage?: File; 
+  //   profilePreview?: string; 
+  //   bannerImage?: File; 
+  //   bannerPreview?: string; 
+  //   bio?: string; 
+  // }) => {
+  //   setUserData(prev => ({ ...prev, ...data }));
+  //   setCurrentStep(4);
+  // };
 
-  const handleStep3Next = (data: { 
-    username?: string; 
-    profileImage?: File; 
-    profilePreview?: string; 
-    bannerImage?: File; 
-    bannerPreview?: string; 
-    bio?: string; 
-  }) => {
-    setUserData(prev => ({ ...prev, ...data }));
-    setCurrentStep(4);
-  };
-
-  const handleStep4Next = (data: { interests: string[] }) => {
-    setUserData(prev => ({ ...prev, ...data }));
-    setCurrentStep(5);
-  };
+  // const handleStep4Next = (data: { interests: string[] }) => {
+  //   setUserData(prev => ({ ...prev, ...data }));
+  //   setCurrentStep(5);
+  // };
 
   const handleStepBack = () => {
     if (currentStep > 1) {
@@ -69,13 +66,6 @@ const UserProfileFlowModal = ({ onClose, onComplete }: UserProfileFlowModalProps
   };
 
   const handleFinalComplete = async () => {
-    // Here you would typically save the user profile data to your backend
-    console.log("Saving user profile:", userData);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    // router.push("/marketplace");
-    
     // Complete the flow
     onComplete();
   };
@@ -85,60 +75,64 @@ const UserProfileFlowModal = ({ onClose, onComplete }: UserProfileFlowModalProps
       case 1:
         return (
           <Step1WelcomeModal
-            onNext={handleStep1Next}
+            onNext={() => setCurrentStep(2)}
             totalSteps={totalSteps}
             currentStep={currentStep}
+            onSkip={handleSkip}
           />
         );
       case 2:
         return (
-          <Step2BasicInfoModal
-            onNext={handleStep2Next}
+          <Step2CraftAndPublishModal
+            onNext={() => setCurrentStep(3)}
             onBack={handleStepBack}
             totalSteps={totalSteps}
             currentStep={currentStep}
-            initialData={{
-              displayName: userData.displayName,
-              username: userData.username,
-            }}
+            onSkip={handleSkip}
+            // initialData={{
+            //   displayName: userData.displayName,
+            //   username: userData.username,
+            // }}
           />
         );
       case 3:
         return (
-          <Step3ProfilePictureModal
-            onNext={handleStep3Next}
+          <Step3UnlockRevenueModal
+            onNext={() => setCurrentStep(4)}
             onBack={handleStepBack}
             totalSteps={totalSteps}
             currentStep={currentStep}
-            initialData={{
-              username: userData.username,
-              profileImage: userData.profileImage,
-              profilePreview: userData.profilePreview,
-              bannerImage: userData.bannerImage,
-              bannerPreview: userData.bannerPreview,
-              bio: userData.bio,
-            }}
+            onSkip={handleSkip}
+            // initialData={{
+            //   username: userData.username,
+            //   profileImage: userData.profileImage,
+            //   profilePreview: userData.profilePreview,
+            //   bannerImage: userData.bannerImage,
+            //   bannerPreview: userData.bannerPreview,
+            //   bio: userData.bio,
+            // }}
           />
         );
       case 4:
         return (
-          <Step4BioInterestsModal
-            onNext={handleStep4Next}
+          <Step5CompletionModal
+            onNext={() => setCurrentStep(5)}
             onBack={handleStepBack}
             totalSteps={totalSteps}
             currentStep={currentStep}
-            initialData={{
-              interests: userData.interests,
-            }}
+            initialData={userData}
           />
+          
         );
       case 5:
         return (
-          <Step5CompletionModal
+          <Step4ManageAudienceModal
             onComplete={handleFinalComplete}
             totalSteps={totalSteps}
             currentStep={currentStep}
-            userData={userData}
+            // initialData={{
+            //   interests: userData.interests,
+            // }}
           />
         );
       default:

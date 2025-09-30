@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { getAddress } from "viem";
 import { walletAuth, walletVerifyAuth } from "@/redux/slices/walletSlice";
+import { getUserProfile } from "@/redux/slices/authSlice";
 
 export function useWalletAuth() {
   const { address } = useAccount();
@@ -10,7 +11,6 @@ export function useWalletAuth() {
   const dispatch = useDispatch<AppDispatch>();
 
   const loginWithWallet = async () => {
-    console.log({ address });
     if (!address) throw new Error("No wallet connected");
 
     try{
@@ -19,21 +19,20 @@ export function useWalletAuth() {
       const msgRes = await dispatch(walletAuth({ walletAddress })).unwrap();
       const message = msgRes.message;
 
-      console.log(message)
-
       const signature = await signMessageAsync({
         message,
         account: walletAddress,
       });
 
-      console.log(signature)
-
       const verifyRes = await dispatch(
         walletVerifyAuth({ walletAddress, message, signature })
-        // walletVerifyAuth({ walletAddress})
       ).unwrap();
-      if (verifyRes.token) {
-        localStorage.setItem("token", verifyRes.token);
+      if (verifyRes.accessToken) {
+        localStorage.setItem("token", verifyRes.accessToken);
+      }
+
+      if(verifyRes.user){
+        dispatch(getUserProfile(verifyRes.user._id))
       }
 
       return verifyRes.user;

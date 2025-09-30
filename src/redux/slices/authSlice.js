@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../axios-instance';
+import { walletAuth, walletVerifyAuth } from './walletSlice';
 
 const initialState = {
     sendOtp: {
@@ -24,15 +25,31 @@ const initialState = {
         isLoading: false,
         error: null
     },
-    wallet: {
-        data: null,
+    onboarding: {
         isLoading: false,
-        error: null
+        error: null,
+        success: false
     },
-    walletAddress: null
+    usernameCheck: {
+        isLoading: false,
+        error: null,
+        isAvailable: null,
+        checkedUsername: null
+    },
+    updateProfile: {
+        isLoading: false,
+        error: null,
+        success: false
+    },
+    uploadAvatar: {
+        isLoading: false,
+        error: null,
+        success: false
+    }
 };
 
-// Async thunk for sending OTP via email
+
+// AUTHENTICATION THUNKS (existing)
 export const sendOtpEmail = createAsyncThunk(
     'auth/sendOtpEmail',
     async (credentials, { rejectWithValue }) => {
@@ -49,7 +66,6 @@ export const sendOtpEmail = createAsyncThunk(
     }
 );
 
-// Async thunk for verifying OTP
 export const verifyOtpEmail = createAsyncThunk(
     'auth/verifyOtpEmail',
     async (otpData, { rejectWithValue }) => {
@@ -66,12 +82,12 @@ export const verifyOtpEmail = createAsyncThunk(
     }
 );
 
-// Async thunk for getting user profile
+// USER PROFILE THUNKS (new and updated)
 export const getUserProfile = createAsyncThunk(
     'auth/getUserProfile',
-    async (_, { rejectWithValue }) => {
+    async (id, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get('/auth/profile');
+            const response = await axiosInstance.get(`/${id}`);
             return response.data;
         } catch (error) {
             return rejectWithValue(
@@ -83,18 +99,71 @@ export const getUserProfile = createAsyncThunk(
     }
 );
 
-// Async thunk for getting user profile
-export const getWalletVerify = createAsyncThunk(
-    'auth/getWalletVerify',
-    async (_, { rejectWithValue }) => {
+
+export const completeOnboarding = createAsyncThunk(
+    'auth/completeOnboarding',
+    async (onboardingData, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get('/wallet/verify');
+            const response = await axiosInstance.post('/user/onboarding', onboardingData);
             return response.data;
         } catch (error) {
             return rejectWithValue(
                 error.response?.data?.message || 
                 error.response?.data || 
-                'Failed to get user profile'
+                'Failed to complete onboarding'
+            );
+        }
+    }
+);
+
+export const checkUsername = createAsyncThunk(
+    'auth/checkUsername',
+    async ({ username }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post('/user/check-username', { username });
+            return { ...response.data, checkedUsername: username };
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || 
+                error.response?.data || 
+                'Failed to check username'
+            );
+        }
+    }
+);
+
+export const updateUserProfile = createAsyncThunk(
+    'auth/updateUserProfile',
+    async (profileData, { rejectWithValue }) => {
+        try {
+            const userId = profileData.get('id');
+            const response = await axiosInstance.put(`/${userId}/profile`, profileData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || 
+                error.response?.data || 
+                'Failed to update profile'
+            );
+        }
+    }
+);
+
+export const uploadAvatar = createAsyncThunk(
+    'auth/uploadAvatar',
+    async (avatarData, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post('/user/update-avatar', avatarData);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || 
+                error.response?.data || 
+                'Failed to upload avatar'
             );
         }
     }
@@ -117,6 +186,38 @@ const authSlice = createSlice({
                 error: null,
                 success: false
             };
+        },
+        
+        // Reset profile states
+        resetProfileStates: (state) => {
+            state.onboarding = {
+                isLoading: false,
+                error: null,
+                success: false
+            };
+            state.usernameCheck = {
+                isLoading: false,
+                error: null,
+                isAvailable: null,
+                checkedUsername: null
+            };
+            state.updateProfile = {
+                isLoading: false,
+                error: null,
+                success: false
+            };
+            state.uploadAvatar = {
+                isLoading: false,
+                error: null,
+                success: false
+            };
+        },
+        
+        // Clear username check when user starts typing new username
+        clearUsernameCheck: (state) => {
+            state.usernameCheck.isAvailable = null;
+            state.usernameCheck.checkedUsername = null;
+            state.usernameCheck.error = null;
         },
         
         // Set token manually (if needed)
@@ -149,10 +250,10 @@ const authSlice = createSlice({
             state.sendOtp.error = null;
             state.verifyOtp.error = null;
             state.profile.error = null;
-        },
-
-        setWalletAddress: (state, action) => {
-            state.walletAddress = action.payload
+            state.onboarding.error = null;
+            state.usernameCheck.error = null;
+            state.updateProfile.error = null;
+            state.uploadAvatar.error = null;
         }
     },
     extraReducers: (builder) => {
@@ -212,6 +313,7 @@ const authSlice = createSlice({
                 state.profile.error = null;
             })
             .addCase(getUserProfile.fulfilled, (state, action) => {
+                console.log(action.payload); 
                 state.profile.isLoading = false;
                 state.profile.data = action.payload.data;
             })
@@ -220,28 +322,144 @@ const authSlice = createSlice({
                 state.profile.error = action.payload;
             });
 
+        // Complete Onboarding
         builder
-            .addCase(getWalletVerify.pending, (state) => {
-                state.wallet.isLoading = true;
-                state.wallet.error = null;
+            .addCase(completeOnboarding.pending, (state) => {
+                state.onboarding.isLoading = true;
+                state.onboarding.error = null;
+                state.onboarding.success = false;
             })
-            .addCase(getWalletVerify.fulfilled, (state, action) => {
-                state.wallet.isLoading = false;
-                state.wallet.data = action.payload.data;
+            .addCase(completeOnboarding.fulfilled, (state, action) => {
+                state.onboarding.isLoading = false;
+                state.onboarding.success = true;
+                // Update user data if returned
+                if (action.payload.user) {
+                    state.user.data = action.payload.user;
+                    state.profile.data = action.payload.user;
+                }
             })
-            .addCase(getWalletVerify.rejected, (state, action) => {
-                state.wallet.isLoading = false;
-                state.wallet.error = action.payload;
+            .addCase(completeOnboarding.rejected, (state, action) => {
+                state.onboarding.isLoading = false;
+                state.onboarding.error = action.payload;
+                state.onboarding.success = false;
             });
+
+        // Check Username
+        builder
+            .addCase(checkUsername.pending, (state) => {
+                state.usernameCheck.isLoading = true;
+                state.usernameCheck.error = null;
+                state.usernameCheck.isAvailable = null;
+            })
+            .addCase(checkUsername.fulfilled, (state, action) => {
+                state.usernameCheck.isLoading = false;
+                state.usernameCheck.isAvailable = action.payload.available;
+                state.usernameCheck.checkedUsername = action.payload.checkedUsername;
+            })
+            .addCase(checkUsername.rejected, (state, action) => {
+                state.usernameCheck.isLoading = false;
+                state.usernameCheck.error = action.payload;
+                state.usernameCheck.isAvailable = null;
+            });
+
+        // Update Profile
+        builder
+            .addCase(updateUserProfile.pending, (state) => {
+                state.updateProfile.isLoading = true;
+                state.updateProfile.error = null;
+                state.updateProfile.success = false;
+            })
+            .addCase(updateUserProfile.fulfilled, (state, action) => {
+                state.updateProfile.isLoading = false;
+                state.updateProfile.success = true;
+                // Update user and profile data if returned
+                if (action.payload.data) {
+                    state.user.data = action.payload.data;
+                    state.profile.data = action.payload.data;
+                }
+            })
+            .addCase(updateUserProfile.rejected, (state, action) => {
+                state.updateProfile.isLoading = false;
+                state.updateProfile.error = action.payload;
+                state.updateProfile.success = false;
+            });
+
+        // Upload Avatar
+        builder
+            .addCase(uploadAvatar.pending, (state) => {
+                state.uploadAvatar.isLoading = true;
+                state.uploadAvatar.error = null;
+                state.uploadAvatar.success = false;
+            })
+            .addCase(uploadAvatar.fulfilled, (state, action) => {
+                state.uploadAvatar.isLoading = false;
+                state.uploadAvatar.success = true;
+                // Update avatar in profile data
+                if (state.profile.data && action.payload.avatar) {
+                    state.profile.data.avatar = action.payload.avatar;
+                }
+                if (state.user.data && action.payload.avatar) {
+                    state.user.data.avatar = action.payload.avatar;
+                }
+            })
+            .addCase(uploadAvatar.rejected, (state, action) => {
+                state.uploadAvatar.isLoading = false;
+                state.uploadAvatar.error = action.payload;
+                state.uploadAvatar.success = false;
+            });
+        // Wallet Auth
+        builder
+            .addCase(walletAuth.pending, (state) => {
+                state.sendOtp.isLoading = true; // reuse loading flags or make a new one
+                state.sendOtp.error = null;
+            })
+            .addCase(walletAuth.fulfilled, (state, action) => {
+                state.sendOtp.isLoading = false;
+                // backend only returns message, so nothing to store yet
+            })
+            .addCase(walletAuth.rejected, (state, action) => {
+                state.sendOtp.isLoading = false;
+                state.sendOtp.error = action.payload;
+            });
+
+        builder
+            .addCase(walletVerifyAuth.pending, (state) => {
+                state.verifyOtp.isLoading = true;
+                state.verifyOtp.error = null;
+                state.verifyOtp.success = false;
+            })
+            .addCase(walletVerifyAuth.fulfilled, (state, action) => {
+                state.verifyOtp.isLoading = false;
+                state.verifyOtp.success = true;
+
+                if (action.payload.token) {
+                state.user.token = action.payload.token;
+                state.user.data = action.payload.user;
+                state.user.isAuthenticated = true;
+
+                if (typeof window !== "undefined") {
+                    localStorage.setItem("userData", JSON.stringify(action.payload));
+                    localStorage.setItem("token", action.payload.token);
+                }
+                }
+            })
+            .addCase(walletVerifyAuth.rejected, (state, action) => {
+                state.verifyOtp.isLoading = false;
+                state.verifyOtp.error = action.payload;
+                state.verifyOtp.success = false;
+            });
+
+        
     }
 });
 
 export const { 
     resetOtpStates, 
+    resetProfileStates,
+    clearUsernameCheck,
     setToken, 
     logout, 
-    clearErrors,
-    setWalletAddress
+    clearErrors 
 } = authSlice.actions;
 
 export default authSlice.reducer;
