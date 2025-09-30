@@ -1,5 +1,9 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { ChevronDown, LogOut, Copy, ExternalLink } from "lucide-react";
+
+// Import your Avatar components (adjust path as needed)
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 type RainbowConnectProps = {
   disabled?: boolean;
@@ -8,6 +12,32 @@ type RainbowConnectProps = {
 export const RainbowConnect: React.FC<RainbowConnectProps> = ({
   disabled = false,
 }) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    // You can add a toast notification here
+  };
+
+  const truncateAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+
   return (
     <ConnectButton.Custom>
       {({
@@ -76,50 +106,135 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
               }
 
               return (
-                <div className="flex gap-3 w-full">
-                  {/* Chain Button */}
+                <div className="relative" ref={dropdownRef}>
+                  {/* Avatar Button */}
                   <button
-                    onClick={disabled ? undefined : openChainModal}
+                    onClick={disabled ? undefined : () => setIsDropdownOpen(!isDropdownOpen)}
                     type="button"
                     disabled={disabled}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors w-full
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors
                       ${
                         disabled
-                          ? "bg-gray-300 text-gray-500 cursor-not-allowed border-gray-300"
-                          : "bg-transparent text-white border-white/30 hover:border-white hover:bg-white/10"
+                          ? "bg-gray-300 cursor-not-allowed border-gray-300"
+                          : "bg-transparent border-white/30 hover:border-white hover:bg-white/10"
                       }`}
                   >
-                    {chain.hasIcon && chain.iconUrl && (
-                      <div
-                        className="w-4 h-4 rounded-full overflow-hidden"
-                        style={{ background: chain.iconBackground }}
-                      >
-                        <img
-                          alt={chain.name ?? "Chain icon"}
-                          src={chain.iconUrl}
-                          className="w-4 h-4"
-                        />
-                      </div>
-                    )}
-                    {chain.name}
+                    <Avatar className="w-7 h-7 lg:w-8 lg:h-8 border border-secondary-200/50">
+                      <AvatarImage src="https://github.com/shadcn.png" alt="User Avatar" />
+                      <AvatarFallback className="bg-secondary-200 text-white text-xs font-medium">
+                        {account.displayName?.slice(0, 2).toUpperCase() || "GA"}
+                      </AvatarFallback>
+                    </Avatar>
+                    
+                    <span className="text-white text-sm font-medium hidden sm:block">
+                      {truncateAddress(account.address)}
+                    </span>
+                    
+                    <ChevronDown 
+                      size={16} 
+                      className={`text-white transition-transform ${
+                        isDropdownOpen ? 'rotate-180' : ''
+                      }`} 
+                    />
                   </button>
 
-                  <button
-                    onClick={disabled ? undefined : openAccountModal}
-                    type="button"
-                    disabled={disabled}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors w-full
-                      ${
-                        disabled
-                          ? "bg-gray-300 text-gray-500 cursor-not-allowed border-gray-300"
-                          : "bg-transparent text-white border-white/30 hover:border-white hover:bg-white/10"
-                      }`}
-                  >
-                    {account.displayName}
-                    {account.displayBalance
-                      ? ` (${account.displayBalance})`
-                      : ""}
-                  </button>
+                  {/* Dropdown Menu */}
+                  {isDropdownOpen && (
+                    <div className="absolute top-full right-0 mt-2 w-72 bg-black-400 border border-white/20 rounded-xl shadow-xl z-50 overflow-hidden">
+                      {/* User Info Header */}
+                      <div className="p-4 border-b border-white/10">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="w-10 h-10 border border-secondary-200/50">
+                            <AvatarImage src="https://github.com/shadcn.png" alt="User Avatar" />
+                            <AvatarFallback className="bg-secondary-200 text-white text-sm font-medium">
+                              {account.displayName?.slice(0, 2).toUpperCase() || "GA"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="text-white font-medium text-sm">
+                              {account.displayName}
+                            </p>
+                            {account.displayBalance && (
+                              <p className="text-white/60 text-xs">
+                                {account.displayBalance}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Wallet Address */}
+                      <div className="p-4 border-b border-white/10">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-white/60 text-xs mb-1">Wallet Address</p>
+                            <p className="text-white font-mono text-sm">
+                              {truncateAddress(account.address)}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => copyToClipboard(account.address)}
+                              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                              title="Copy address"
+                            >
+                              <Copy size={14} className="text-white/60" />
+                            </button>
+                            <button
+                              onClick={() => window.open(`https://etherscan.io/address/${account.address}`, '_blank')}
+                              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                              title="View on explorer"
+                            >
+                              <ExternalLink size={14} className="text-white/60" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Chain Info */}
+                      <div className="p-4 border-b border-white/10">
+                        <button
+                          onClick={disabled ? undefined : openChainModal}
+                          disabled={disabled}
+                          className="flex items-center justify-between w-full hover:bg-white/5 p-2 rounded-lg transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            {chain.hasIcon && chain.iconUrl && (
+                              <div
+                                className="w-5 h-5 rounded-full overflow-hidden"
+                                style={{ background: chain.iconBackground }}
+                              >
+                                <img
+                                  alt={chain.name ?? "Chain icon"}
+                                  src={chain.iconUrl}
+                                  className="w-5 h-5"
+                                />
+                              </div>
+                            )}
+                            <div className="text-left">
+                              <p className="text-white/60 text-xs">Network</p>
+                              <p className="text-white text-sm font-medium">{chain.name}</p>
+                            </div>
+                          </div>
+                          <ChevronDown size={14} className="text-white/60 -rotate-90" />
+                        </button>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="p-2">
+                        <button
+                          onClick={() => {
+                            openAccountModal();
+                            setIsDropdownOpen(false);
+                          }}
+                          className="flex items-center gap-3 w-full p-3 hover:bg-red-500/10 rounded-lg transition-colors text-red-400 hover:text-red-300"
+                        >
+                          <LogOut size={16} />
+                          <span className="text-sm font-medium">Disconnect</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })()}

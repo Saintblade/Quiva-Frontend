@@ -1,5 +1,6 @@
 'use client'
 
+import { MainButton } from '@/components/button'
 import { Button } from '@/components/ui/button'
 import { QuivaLogo } from '@/components/utils/function'
 import { X } from 'lucide-react'
@@ -61,12 +62,11 @@ export function Sidebar({ isMobileMenuOpen, onMobileMenuClose }) {
         </nav>
 
         {/* Become a Creator Button */}
-        <Button 
-          className="bg-secondary-200 hover:bg-secondarty-200/60 text-white font-medium rounded-full transition-colors"
+        <MainButton
           onClick={handleBecomeCreator}
         >
           Become a Creator
-        </Button>
+        </MainButton>
       </aside>
 
       {/* Mobile Menu Overlay */}

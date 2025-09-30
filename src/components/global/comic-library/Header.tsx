@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { useState, useEffect, useRef } from 'react'
 import { QuivaLogo } from '@/components/utils/function'
+import { RainbowConnect } from '@/components/button/RainbowConnect'
 
 export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
   const [searchQuery, setSearchQuery] = useState('')
@@ -184,12 +185,14 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
             </div>
 
             {/* Avatar */}
-            <Avatar className="w-7 h-7 lg:w-8 lg:h-8 border border-secondary-200/50">
+            {/* <Avatar className="w-7 h-7 lg:w-8 lg:h-8 border border-secondary-200/50">
               <AvatarImage src="https://github.com/shadcn.png" alt="User Avatar" />
               <AvatarFallback className="bg-secondary-200 text-white text-xs font-medium">
                 GA
               </AvatarFallback>
-            </Avatar>
+            </Avatar> */}
+
+            <RainbowConnect/>
           </div>
         </div>
 

@@ -1,3 +1,4 @@
+import { MainButton } from '@/components/button'
 import { Button } from '@/components/ui/button'
 import { ComicSection } from '@/features/comic-library/components/ComicSection'
 import { CreatorsSection } from '@/features/comic-library/components/CreatorsSection'
@@ -50,9 +51,9 @@ export default function MainPage() {
 
       {/* Explore More Button */}
       <div className="flex justify-center mt-12">
-        <Button className="bg-secondary-200 hover:bg-secondary-200/80   text-white px-8 py-3 rounded-full font-medium">
+        <MainButton>
           Explore More Comics
-        </Button>
+        </MainButton>
       </div>
     
     </>

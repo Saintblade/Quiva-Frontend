@@ -8,7 +8,7 @@ import { HeroUIProvider } from "@heroui/react";
 import { Metadata } from "next";
 import { SEO_CONFIG } from "@/components/utils/seoContants";
 import ReduxProviders from '@/redux/Provider';
-// import RainbowProvider from '@/providers/RainbowProvider';
+import RainbowProvider from '@/providers/RainbowProvider';
 
 const { description, keywords, title, url } = SEO_CONFIG.default;
 export const metadata: Metadata = {
@@ -38,11 +38,11 @@ export default function RootLayout({
 			<body className={`max-w-[1700px] mx-auto relative bg-black`}>
 				
 				<ReduxProviders>
-					{/* <RainbowProvider> */}
-					<HeroUIProvider>
-						{children}
-					</HeroUIProvider>
-					{/* </RainbowProvider> */}
+					<RainbowProvider>
+						<HeroUIProvider>
+							{children}
+						</HeroUIProvider>
+					</RainbowProvider>
 				</ReduxProviders>
 			</body>
 		</html>
