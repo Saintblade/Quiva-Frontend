@@ -1,5 +1,6 @@
 interface MainButtonProps {
   children: React.ReactNode;
+  disabled?: boolean;
   onClick?: () => void;
   className?: string;
   type?: "button" | "submit";
@@ -8,6 +9,7 @@ interface MainButtonProps {
 export const MainButton = ({
   children,
   onClick,
+  disabled = false,
   className = "",
   type = "button",
 }: MainButtonProps) => {
@@ -25,6 +27,7 @@ export const MainButton = ({
 export const MainButton2 = ({
   children,
   onClick,
+  disabled = false,
   className = "",
 }: MainButtonProps) => {
   return (
@@ -40,6 +43,7 @@ export const MainButton2 = ({
 export const AnchorButton = ({
   children,
   onClick,
+  disabled = false,
   className = "",
   href = "#",
 }: MainButtonProps & { href: string }) => {
@@ -60,6 +64,7 @@ export const AnchorButton = ({
 export const SecondaryAnchorButton = ({
   children,
   onClick,
+  disabled = false,
   className = "",
   href = "#",
 }: MainButtonProps & { href: string }) => {

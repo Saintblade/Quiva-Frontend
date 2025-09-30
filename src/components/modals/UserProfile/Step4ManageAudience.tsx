@@ -1,21 +1,19 @@
 "use client";
 import React from "react";
-import { progress_2 } from "../../../../public/dev_images";
+import { audience } from "../../../../public/dev_images";
 import Image from "next/image";
 import { MainButton } from "@/components/button";
 
 type Props = {
-  onNext: () => void;
-  onSkip?: () => void;
+  onComplete?: () => void;
   totalSteps?: number;
   currentStep?: number;
 };
 
-const Step1WelcomeModal = ({ 
-  onNext, 
-  onSkip,
+const Step4ManageAudienceModal = ({ 
+  onComplete,
   totalSteps = 5, 
-  currentStep = 1 
+  currentStep = 4 
 }: Props) => {
   return (
     <> 
@@ -24,7 +22,7 @@ const Step1WelcomeModal = ({
         {/* Progress Image */}
         <div className="flex justify-center mb-6">
           <Image
-            src={progress_2}
+            src={audience}
             alt="Welcome to Profile Creation"
             width={300}
             height={300}
@@ -48,33 +46,27 @@ const Step1WelcomeModal = ({
 
         {/* Title */}
         <h1 className="text-xl sm:text-2xl font-semibold mb-4 tracking-tight text-white">
-          Welcome to Quiva ComicPad.
+          Manage, Track & Grow your Audience
         </h1>
 
         {/* Description */}
         <p className="text-white/30 text-sm sm:text-base leading-relaxed mb-12 max-w-xl mx-auto font-light">
-          Your all-in-one studio for crafting, publishing, and monetizing your unique digital comics on the blockchain. Let's show you around.
+         Your Creator Dashboard gives you real-time insights into engagement, earning, and fan activity.
         </p>
 
         {/* Action Buttons */}
         <div className="flex flex-col items-center gap-4">
           <MainButton
-            onClick={onNext}
+            onClick={onComplete}
             className="w-full max-w-lg py-4 px-8 bg-amber-500 hover:bg-amber-600 text-black font-semibold text-base rounded-full transition-all duration-200 shadow-lg shadow-amber-500/20"
           >
-            Next
+            Go it!
           </MainButton>
-          
-          <button
-            onClick={onSkip}
-            className="w-full max-w-lg py-4 px-8 bg-transparent hover:bg-black-100 text-white font-semibold text-base rounded-full border-2 border-white hover:border-white/80 transition-all duration-200"
-          >
-            Skip Tour
-          </button>
+
         </div>
       </div>
     </>
   );
 };
 
-export default Step1WelcomeModal;
+export default Step4ManageAudienceModal;

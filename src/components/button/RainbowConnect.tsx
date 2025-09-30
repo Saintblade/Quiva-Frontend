@@ -1,6 +1,11 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, LogOut, Copy, ExternalLink } from "lucide-react";
+import { useWalletAuth } from "@/hook/useWalletAuth";
+import { useAccount, useDisconnect } from "wagmi";
+import { useAppSelector, useAppDispatch } from "@/redux/hook";
+import { logout } from "@/redux/slices/authSlice";
+import {setWalletAddress} from "@/redux/slices/walletSlice";
 
 // Import your Avatar components (adjust path as needed)
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -12,6 +17,33 @@ type RainbowConnectProps = {
 export const RainbowConnect: React.FC<RainbowConnectProps> = ({
   disabled = false,
 }) => {
+  const { loginWithWallet } = useWalletAuth();
+  const { isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
+  const dispatch = useAppDispatch();
+
+  const {
+      user: { isAuthenticated },
+    } = useAppSelector((state) => state.auth);
+
+  
+  
+    const handleLogin = async () => {
+      try {
+        const user = await loginWithWallet();
+      } catch (err) {
+        console.error("Wallet login failed:", err);
+      }
+    };
+  
+    const handleLogout = () => {
+      // Disconnect wallet
+      disconnect();
+      // Clear redux + localStorage
+      dispatch(logout());
+    };
+
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -56,6 +88,13 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
           chain &&
           (!authenticationStatus || authenticationStatus === "authenticated");
 
+          useEffect(() => {
+            if (isConnected) {
+              console.log("Wallet connected");
+              handleLogin()
+            } 
+          }, [isConnected]);
+
         return (
           <div
             {...(!ready && {
@@ -72,7 +111,17 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
               if (!connected) {
                 return (
                   <button
-                    onClick={disabled ? undefined : openConnectModal}
+                    onClick={
+                      async () => 
+                      {
+                        const response = disabled ? undefined : openConnectModal()
+                        await response;
+                        if(response !== undefined){
+                          setWalletAddress(account.address);
+                          handleLogin()
+                        }
+                      }
+                    }
                     type="button"
                     disabled={disabled}
                     className={`w-full px-4 py-2 rounded-xl font-medium border transition-colors
@@ -225,6 +274,7 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                         <button
                           onClick={() => {
                             openAccountModal();
+                            handleLogout();
                             setIsDropdownOpen(false);
                           }}
                           className="flex items-center gap-3 w-full p-3 hover:bg-red-500/10 rounded-lg transition-colors text-red-400 hover:text-red-300"

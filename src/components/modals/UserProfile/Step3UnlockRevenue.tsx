@@ -1,21 +1,23 @@
 "use client";
 import React from "react";
-import { progress_2 } from "../../../../public/dev_images";
+import { earnings } from "../../../../public/dev_images";
 import Image from "next/image";
 import { MainButton } from "@/components/button";
 
 type Props = {
   onNext: () => void;
+  onBack: () => void;
   onSkip?: () => void;
   totalSteps?: number;
   currentStep?: number;
 };
 
-const Step1WelcomeModal = ({ 
+const Step3UnlockRevenueModal = ({ 
   onNext, 
+  onBack,
   onSkip,
   totalSteps = 5, 
-  currentStep = 1 
+  currentStep = 3
 }: Props) => {
   return (
     <> 
@@ -24,7 +26,7 @@ const Step1WelcomeModal = ({
         {/* Progress Image */}
         <div className="flex justify-center mb-6">
           <Image
-            src={progress_2}
+            src={earnings}
             alt="Welcome to Profile Creation"
             width={300}
             height={300}
@@ -48,12 +50,12 @@ const Step1WelcomeModal = ({
 
         {/* Title */}
         <h1 className="text-xl sm:text-2xl font-semibold mb-4 tracking-tight text-white">
-          Welcome to Quiva ComicPad.
+          Unlock new revenue streams
         </h1>
 
         {/* Description */}
         <p className="text-white/30 text-sm sm:text-base leading-relaxed mb-12 max-w-xl mx-auto font-light">
-          Your all-in-one studio for crafting, publishing, and monetizing your unique digital comics on the blockchain. Let's show you around.
+          Monetize your comics through direct purchase, pay-per-read or limited-edition NFT drops.
         </p>
 
         {/* Action Buttons */}
@@ -77,4 +79,4 @@ const Step1WelcomeModal = ({
   );
 };
 
-export default Step1WelcomeModal;
+export default Step3UnlockRevenueModal;

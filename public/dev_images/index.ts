@@ -45,6 +45,9 @@ import kakashi from "./kakashi.png";
 import goofyFriend from "./goofy-friend.png";
 import hinataPicture from "./hinata-picture.png";
 import UploadImage from "../upload-img.png";
+import audience from "./audience.png";
+import dashboard from "./dashboard.png";
+import earnings from "./earnings.png";
 
 export {
 	canna,
@@ -94,4 +97,7 @@ export {
 	kakashi,
 	goofyFriend,
 	hinataPicture,
+	audience,
+	dashboard,
+	earnings
 };
