@@ -23,7 +23,13 @@ const initialState = {
         data: null,
         isLoading: false,
         error: null
-    }
+    },
+    wallet: {
+        data: null,
+        isLoading: false,
+        error: null
+    },
+    walletAddress: null
 };
 
 // Async thunk for sending OTP via email
@@ -66,6 +72,23 @@ export const getUserProfile = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get('/auth/profile');
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || 
+                error.response?.data || 
+                'Failed to get user profile'
+            );
+        }
+    }
+);
+
+// Async thunk for getting user profile
+export const getWalletVerify = createAsyncThunk(
+    'auth/getWalletVerify',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get('/wallet/verify');
             return response.data;
         } catch (error) {
             return rejectWithValue(
@@ -126,6 +149,10 @@ const authSlice = createSlice({
             state.sendOtp.error = null;
             state.verifyOtp.error = null;
             state.profile.error = null;
+        },
+
+        setWalletAddress: (state, action) => {
+            state.walletAddress = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -192,6 +219,20 @@ const authSlice = createSlice({
                 state.profile.isLoading = false;
                 state.profile.error = action.payload;
             });
+
+        builder
+            .addCase(getWalletVerify.pending, (state) => {
+                state.wallet.isLoading = true;
+                state.wallet.error = null;
+            })
+            .addCase(getWalletVerify.fulfilled, (state, action) => {
+                state.wallet.isLoading = false;
+                state.wallet.data = action.payload.data;
+            })
+            .addCase(getWalletVerify.rejected, (state, action) => {
+                state.wallet.isLoading = false;
+                state.wallet.error = action.payload;
+            });
     }
 });
 
@@ -199,7 +240,8 @@ export const {
     resetOtpStates, 
     setToken, 
     logout, 
-    clearErrors 
+    clearErrors,
+    setWalletAddress
 } = authSlice.actions;
 
 export default authSlice.reducer;

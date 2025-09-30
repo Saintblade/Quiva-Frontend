@@ -13,24 +13,35 @@ export function useWalletAuth() {
     console.log({ address });
     if (!address) throw new Error("No wallet connected");
 
-    const walletAddress = getAddress(address) as `0x${string}`;
+    try{
+      const walletAddress = getAddress(address) as `0x${string}`;
 
-    const msgRes = await dispatch(walletAuth({ walletAddress })).unwrap();
-    const message = msgRes.message;
+      const msgRes = await dispatch(walletAuth({ walletAddress })).unwrap();
+      const message = msgRes.message;
 
-    const signature = await signMessageAsync({
-      message,
-      account: walletAddress,
-    });
+      console.log(message)
 
-    const verifyRes = await dispatch(
-      walletVerifyAuth({ walletAddress, message, signature })
-    ).unwrap();
-    if (verifyRes.token) {
-      localStorage.setItem("token", verifyRes.token);
+      const signature = await signMessageAsync({
+        message,
+        account: walletAddress,
+      });
+
+      console.log(signature)
+
+      const verifyRes = await dispatch(
+        walletVerifyAuth({ walletAddress, message, signature })
+        // walletVerifyAuth({ walletAddress})
+      ).unwrap();
+      if (verifyRes.token) {
+        localStorage.setItem("token", verifyRes.token);
+      }
+
+      return verifyRes.user;
+    } catch(error){
+      console.log(error)
     }
 
-    return verifyRes.user;
+    
   };
 
   return { loginWithWallet };
