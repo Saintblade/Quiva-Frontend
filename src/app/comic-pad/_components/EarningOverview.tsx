@@ -1,6 +1,7 @@
 import TitleText from "@/components/text/TitleText";
 import { OVERVIEW_CARDS } from "@/components/utils/constant";
 import React from "react";
+import { FaBook } from "react-icons/fa";
 import {
 	FiArrowUpRight,
 	FiArrowDownRight,
@@ -15,7 +16,7 @@ const EarningOverview = () => {
 			<div className='col-span-7'>
 				<TitleText title='Welcome, Mary' className='text-white/70 !text-lg' />
 				<div className='flex items-center gap-2 my-4'>
-					<div className='w-2 h-6 bg-amber-500 rounded'></div>
+					<div className='w-4 h-8 bg-amber-500/70 rounded'></div>
 					<h2 className='text-lg font-semibold'>Overview</h2>
 				</div>
 
@@ -27,9 +28,12 @@ const EarningOverview = () => {
 								className='border border-amber-500 rounded-lg px-6 py-4 flex flex-col'
 							>
 								<div className='flex items-center justify-between'>
-									<span className='text-sm text-gray-50/70 font-medium tracking-wider'>
-										{title}
-									</span>
+									<div className='flex items-center gap-2'>
+										<FaBook className={`${changeColor}`} />
+										<span className='text-sm text-gray-50/70 font-medium tracking-wider'>
+											{title}
+										</span>
+									</div>
 									<span
 										className={`flex items-center text-xs rounded font-medium tracking-wider px-2 py-0.5 ${changeColor} ${changeBg}`}
 									>

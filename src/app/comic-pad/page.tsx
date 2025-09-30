@@ -7,7 +7,7 @@ import AppMenu from "@/components/global/AppMenu";
 const page = () => {
 	return (
 		<ComicPadlayout className='text-white pt-24 sm:pt-28 pb-32 sm:pb-12 w-full'>
-			<div className='px-2 sm:px-10'>
+			<div className='px-3 sm:px-10'>
 				<StartNewComicFast />
 				<RecentFile />
 			</div>

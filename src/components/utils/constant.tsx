@@ -172,14 +172,14 @@ export const mobileHeaderLinkUrl = [
 	{
 		url: "/comic-pad",
 		link: "Comic Pad",
-		icon: (className: string) => <FaHome className={`${className} !text-lg`} />,
+		icon: (className: string) => (
+			<FaHome className={`${className} !text-2xl`} />
+		),
 	},
 	{
 		url: "/comic-pad/my-comics",
 		link: "My Comics",
-		icon: (className: string) => (
-			<FaBook className={`${className} !text-2xl`} />
-		),
+		icon: (className: string) => <FaBook className={`${className} !text-xl`} />,
 	},
 	{
 		url: "",
