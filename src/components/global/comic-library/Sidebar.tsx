@@ -62,7 +62,7 @@ export function Sidebar({ isMobileMenuOpen, onMobileMenuClose }) {
 
         {/* Become a Creator Button */}
         <Button 
-          className="bg-secondary-200 hover:bg-orange-600 text-white font-medium rounded-full transition-colors"
+          className="bg-secondary-200 hover:bg-secondarty-200/60 text-white font-medium rounded-full transition-colors"
           onClick={handleBecomeCreator}
         >
           Become a Creator

@@ -1,21 +1,25 @@
 import { Button } from "@/components/ui/button";
-import { ComicSection } from "@/Features/comic-library/components/ComicSection";
-import { CreatorsSection } from "@/Features/comic-library/components/CreatorsSection";
-import { FeaturedComic } from "@/Features/comic-library/components/FeaturedComic";
-import { TopComicsTable } from "@/Features/comic-library/components/TopComicsTable";
+import { ComicSection } from "@/features/comic-library/components/ComicSection";
+import { CreatorsSection } from "@/features/comic-library/components/CreatorsSection";
+import { FeaturedComic } from "@/features/comic-library/components/FeaturedComic";
+import { HeroComicSlider } from "@/features/comic-library/components/HeroComicSlider";
+import { TopComicsTable } from "@/features/comic-library/components/TopComicsTable";
 import {
-	creators,
-	featuredComics,
-	FeaturesComics,
-	mintComics,
-	topComics,
 	trendingComics,
+	featuredComics,
 	upcomingComics,
-} from "@/Features/comic-library/data/sampleData";
+	creators,
+	topComics,
+	mintComics,
+	FeaturesComics,
+	heroComics,
+} from "@/features/comic-library/data/sampleData";
 
 export default function MainPage() {
 	return (
 		<>
+			<HeroComicSlider comics={heroComics} />
+
 			{/* Trending Comics */}
 			<ComicSection title='Trending Comics' comics={trendingComics} />
 

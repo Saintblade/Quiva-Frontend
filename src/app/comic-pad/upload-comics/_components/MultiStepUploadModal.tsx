@@ -18,8 +18,8 @@ const MultiStepUploadModal = ({ isOpen, onClose }: MultiStepUploadModalProps) =>
 
   return (
     <>
-      {step === 1 && <UploadModal onClose={onClose} onNext={handleNext} />}
-      {step === 2 && <ComicUploadModal isOpen={true} onClose={onClose} />}
+      {step === 1 && <UploadModal onClose={onClose}  />}
+      {step === 2 && <ComicUploadModal onNext={handleNext}  isOpen={true} onClose={onClose} />}
     </>
   );
 };

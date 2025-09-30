@@ -3,9 +3,11 @@ import { useState, useEffect } from "react";
 import { X, Pause } from "lucide-react";
 
 interface ComicUploadModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	file: File;
+  isOpen: boolean;
+  onClose: () => void;
+  onNext: () => void;   // 👈 add this prop
+  file?: File;
+  preview?: string | null;
 }
 
 export function ComicUploadModal({

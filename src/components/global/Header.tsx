@@ -171,14 +171,11 @@ const Header = () => {
 					</ul>
 
 					<div className='flex justify-end col-span-1'>
-						<MainButton
-							onClick={() => {
-								router.push("?modal=whitepaper");
-								onOpenWhitePaper();
-							}}
-						>
-							Login
-						</MainButton>
+						<MainButton onClick={() => {
+							// router.push("?modal=whitepaper");
+							// onOpenWhitePaper()
+							router.push("/marketplace");
+						}}>Getting Started</MainButton>
 					</div>
 				</nav>
 

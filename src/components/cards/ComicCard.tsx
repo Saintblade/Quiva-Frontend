@@ -1,7 +1,9 @@
 'use client'
+
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 
 interface ComicCardProps {
   title: string
@@ -28,6 +30,8 @@ export function ComicCard({
   buttonVariant = "default",
   size = "medium"
 }: ComicCardProps) {
+
+  const router = useRouter()
   const cardSizes = {
     small: "w-56 h-64",
     medium: "w-64 h-72", 
@@ -127,6 +131,9 @@ export function ComicCard({
           
           {/* Explore Button */}
           <Button 
+            onClick={
+              () => router.push("/comic-library/detail")
+            }
             className={`w-full font-semibold transition-all duration-200 bg-secondary-200 hover:bg-secondary-200/80 text-black-500 rounded-full focus:ring-none`}
             variant={buttonVariant}
           >

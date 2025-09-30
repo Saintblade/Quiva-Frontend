@@ -19,7 +19,7 @@ const config: Config = {
 				"custom-inset-white": "0px 4px 8px 0px #FFFFFF1A inset",
 			},
 			maxWidth: {
-				"screen-xl": "1300px", // Defines max-w-[1300p
+				"screen-xl": "1300px", // Defines max-w-[1300px]
 			},
 			fontFamily: {
 				outfit: ["Outfit", ...fontFamily.sans],
