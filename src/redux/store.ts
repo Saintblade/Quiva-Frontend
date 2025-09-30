@@ -3,16 +3,18 @@ import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
 import generalReducer from './slices/generalSlice';
 import authReducer from './slices/authSlice';
+import walletReducer from './slices/walletSlice';
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: []
+  whitelist: ['auth', 'wallet']
 };
 
 const rootReducer = combineReducers({
   general: generalReducer,
-  auth: authReducer
+  auth: authReducer,
+  wallet: walletReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
