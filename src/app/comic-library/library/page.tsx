@@ -1,13 +1,13 @@
-import { ComicsLibrary } from '@/features/comic-library/components/ComicsLibrary'
-import { trendingComics } from '@/features/comic-library/data/sampleData'
-import React from 'react'
+import { ComicsLibrary } from "@/Features/comic-library/components/ComicsLibrary";
+import { trendingComics } from "@/Features/comic-library/data/sampleData";
+import React from "react";
 
 function page() {
-  return (
-    <>
-        <ComicsLibrary comics={trendingComics}/>
-    </>
-  )
+	return (
+		<>
+			<ComicsLibrary comics={trendingComics} />
+		</>
+	);
 }
 
-export default page
+export default page;

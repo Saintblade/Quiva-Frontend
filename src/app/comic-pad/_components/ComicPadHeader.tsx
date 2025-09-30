@@ -7,23 +7,23 @@ import { avatarImg } from "../../../../public/dev_images";
 import Link from "next/link";
 
 import { QuivaLogo } from "@/components/utils/function";
-
+import { IoMdReturnLeft } from "react-icons/io";
+import { FaArrowLeftLong } from "react-icons/fa6";
 
 const ComicPadHeader = () => {
 	return (
 		<header
-			className={`fixed max-w-[1700px] flex justify-between items-center lg:block px-2 w-full lg:w-[83%] min-h-20 lg:py-3 top-0 border-b dashed-border-strong drop-shadow-sm z-50 bg-black-200`}
+			className={`fixed max-w-[1700px] flex justify-between items-center lg:block pl-4 pr-2 w-full lg:w-[83%] min-h-20 lg:py-3 top-0 border-b dashed-border-strong drop-shadow-sm z-50 bg-black-200`}
 		>
-
-			<div className='flex items-center'>
-				<Link href="/marketplace" className="text-white/70 hover:text-white transition text-sm">
-					← Back to Marketplace
-				</Link>
-			</div>
 			{/* Desktop */}
 			<div className='hidden lg:grid grid-cols-3'>
-				<div className=''></div>
-
+				<Link
+					href='/marketplace'
+					className='text-white/70 hover:text-primary-100 transition text-sm flex items-center gap-1 group'
+				>
+					<FaArrowLeftLong className='text-xl group-hover:-translate-x-1 transition-[.4]' />
+					<h4>Marketplace</h4>
+				</Link>
 
 				<div className='flex flex-col items-center justify-center'>
 					<h4 className='text-white text-sm lg:text-base xl:text-xl font-medium tracking-wider'>
