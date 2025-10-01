@@ -45,10 +45,10 @@ const ComicPadSideNav = () => {
 					<a
 						key={item.href}
 						href={item.href}
-						className={`flex items-center gap-2.5 group mx-auto py-1 rounded-md group transition-[.3] hover:text-secondary-300 ${
+						className={`flex items-center gap-2.5 group mx-auto py-1 rounded-md group transition-[.3] hover:text-white ${
 							pathname === item.pathname
-								? "text-secondary-300"
-								: "text-light-100/60 hover:text-secondary-300"
+								? "text-white"
+								: "text-light-100/40 hover:text-white"
 						}`}
 					>
 						<h2
@@ -59,19 +59,16 @@ const ComicPadSideNav = () => {
 					</a>
 				))}
 
-
-				<button 
+				<button
 					onClick={handleCreateNewComic}
 					className='text-black-200 bg-secondary-300 rounded-full px-5 py-2 font-medium hover:bg-secondary-300 transition-[.4] hover:scale-105'
 				>
-                {/* </button> */}
-				{/* <button className='text-black-200 text-sm xl:text-base bg-secondary-300 rounded-full px-2 lg:px-5 py-2 font-medium hover:bg-secondary-300 transition-[.4] hover:scale-105'> */}
-
+					{/* </button> */}
+					{/* <button className='text-black-200 text-sm xl:text-base bg-secondary-300 rounded-full px-2 lg:px-5 py-2 font-medium hover:bg-secondary-300 transition-[.4] hover:scale-105'> */}
 					Create New Comic
 				</button>
 			</div>
 		</div>
-		
 	);
 };
 

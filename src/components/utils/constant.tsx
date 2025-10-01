@@ -3,6 +3,7 @@ import { RiTelegram2Fill, RiTwitterXFill, RiYoutubeFill } from "react-icons/ri";
 import { soloLevel } from "../../../public/dev_images";
 import { FaBook, FaCog, FaHome, FaMoneyBill } from "react-icons/fa";
 import { FcMoneyTransfer } from "react-icons/fc";
+import { FaArrowTrendUp } from "react-icons/fa6";
 
 export type NavLink = {
 	label: string;
@@ -172,14 +173,14 @@ export const mobileHeaderLinkUrl = [
 	{
 		url: "/comic-pad",
 		link: "Comic Pad",
-		icon: (className: string) => <FaHome className={`${className} !text-lg`} />,
+		icon: (className: string) => (
+			<FaHome className={`${className} !text-2xl`} />
+		),
 	},
 	{
 		url: "/comic-pad/my-comics",
 		link: "My Comics",
-		icon: (className: string) => (
-			<FaBook className={`${className} !text-2xl`} />
-		),
+		icon: (className: string) => <FaBook className={`${className} !text-xl`} />,
 	},
 	{
 		url: "",
@@ -211,6 +212,7 @@ export const OVERVIEW_CARDS = [
 		changeColor: "text-red-500",
 		changeBg: "bg-red-900/30",
 		Icon: FiArrowUp,
+		Icon2: FaBook,
 	},
 	{
 		id: "income",
@@ -220,5 +222,6 @@ export const OVERVIEW_CARDS = [
 		changeColor: "text-amber-300",
 		changeBg: "bg-amber-900/30",
 		Icon: FiArrowDown,
+		Icon2: FaArrowTrendUp,
 	},
 ];
