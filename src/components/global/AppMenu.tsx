@@ -54,7 +54,7 @@ const AppMenu = () => {
 									>
 										<div
 											className={`absolute -inset-2 bg-yellow-400 rounded-full opacity-0 ${
-												isActive ? "opacity-20 animate-pulse" : ""
+												isActive ? "opacity-20" : ""
 											} transition-opacity duration-300`}
 										/>
 										{menuItem.icon(iconClassName)}
@@ -87,14 +87,14 @@ const AppMenu = () => {
 								/>
 							</svg>
 
-							{/* <div className='absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300'>
+							<div className='absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300'>
 								<div className='absolute -inset-1 bg-yellow-400 rounded-full blur-sm animate-blink' />
-							</div> */}
+							</div>
 						</Link>
 					</div>
 
 					{/* Comic-style speech bubble tip at the top */}
-					{/* <div className='absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-2 bg-inherit clip-comic-bubble' /> */}
+					<div className='absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-2 bg-inherit clip-comic-bubble' />
 				</div>
 			</div>
 

@@ -84,7 +84,7 @@ const MyComicList = () => {
 		<div className='mt-6'>
 			{/* Comic-style Tabs */}
 			<motion.div
-				className='flex gap-2 lg:gap-5 mb-6 overflow-x-auto pb-3 scrollbar-hide'
+				className='flex pl-2 sm:pl-0 gap-2 lg:gap-5 mb-6 overflow-x-auto pb-3 scrollbar-hide'
 				initial='hidden'
 				animate='visible'
 				variants={containerVariants}
@@ -136,7 +136,7 @@ const MyComicList = () => {
 			<AnimatePresence mode='wait'>
 				<motion.div
 					key={activeTab}
-					className='grid grid-cols-2 lg:flex gap-4 flex-wrap'
+					className='grid grid-cols-2 lg:flex gap-4 flex-wrap px-3 sm:px-0'
 					initial='hidden'
 					animate='visible'
 					exit='hidden'

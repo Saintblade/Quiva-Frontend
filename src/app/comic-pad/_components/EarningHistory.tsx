@@ -1,7 +1,11 @@
+"use client";
 import Picture from "@/components/picture/Index";
 import React from "react";
 import { image3 } from "../../../../public/dev_images";
 import { StaticImageData } from "next/image";
+import GeneralModal from "@/components/modals/GeneralModal";
+import { useDisclosure } from "@heroui/react";
+import EarningsDetailsModal from "@/components/modals/EarningsDetailsModal";
 
 type HistoryRow = {
 	avatar: string | StaticImageData;
@@ -48,38 +52,98 @@ const data: HistoryRow[] = [
 ];
 
 const EarningHistory = () => {
+	const {
+		isOpen: isOpenEarningsDetailsOpen,
+		onOpen: onOpenEarningsDetails,
+		onOpenChange: onOpenChangeEarningsDetails,
+		onClose: onCloseEarningsDetails,
+	} = useDisclosure();
+
 	return (
-		<div className='bg-black text-white p-6 rounded-xl'>
-			<h2 className='text-lg font-semibold mb-4 text-white/80'>History</h2>
-			<table className='w-full border-separate border-spacing-y-3 border-primary-500'>
-				<thead className=''>
-					<tr className='text-left text-sm text-gray-50/80 border-b border-primary-500'>
-						<th className='pb-2'>Reader</th>
-						<th className='pb-2'>Books Read</th>
-						<th className='pb-2'>Status</th>
-						<th className='pb-2'>Date</th>
-						<th className='pb-2'>Amount</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
+		<>
+			<div className='bg-black text-white p-4 sm:p-6 rounded-xl'>
+				<h2 className='text-lg font-semibold mb-4 text-white/80'>History</h2>
+
+				{/* Desktop Table */}
+				<div className='hidden lg:block overflow-x-auto'>
+					<table className='w-full min-w-[600px]'>
+						<thead>
+							<tr className='text-left text-sm text-gray-50/80 border-t border-primary-500'>
+								<th className='py-4 pl-4 pr-6'>Reader</th>
+								<th className='py-4 px-6'>Books Read</th>
+								<th className='py-4 px-6'>Status</th>
+								<th className='py-4 px-6'>Date</th>
+								<th className='py-4 px-6'>Amount</th>
+								<th className='py-4 pl-6 pr-4'></th>
+							</tr>
+						</thead>
+						<tbody>
+							{data.map((row, i) => (
+								<tr
+									key={i}
+									className='border-t border-primary-500 text-sm text-white/70'
+								>
+									<td className='py-3 flex items-center gap-3 font-semibold pl-4 pr-6'>
+										<Picture
+											src={row.avatar}
+											alt={row.name}
+											className='rounded-sm size-10'
+										/>
+										{row.name}
+									</td>
+									<td className='py-3 px-6 tracking-wide font-medium'>
+										{row.book}
+									</td>
+									<td className='py-3 px-6'>
+										<span
+											className={`px-3 py-1 rounded-md text-xs font-semibold ${
+												row.status === "Pending"
+													? "bg-primary-100/40 text-primary-400"
+													: "bg-amber-500"
+											}`}
+										>
+											{row.status}
+										</span>
+									</td>
+									<td className='py-3 px-6 font-medium'>{row.date}</td>
+									<td className='py-3 px-6 font-medium'>{row.amount}</td>
+									<td className='py-3 pl-6 pr-4'>
+										<button
+											onClick={onOpenEarningsDetails}
+											className='px-4 font-medium py-1 text-primary-400 border border-primary-400 rounded-md hover:bg-primary-400 hover:text-white/90 transition-colors'
+										>
+											Details
+										</button>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+
+				{/* Mobile Cards */}
+				<div className='lg:hidden space-y-4'>
 					{data.map((row, i) => (
-						<tr
+						<div
 							key={i}
-							className='border border-b border-primary-500 text-sm text-white/70'
+							className='border border-primary-500 rounded-lg p-4 space-y-3'
 						>
-							<td className='py-2 flex items-center gap-3 font-semibold'>
-								<Picture
-									src={row.avatar}
-									alt={row.name}
-									className='rounded-sm size-10'
-								/>
-								{row.name}
-							</td>
-							<td className='py-2 tracking-wide font-medium'>{row.book}</td>
-							<td className='py-2'>
+							<div className='flex items-center justify-between'>
+								<div className='flex items-center gap-3'>
+									<Picture
+										src={row.avatar}
+										alt={row.name}
+										className='rounded-sm size-10'
+									/>
+									<div>
+										<p className='text-sm font-semibold text-white'>
+											{row.name}
+										</p>
+										<p className='text-xs text-white/70'>{row.book}</p>
+									</div>
+								</div>
 								<span
-									className={`px-3 py-1 rounded-md text-xs font-semibold ${
+									className={`px-2 py-1 rounded text-xs font-semibold ${
 										row.status === "Pending"
 											? "bg-primary-100/40 text-primary-400"
 											: "bg-amber-500"
@@ -87,19 +151,40 @@ const EarningHistory = () => {
 								>
 									{row.status}
 								</span>
-							</td>
-							<td className='py-2 font-medium'>{row.date}</td>
-							<td className='py-2 font-medium'>{row.amount}</td>
-							<td className='py-2'>
-								<button className='px-4 font-medium py-1 text-primary-400 border border-primary-400 rounded-md hover:bg-primary-400 hover:text-white/90 transition-[.4]'>
-									Details
-								</button>
-							</td>
-						</tr>
+							</div>
+
+							<div className='grid grid-cols-2 gap-4 text-sm'>
+								<div>
+									<p className='text-white/50 text-xs'>Date</p>
+									<p className='text-xs font-medium'>{row.date}</p>
+								</div>
+								<div>
+									<p className='text-white/50 text-xs'>Amount</p>
+									<p className='text-xs font-medium'>{row.amount}</p>
+								</div>
+							</div>
+
+							<button
+								onClick={onOpenEarningsDetails}
+								className='w-full px-4 text-sm font-medium py-2 text-primary-400 border border-primary-400 rounded-md hover:bg-primary-400 hover:text-white/90 transition-colors'
+							>
+								View Details
+							</button>
+						</div>
 					))}
-				</tbody>
-			</table>
-		</div>
+				</div>
+			</div>
+
+			<GeneralModal
+				isOpen={isOpenEarningsDetailsOpen}
+				onOpenChange={onOpenChangeEarningsDetails}
+				onClose={onCloseEarningsDetails}
+				backdrop='blur'
+				size='sm'
+			>
+				<EarningsDetailsModal onClose={onCloseEarningsDetails} />
+			</GeneralModal>
+		</>
 	);
 };
 
