@@ -6,7 +6,10 @@ import TitleText from "@/components/text/TitleText";
 const EarningContainer = () => {
 	return (
 		<div>
-			<TitleText title='Earnings' className='text-white/70 !text-2xl' />
+			<TitleText
+				title='Earnings'
+				className='text-white/70 !text-lg lg:!text-2xl ml-3 lg:ml-0'
+			/>
 			<EarningOverview />
 			<EarningHistory />
 		</div>
