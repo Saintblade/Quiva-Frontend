@@ -11,7 +11,7 @@ interface ComicPadlayoutProps {
 const ComicPadlayout = ({ children, className }: ComicPadlayoutProps) => {
 	return (
 		<>
-			<main className='flex relative h-screen bg-black-100'>
+			<main className='flex justify-center relative h-screen bg-black-100'>
 				<ComicPadSideNav />
 				<div className='w-full lg:w-[82%] relative'>
 					<ComicPadHeader />

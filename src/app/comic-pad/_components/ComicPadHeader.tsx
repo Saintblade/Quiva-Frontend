@@ -13,7 +13,7 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 const ComicPadHeader = () => {
 	return (
 		<header
-			className={`fixed max-w-[1700px] flex justify-between items-center lg:block pl-4 pr-2 w-full lg:w-[83%] min-h-20 lg:py-3 top-0 border-b dashed-border-strong drop-shadow-sm z-50 bg-black-200`}
+			className={`fixed flex justify-between items-center lg:block pl-4 pr-2 w-full lg:w-[82%] min-h-20 lg:py-3 top-0 border-b dashed-border-strong drop-shadow-sm z-50 bg-black-200`}
 		>
 			{/* Desktop */}
 			<div className='hidden lg:grid grid-cols-3'>
