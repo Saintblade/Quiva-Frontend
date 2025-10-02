@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { X, Pause, Folder } from "lucide-react";
+import { X, Pause, Folder, AlertCircle } from "lucide-react";
 import JSZip from "jszip";
 import { ComicPreviewModal } from "./ComicPreviewModal";
 import Picture from "@/components/picture/Index";
@@ -16,6 +16,10 @@ interface ExtractedFile {
 	preview: string;
 }
 
+const VALID_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml', 'image/gif', 'image/webp'];
+const VALID_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.svg', '.gif', '.webp'];
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+
 const UploadModal = ({ onClose }: UploadModalProps) => {
 	const [file, setFile] = useState<File | null>(null);
 	const [preview, setPreview] = useState<string | null>(null);
@@ -24,6 +28,24 @@ const UploadModal = ({ onClose }: UploadModalProps) => {
 	const [extractedFiles, setExtractedFiles] = useState<ExtractedFile[]>([]);
 	const [error, setError] = useState<string | null>(null);
 	const [progress, setProgress] = useState(0);
+
+	const validateImageFile = (file: File): boolean => {
+		// Check file type
+		if (!VALID_IMAGE_TYPES.includes(file.type)) {
+			const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+			if (!VALID_EXTENSIONS.includes(ext)) {
+				return false;
+			}
+		}
+		
+		// Check file size
+		if (file.size > MAX_FILE_SIZE) {
+			setError(`File "${file.name}" exceeds maximum size of 50MB`);
+			return false;
+		}
+		
+		return true;
+	};
 
 	const extractZipFile = async (zipFile: File): Promise<ExtractedFile[]> => {
 		try {
@@ -36,7 +58,7 @@ const UploadModal = ({ onClose }: UploadModalProps) => {
 			setProgress(30);
 
 			const imageFiles: ExtractedFile[] = [];
-			const validExtensions = ['.jpg', '.jpeg', '.png', '.svg', '.gif', '.webp'];
+			const invalidFiles: string[] = [];
 
 			let processedCount = 0;
 			const totalFiles = Object.keys(zipContent.files).length;
@@ -49,20 +71,42 @@ const UploadModal = ({ onClose }: UploadModalProps) => {
 					filename.startsWith('.') ||
 					filename.includes('/.')
 				) {
+					processedCount++;
 					continue;
 				}
 
 				const ext = filename.substring(filename.lastIndexOf('.')).toLowerCase();
 				
-				if (validExtensions.includes(ext)) {
-					const blob = await zipEntry.async('blob');
-					const previewUrl = URL.createObjectURL(blob);
-					
-					imageFiles.push({
-						name: filename.split('/').pop() || filename,
-						blob,
-						preview: previewUrl,
-					});
+				if (VALID_EXTENSIONS.includes(ext)) {
+					try {
+						const blob = await zipEntry.async('blob');
+						
+						// Verify blob type
+						const fileType = blob.type || `image/${ext.substring(1)}`;
+						if (!VALID_IMAGE_TYPES.includes(fileType) && !VALID_EXTENSIONS.includes(ext)) {
+							invalidFiles.push(filename);
+							processedCount++;
+							continue;
+						}
+						
+						// Check size
+						if (blob.size > MAX_FILE_SIZE) {
+							invalidFiles.push(`${filename} (too large)`);
+							processedCount++;
+							continue;
+						}
+						
+						const previewUrl = URL.createObjectURL(blob);
+						
+						imageFiles.push({
+							name: filename.split('/').pop() || filename,
+							blob,
+							preview: previewUrl,
+						});
+					} catch (err) {
+						console.error(`Error processing ${filename}:`, err);
+						invalidFiles.push(filename);
+					}
 				}
 
 				processedCount++;
@@ -75,22 +119,33 @@ const UploadModal = ({ onClose }: UploadModalProps) => {
 			setProgress(100);
 			setIsExtracting(false);
 
+			// Show warning if some files were invalid
+			if (invalidFiles.length > 0) {
+				setError(`${invalidFiles.length} file(s) were skipped (invalid format or too large). ${imageFiles.length} valid images extracted.`);
+			}
+
 			return imageFiles;
 		} catch (err) {
 			console.error("Error extracting ZIP:", err);
 			setIsExtracting(false);
-			throw new Error("Failed to extract ZIP file");
+			throw new Error("Failed to extract ZIP file. Please ensure it's a valid archive.");
 		}
 	};
 
 	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files && e.target.files[0]) {
 			const selected = e.target.files[0];
-			setFile(selected);
 			setError(null);
 			setProgress(0);
 			
 			if (selected.type.startsWith("image/")) {
+				// Validate single image
+				if (!validateImageFile(selected)) {
+					setError("Invalid image file. Please upload a valid image format (JPEG, PNG, GIF, WebP, SVG) under 50MB.");
+					return;
+				}
+				
+				setFile(selected);
 				const previewUrl = URL.createObjectURL(selected);
 				setPreview(previewUrl);
 				setExtractedFiles([{
@@ -99,17 +154,21 @@ const UploadModal = ({ onClose }: UploadModalProps) => {
 					preview: previewUrl,
 				}]);
 			} else if (selected.name.toLowerCase().endsWith(".zip")) {
+				setFile(selected);
 				setPreview(null);
 				try {
 					const files = await extractZipFile(selected);
 					setExtractedFiles(files);
 					
 					if (files.length === 0) {
-						setError("No valid image files found in ZIP archive");
+						setError("No valid image files found in ZIP archive. Please ensure your ZIP contains image files (JPEG, PNG, GIF, WebP, SVG).");
 					}
 				} catch (err) {
-					setError("Failed to extract ZIP file. Please ensure it's a valid archive.");
+					setError(err instanceof Error ? err.message : "Failed to extract ZIP file. Please ensure it's a valid archive.");
+					setFile(null);
 				}
+			} else {
+				setError("Invalid file type. Please upload an image or ZIP file.");
 			}
 		}
 	};
@@ -221,11 +280,12 @@ const UploadModal = ({ onClose }: UploadModalProps) => {
 					</div>
 
 					<h4 className='text-white/50 text-xs my-1 tracking-wider'>
-						Support: .jpg, .jpeg, .png, .svg, .gif, .webp, and .zip files
+						Support: .jpg, .jpeg, .png, .svg, .gif, .webp, and .zip files (max 50MB per file)
 					</h4>
 
 					{error && (
-						<div className='bg-red-500/20 border border-red-500/50 rounded-lg p-3 mt-3'>
+						<div className='bg-red-500/20 border border-red-500/50 rounded-lg p-3 mt-3 flex items-start gap-2'>
+							<AlertCircle className='text-red-400 flex-shrink-0 mt-0.5' size={18} />
 							<p className='text-red-400 text-sm'>{error}</p>
 						</div>
 					)}
