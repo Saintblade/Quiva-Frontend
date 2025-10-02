@@ -4,6 +4,7 @@ import { persistReducer, persistStore } from 'redux-persist';
 import generalReducer from './slices/generalSlice';
 import authReducer from './slices/authSlice';
 import walletReducer from './slices/walletSlice';
+import comicReducer from './slices/comicSlice';
 
 const persistConfig = {
   key: 'root',
@@ -14,7 +15,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   general: generalReducer,
   auth: authReducer,
-  wallet: walletReducer
+  wallet: walletReducer,
+  comic: comicReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

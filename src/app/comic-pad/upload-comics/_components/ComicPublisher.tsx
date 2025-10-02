@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { ComicNotification } from "./ComicNotification";
 import Picture from "@/components/picture/Index";
+import {createFullComic} from "@/redux/slices/comicSlice"
+import { useAppDispatch } from "@/redux/hook";
 
 interface ExtractedFile {
 	name: string;
@@ -35,6 +37,7 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 	const [showNotification, setShowNotification] = useState(false);
 	const [isPublishing, setIsPublishing] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const dispatch = useAppDispatch();
 
 	const handlePublish = async () => {
 		try {
@@ -50,12 +53,12 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 			
 			// Add genres as array
 			comicData.genre.forEach(genre => {
-				formData.append('genre[]', genre);
+				formData.append('genre', genre);
 			});
 
 			// Add tags as array
 			comicData.tags.forEach(tag => {
-				formData.append('tags[]', tag);
+				formData.append('tags', tag);
 			});
 
 			// Add status
@@ -73,28 +76,30 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 			}
 
 			// Add all pages
+			// comicData.pages.forEach((page, index) => {
+			// 	// Convert blob to file with proper name
+			// 	const file = new File([page.blob], page.name, { type: page.blob.type });
+			// 	formData.append('pages', file);
+			// });
+
+			// formData.append('pages', comicData.pages)
 			comicData.pages.forEach((page, index) => {
-				// Convert blob to file with proper name
-				const file = new File([page.blob], page.name, { type: page.blob.type });
-				formData.append('pages', file);
+				// If you already have a File
+				if (page instanceof File) {
+					formData.append("pages", page);
+				} else {
+					// If it's a Blob, wrap it in a File so backend receives a filename
+					const file = new File([page.blob], page.name, { type: page.blob.type });
+					formData.append("pages", file);
+				}
 			});
 
 			// Make API request
-			const response = await fetch('/api/comics/full', {
-				method: 'POST',
-				headers: {
-					// Don't set Content-Type - browser will set it with boundary for multipart/form-data
-					'Authorization': `Bearer ${localStorage.getItem('token')}`, // Adjust based on your auth setup
-				},
-				body: formData,
-			});
+			const response = await dispatch(createFullComic(formData as any));
 
-			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(errorData.message || 'Failed to publish comic');
-			}
+			console.log(response)
 
-			const result = await response.json();
+			const result = await response;
 			console.log('Comic published successfully:', result);
 
 			// Show success notification
