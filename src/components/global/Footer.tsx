@@ -38,18 +38,18 @@ const Footer = () => {
 					className={`w-[90%] h-[200px] sm:h-fit lg:max-w-[850px] mx-auto`}
 				/>
 				<div className='flex flex-col items-center justify-center gap-4 w-full max-w-sm mx-auto'>
-				<Link href="/waitlist" className="w-full">
-					<MainButton className='w-full rounded-2xl py-3'>
-					Join Creator Waitlist
-					</MainButton>
-				</Link>
+					<Link href="/waitlist" className="w-full">
+						<MainButton className='w-full rounded-2xl py-3'>
+							Join Creator Waitlist
+						</MainButton>
+					</Link>
 
-				<AnchorButton
-					href="https://t.me/Quivannouncement"
-					className='bg-transparent w-full rounded-full py-3 border border-black'
-				>
-					Join the community
-				</AnchorButton>
+					<AnchorButton
+						href="https://t.me/Quivannouncement"
+						className='bg-transparent w-full rounded-full py-3 border border-black'
+					>
+						Join the community
+					</AnchorButton>
 				</div>
 
 

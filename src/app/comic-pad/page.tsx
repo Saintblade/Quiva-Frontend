@@ -20,11 +20,11 @@ const page = () => {
 		onClose: onCloseUserProfile,
 	} = useDisclosure();
 
-	// useEffect(() => {
-	// 	if (!user.creatorProfile.verified) {
-	// 		onOpenUserProfile();
-	// 	}
-	// }, []);
+	useEffect(() => {
+		if (!user?.creatorProfile?.verified) {
+			onOpenUserProfile();
+		}
+	},[])
 
 	const handleProfileComplete = () => {
 		// Close the user profile modal
