@@ -74,7 +74,7 @@ export function ComicSection({
   return (
     <section className="my-8 mt-12">
       {/* Section Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 max-w-6xl">
         <h2 className="text-white text-xl font-bold">{title}</h2>
         {showNavigation && !isLoading && comics.length > 0 && (
           <div className="flex space-x-2">
