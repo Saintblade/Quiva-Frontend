@@ -132,7 +132,7 @@ export function ComicCard({
           {/* Explore Button */}
           <Button 
             onClick={
-              () => router.push("/comic-library/detail")
+              () => router.push("/marketplace/detail")
             }
             className={`w-full font-semibold transition-all duration-200 bg-secondary-200 hover:bg-secondary-200/80 text-black-500 rounded-full focus:ring-none`}
             variant={buttonVariant}
