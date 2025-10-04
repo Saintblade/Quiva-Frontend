@@ -36,12 +36,12 @@ const Step5CompletionModal = ({
   initialData = {}
 }: Props) => {
   const { profile } = useAppSelector((state) => state.auth);
-  const [username, setUsername] = useState(profile.data.displayName || "");
-  const [profilePreview, setProfilePreview] = useState<string | null>(profile.data.avatar || null);
-  const [bannerPreview, setBannerPreview] = useState<string | null>(profile.data.banner || null);
-  const [selectedProfileFile, setSelectedProfileFile] = useState<File | null>(initialData.profileImage || null);
-  const [selectedBannerFile, setSelectedBannerFile] = useState<File | null>(initialData.bannerImage || null);
-  const [bio, setBio] = useState(profile.data.bio || "");
+  const [username, setUsername] = useState(profile?.data?.displayName || "");
+  const [profilePreview, setProfilePreview] = useState<string | null>(profile?.data?.avatar || null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(profile?.data?.banner || null);
+  const [selectedProfileFile, setSelectedProfileFile] = useState<File | null>(initialData?.profileImage || null);
+  const [selectedBannerFile, setSelectedBannerFile] = useState<File | null>(initialData?.bannerImage || null);
+  const [bio, setBio] = useState(profile?.data?.bio || "");
   const [showSuccess, setShowSuccess] = useState(false);
   
   const profileFileInputRef = useRef<HTMLInputElement>(null);

@@ -21,7 +21,7 @@ const page = () => {
 	} = useDisclosure();
 
 	useEffect(() => {
-		if (!user.creatorProfile.verified) {
+		if (!user?.creatorProfile?.verified) {
 			onOpenUserProfile();
 		}
 	}, []);
