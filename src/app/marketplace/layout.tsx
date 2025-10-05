@@ -22,7 +22,8 @@ export default function MainPage({children}) {
             <div className="lg:hidden">
                 <Header
                     onMobileMenuToggle={toggleMobileMenu}
-                    isMobileMenuOpen={isMobileMenuOpen}/>
+                    isMobileMenuOpen={isMobileMenuOpen}
+                />
                 <Sidebar
                     isMobileMenuOpen={isMobileMenuOpen}
                     onMobileMenuClose={closeMobileMenu}/>

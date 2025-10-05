@@ -1,29 +1,54 @@
-import React, { ReactNode } from "react";
-import ComicPadSideNav from "./ComicPadSideNav";
-import ComicPadHeader from "./ComicPadHeader";
-import styles from "../../css/Scrollbar.module.css";
+'use client'
 
-interface ComicPadlayoutProps {
-	children: ReactNode;
-	className?: string;
+import {ComicPadHeader} from './ComicPadHeader'
+import {ComicPadSideNav} from './ComicPadSideNav'
+import {useState} from 'react'
+
+export default function ComicPadLayout({children}) {
+    const [isMobileMenuOpen,
+        setIsMobileMenuOpen] = useState(false)
+
+    const toggleMobileMenu = () => {
+        setIsMobileMenuOpen(prev => !prev)
+    }
+
+    const closeMobileMenu = () => {
+        setIsMobileMenuOpen(false)
+    }
+
+    return (
+        <div className="min-h-screen bg-black-100 w-full font-recursive">
+            {/* Mobile Layout */}
+            <div className="lg:hidden">
+                <ComicPadHeader
+                    onMobileMenuToggle={toggleMobileMenu}
+                    isMobileMenuOpen={isMobileMenuOpen}/>
+                <ComicPadSideNav
+                    isMobileMenuOpen={isMobileMenuOpen}
+                    onMobileMenuClose={closeMobileMenu}/>
+
+                <main
+                    className={`p-4 overflow-y-auto bg-black-100 w-full min-h-screen transition-all duration-300 ${isMobileMenuOpen
+                    ? 'blur-sm'
+                    : ''}`}>
+                    {children}
+                </main>
+            </div>
+
+            {/* Desktop Layout */}
+            <div className="hidden lg:grid lg:grid-cols-[15%_1fr] min-h-screen w-full">
+                <div>
+                    <ComicPadSideNav isMobileMenuOpen={false} onMobileMenuClose={() => {}}/>
+                </div>
+
+                <div className="flex flex-col w-full">
+                    <ComicPadHeader onMobileMenuToggle={() => {}} isMobileMenuOpen={false}/>
+
+                    <main className="flex-1 p-6 overflow-y-auto bg-black-100 w-full">
+                        {children}
+                    </main>
+                </div>
+            </div>
+        </div>
+    )
 }
-
-const ComicPadlayout = ({ children, className }: ComicPadlayoutProps) => {
-	return (
-		<>
-			<main className='flex justify-center relative h-screen bg-black-100'>
-				<ComicPadSideNav />
-				<div className='w-full lg:w-[82%] relative'>
-					<ComicPadHeader />
-					<div
-						className={`w-full relative pt-20 xl:pt-28 pb-12 max-h-screen ${className} ${styles["inner-sidebar-scroll"]}`}
-					>
-						{children}
-					</div>
-				</div>
-			</main>
-		</>
-	);
-};
-
-export default ComicPadlayout;
