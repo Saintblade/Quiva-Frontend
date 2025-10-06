@@ -29,8 +29,7 @@ export default function MainPage() {
 	useEffect(() => {
 		dispatch(getUserComics());
 	}, [dispatch]);
-
-	console.log(userComics)
+	
 	return (
 		<>
 			<HeroComicSlider comics={heroComics} />
