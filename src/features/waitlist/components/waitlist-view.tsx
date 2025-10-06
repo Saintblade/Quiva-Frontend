@@ -37,7 +37,7 @@ const Waitlist = () => {
 		console.log("Submitting waitlist with values:", values);
 		try {
 			const response = await axiosInstance.post(`/waitlist/join`, values);
-			console.log("Waitlist response:", response);     
+			    
             if(response.data && response.data.success){
                 toast.success("Successfully joined the waitlist!");
                 setShowModal(true);

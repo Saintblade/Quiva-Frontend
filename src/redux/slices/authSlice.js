@@ -288,7 +288,6 @@ const authSlice = createSlice({
                 
                 // Set user data if verification includes auth data
                 if (action.payload.token) {
-                    console.log(action.payload);
                     state.user.token = action.payload.token;
                     state.user.data = action.payload.user;
                     state.user.isAuthenticated = true;
@@ -313,7 +312,6 @@ const authSlice = createSlice({
                 state.profile.error = null;
             })
             .addCase(getUserProfile.fulfilled, (state, action) => {
-                console.log(action.payload); 
                 state.profile.isLoading = false;
                 state.profile.data = action.payload.data;
             })

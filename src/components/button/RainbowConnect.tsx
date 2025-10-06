@@ -31,6 +31,8 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
     const handleLogin = async () => {
       try {
         const user = await loginWithWallet();
+        return user;
+
       } catch (err) {
         console.error("Wallet login failed:", err);
       }
@@ -89,8 +91,7 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
           (!authenticationStatus || authenticationStatus === "authenticated");
 
           useEffect(() => {
-            if (isConnected) {
-              console.log("Wallet connected");
+            if (!isConnected) {
               handleLogin()
             } 
           }, [isConnected]);
