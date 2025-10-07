@@ -221,8 +221,6 @@ const comicSlice = createSlice({
       })
       .addCase(createFullComic.fulfilled, (state, action) => {
         state.isCreating = false;
-        state.comics.push(action.payload);
-        state.userComics.push(action.payload);
         state.successMessage = "Full comic created successfully";
       })
       .addCase(createFullComic.rejected, (state, action) => {

@@ -78,18 +78,18 @@ export function Header() {
     const navigationItems = [
         {
             label: 'Explore',
-            path: '/comic-library',
-            isActive: pathname === '/comic-library'
+            path: '/marketplace',
+            isActive: pathname === '/marketplace'
         }, 
         {
             label: 'My Library',
-            path: '/comic-library/library',
-            isActive: pathname === '/comic-library/library'
+            path: '/marketplace/library',
+            isActive: pathname === '/marketplace/library'
         },
         {
             label: 'Browse',
-            path: '/comic-library',
-            isActive: pathname === '/comic-library'
+            path: '/marketplace',
+            isActive: pathname === '/marketplace'
         }
     ]
 

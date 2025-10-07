@@ -5,7 +5,7 @@ import { useWalletAuth } from "@/hook/useWalletAuth";
 import { useAccount, useDisconnect } from "wagmi";
 import { useAppSelector, useAppDispatch } from "@/redux/hook";
 import { logout } from "@/redux/slices/authSlice";
-import {setWalletAddress} from "@/redux/slices/walletSlice";
+import { setWalletAddress } from "@/redux/slices/walletSlice";
 
 // Import your Avatar components (adjust path as needed)
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -18,41 +18,63 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
   disabled = false,
 }) => {
   const { loginWithWallet } = useWalletAuth();
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const { disconnect } = useDisconnect();
   const dispatch = useAppDispatch();
 
   const {
-      user: { isAuthenticated },
-    } = useAppSelector((state) => state.auth);
-
-  
-  
-    const handleLogin = async () => {
-      try {
-        const user = await loginWithWallet();
-        return user;
-
-      } catch (err) {
-        console.error("Wallet login failed:", err);
-      }
-    };
-  
-    const handleLogout = () => {
-      // Disconnect wallet
-      disconnect();
-      // Clear redux + localStorage
-      dispatch(logout());
-    };
-
+    isAuthenticated
+  } = useAppSelector((state) => state.wallet);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Auto-login when wallet connects
+  useEffect(() => {
+    const autoLogin = async () => {
+      console.log(isConnected, isAuthenticated, address);
+      if (isConnected && !isAuthenticated && address) {
+        try {
+          console.log("Auto-logging in with address:", address);
+          await dispatch(setWalletAddress(address));
+          await loginWithWallet();
+        } catch (err) {
+          console.error("Auto-login failed:", err);
+        }
+      }
+    };
+
+    autoLogin();
+  }, [isConnected, isAuthenticated, address]);
+
+  const handleLogin = async () => {
+    try {
+      if (!address) {
+        console.error("No address available");
+        return;
+      }
+      dispatch(setWalletAddress(address));
+      const user = await loginWithWallet();
+      return user;
+    } catch (err) {
+      console.error("Wallet login failed:", err);
+    }
+  };
+
+  const handleLogout = () => {
+    // Disconnect wallet
+    disconnect();
+    // Clear redux + localStorage
+    dispatch(logout());
+  };
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsDropdownOpen(false);
       }
     };
@@ -90,12 +112,6 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
           chain &&
           (!authenticationStatus || authenticationStatus === "authenticated");
 
-          useEffect(() => {
-            if (!isConnected) {
-              handleLogin()
-            } 
-          }, [isConnected]);
-
         return (
           <div
             {...(!ready && {
@@ -113,15 +129,11 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                 return (
                   <button
                     onClick={
-                      async () => 
-                      {
-                        const response = disabled ? undefined : openConnectModal()
-                        await response;
-                        if(response !== undefined){
-                          setWalletAddress(account.address);
-                          handleLogin()
-                        }
-                      }
+                      disabled
+                        ? undefined
+                        : () => {
+                            openConnectModal();
+                          }
                     }
                     type="button"
                     disabled={disabled}
@@ -159,7 +171,11 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                 <div className="relative" ref={dropdownRef}>
                   {/* Avatar Button */}
                   <button
-                    onClick={disabled ? undefined : () => setIsDropdownOpen(!isDropdownOpen)}
+                    onClick={
+                      disabled
+                        ? undefined
+                        : () => setIsDropdownOpen(!isDropdownOpen)
+                    }
                     type="button"
                     disabled={disabled}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors
@@ -170,21 +186,24 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                       }`}
                   >
                     <Avatar className="w-7 h-7 lg:w-8 lg:h-8 border border-secondary-200/50">
-                      <AvatarImage src="https://github.com/shadcn.png" alt="User Avatar" />
+                      <AvatarImage
+                        src="https://github.com/shadcn.png"
+                        alt="User Avatar"
+                      />
                       <AvatarFallback className="bg-secondary-200 text-white text-xs font-medium">
                         {account.displayName?.slice(0, 2).toUpperCase() || "GA"}
                       </AvatarFallback>
                     </Avatar>
-                    
+
                     <span className="text-white text-sm font-medium hidden sm:block">
                       {truncateAddress(account.address)}
                     </span>
-                    
-                    <ChevronDown 
-                      size={16} 
+
+                    <ChevronDown
+                      size={16}
                       className={`text-white transition-transform ${
-                        isDropdownOpen ? 'rotate-180' : ''
-                      }`} 
+                        isDropdownOpen ? "rotate-180" : ""
+                      }`}
                     />
                   </button>
 
@@ -195,9 +214,13 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                       <div className="p-4 border-b border-white/10">
                         <div className="flex items-center gap-3">
                           <Avatar className="w-10 h-10 border border-secondary-200/50">
-                            <AvatarImage src="https://github.com/shadcn.png" alt="User Avatar" />
+                            <AvatarImage
+                              src="https://github.com/shadcn.png"
+                              alt="User Avatar"
+                            />
                             <AvatarFallback className="bg-secondary-200 text-white text-sm font-medium">
-                              {account.displayName?.slice(0, 2).toUpperCase() || "GA"}
+                              {account.displayName?.slice(0, 2).toUpperCase() ||
+                                "GA"}
                             </AvatarFallback>
                           </Avatar>
                           <div>
@@ -217,7 +240,9 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                       <div className="p-4 border-b border-white/10">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-white/60 text-xs mb-1">Wallet Address</p>
+                            <p className="text-white/60 text-xs mb-1">
+                              Wallet Address
+                            </p>
                             <p className="text-white font-mono text-sm">
                               {truncateAddress(account.address)}
                             </p>
@@ -231,7 +256,12 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                               <Copy size={14} className="text-white/60" />
                             </button>
                             <button
-                              onClick={() => window.open(`https://etherscan.io/address/${account.address}`, '_blank')}
+                              onClick={() =>
+                                window.open(
+                                  `https://etherscan.io/address/${account.address}`,
+                                  "_blank"
+                                )
+                              }
                               className="p-2 hover:bg-white/10 rounded-lg transition-colors"
                               title="View on explorer"
                             >
@@ -263,10 +293,15 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                             )}
                             <div className="text-left">
                               <p className="text-white/60 text-xs">Network</p>
-                              <p className="text-white text-sm font-medium">{chain.name}</p>
+                              <p className="text-white text-sm font-medium">
+                                {chain.name}
+                              </p>
                             </div>
                           </div>
-                          <ChevronDown size={14} className="text-white/60 -rotate-90" />
+                          <ChevronDown
+                            size={14}
+                            className="text-white/60 -rotate-90"
+                          />
                         </button>
                       </div>
 
@@ -274,14 +309,15 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                       <div className="p-2">
                         <button
                           onClick={() => {
-                            openAccountModal();
                             handleLogout();
                             setIsDropdownOpen(false);
                           }}
                           className="flex items-center gap-3 w-full p-3 hover:bg-red-500/10 rounded-lg transition-colors text-red-400 hover:text-red-300"
                         >
                           <LogOut size={16} />
-                          <span className="text-sm font-medium">Disconnect</span>
+                          <span className="text-sm font-medium">
+                            Disconnect
+                          </span>
                         </button>
                       </div>
                     </div>

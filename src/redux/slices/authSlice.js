@@ -430,7 +430,7 @@ const authSlice = createSlice({
                 state.verifyOtp.isLoading = false;
                 state.verifyOtp.success = true;
 
-                if (action.payload.token) {
+                if (action.payload.token) { 
                 state.user.token = action.payload.token;
                 state.user.data = action.payload.user;
                 state.user.isAuthenticated = true;
