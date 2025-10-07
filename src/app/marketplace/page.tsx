@@ -32,8 +32,8 @@ export default function MainPage() {
 
   // Transform API comics to match Comic interface
   const transformedComics = useMemo(() => {
-    if (!comics?.data?.comics) return []
-    return transformApiComicsToComics(comics.data.comics)
+    if (!comics?.data?.comics?.data) return []
+    return transformApiComicsToComics(comics.data.comics.data)
   }, [comics])
 
   const freeComics = useMemo(() => 

@@ -90,6 +90,22 @@ export const walletVerifyAuth = createAsyncThunk<
   }
 });
 
+export const creatorRegister = createAsyncThunk<
+  any,
+  any,
+  { rejectValue: string }
+>("auth/creatorRegister", async (id, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.put(`/${id}/become-creator`, {});
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message ||
+        "Creator registration failed"
+    );
+  }
+});
+
 const walletAuthSlice = createSlice({
   name: "walletAuth",
   initialState,
@@ -147,6 +163,26 @@ const walletAuthSlice = createSlice({
         state.isVerifying = false;
         state.error = action.payload || "Wallet verification failed";
         state.isAuthenticated = false;
+      });
+
+    // Creator Register
+    builder
+      .addCase(creatorRegister.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(creatorRegister.fulfilled, (state, action) => {
+        state.isLoading = false;
+        console.log(action.payload);
+        // if (state.user) {
+        //   state.user.isCreator = true;
+        // } else {
+        //   state.error = "User data not found";
+        // }
+      })
+      .addCase(creatorRegister.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || "Creator registration failed";
       });
   },
 });
