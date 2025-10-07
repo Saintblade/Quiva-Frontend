@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect } from "react";
 import ComicPadlayout from "./_components/ComicPadlayout";
 import StartNewComicFast from "./_components/StartNewComicFast";
