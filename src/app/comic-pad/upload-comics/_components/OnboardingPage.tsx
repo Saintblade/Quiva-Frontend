@@ -1,25 +1,75 @@
 "use client";
 
-import { X } from "lucide-react";
 import { useState } from "react";
 import ComicPublisher from "./ComicPublisher";
 
-interface OnboardingPageProps {
-	onclose: () => void;
+interface ExtractedFile {
+	name: string;
+	blob: Blob;
+	preview: string;
 }
 
-export default function OnboardingPage({ onclose }: OnboardingPageProps) {
-	const [selectedOption, setSelectedOption] = useState("free");
-	const [showForm, setShowForm] = useState(false);
+interface ComicData {
+	title: string;
+	description: string;
+	genre: string[];
+	tags: string[];
+	ageRating: string;
+	coverImage: File | null;
+	pages: ExtractedFile[];
+}
+
+interface OnboardingPageProps {
+	onclose: () => void;
+	comicData: ComicData;
+}
+
+export default function OnboardingPage({ onclose, comicData }: OnboardingPageProps) {
+	const [publishType, setPublishType] = useState<"free" | "paid">("free");
+	const [price, setPrice] = useState<string>("");
+	const [mintAsNFT, setMintAsNFT] = useState(false);
+	const [nftCopies, setNftCopies] = useState<string>("");
+	const [nftPrice, setNftPrice] = useState<string>("");
+	const [showPublisher, setShowPublisher] = useState(false);
+
+	const handleContinue = () => {
+		// Validate reading access
+		if (publishType === "paid" && (!price || parseFloat(price) <= 0)) {
+			alert("Please enter a valid price for paid content");
+			return;
+		}
+
+		// Validate NFT fields if minting is enabled
+		if (mintAsNFT) {
+			if (!nftCopies || parseInt(nftCopies) <= 0) {
+				alert("Please enter a valid number of NFT copies");
+				return;
+			}
+			if (!nftPrice || parseFloat(nftPrice) <= 0) {
+				alert("Please enter a valid mint price per NFT");
+				return;
+			}
+		}
+
+		setShowPublisher(true);
+	};
+
+	const getMonetizationData = () => ({
+		publishType,
+		price: publishType === "paid" ? parseFloat(price) : undefined,
+		mintAsNFT,
+		nftCopies: mintAsNFT ? parseInt(nftCopies) : undefined,
+		nftPrice: mintAsNFT ? parseFloat(nftPrice) : undefined,
+	});
 
 	return (
 		<>
-			{!showForm && (
-				<div className=''>
+			{!showPublisher && (
+				<div className='px-4 py-6 max-h-[85vh] overflow-y-auto'>
 					{/* Header */}
-					<div className='text-center mb-8 py-3'>
+					<div className='text-center mb-8'>
 						<p className='text-white/80 text-sm font-medium tracking-widest uppercase mb-1'>
-							PUBLISH YOUR COMIC: Step 3 of 4
+							PUBLISH YOUR COMIC: STEP 3 OF 4
 						</p>
 						<h1 className='text-white text-2xl tracking-wider font-semibold mb-2'>
 							Choose your path to prosperity
@@ -35,50 +85,127 @@ export default function OnboardingPage({ onclose }: OnboardingPageProps) {
 							Reading Access
 						</h2>
 
-						<div className='flex items-center gap-3'>
-							<label className='flex items-center gap-1 cursor-pointer'>
+						<div className='space-y-4'>
+							<label className='flex items-start gap-3 cursor-pointer p-4 rounded-lg border border-white/20 hover:border-orange-500/50 transition'>
 								<input
 									type='radio'
 									name='reading-access'
 									value='free'
-									checked={selectedOption === "free"}
-									onChange={() => setSelectedOption("free")}
-									className='accent-orange-500'
+									checked={publishType === "free"}
+									onChange={() => setPublishType("free")}
+									className='accent-orange-500 mt-1'
 								/>
-								<h4 className='text-white'>Free to read</h4>
+								<div>
+									<h4 className='text-white font-semibold'>Free to read</h4>
+									<p className='text-white/60 text-sm mt-1'>
+										Make your comic available to everyone at no cost. Perfect for building an audience.
+									</p>
+								</div>
 							</label>
 
-							<label className='flex items-center gap-1 cursor-pointer'>
+							<label className='flex items-start gap-3 cursor-pointer p-4 rounded-lg border border-white/20 hover:border-orange-500/50 transition'>
 								<input
 									type='radio'
 									name='reading-access'
 									value='pay-per-read'
-									checked={selectedOption === "pay-per-read"}
-									onChange={() => setSelectedOption("pay-per-read")}
-									className='accent-orange-500'
+									checked={publishType === "paid"}
+									onChange={() => setPublishType("paid")}
+									className='accent-orange-500 mt-1'
 								/>
-								<h4 className='text-white'>Pay Per Read</h4>
+								<div className='flex-1'>
+									<h4 className='text-white font-semibold'>Pay Per Read</h4>
+									<p className='text-white/60 text-sm mt-1'>
+										Readers pay to access your comic. Set your own price.
+									</p>
+									
+									{publishType === "paid" && (
+										<div className='mt-3'>
+											<input
+												type='number'
+												placeholder='Enter USDT amount'
+												value={price}
+												onChange={(e) => setPrice(e.target.value)}
+												min='0.01'
+												step='0.01'
+												className='w-full rounded-full border border-white/80 bg-transparent px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500'
+											/>
+										</div>
+									)}
+								</div>
 							</label>
 						</div>
 					</div>
 
+					{/* NFT Section */}
+					<div className='mb-8'>
+						<h2 className='text-white font-medium tracking-widest mb-4'>
+							Turn Your Comic into a Collectible NFT!
+						</h2>
+
+						<label className='flex items-start gap-3 cursor-pointer p-4 rounded-lg border border-white/20 hover:border-orange-500/50 transition'>
+							<input
+								type='checkbox'
+								checked={mintAsNFT}
+								onChange={(e) => setMintAsNFT(e.target.checked)}
+								className='accent-orange-500 mt-1 w-4 h-4'
+							/>
+							<div className='flex-1'>
+								<h4 className='text-white font-semibold'>
+									Mint this comic episode as a limited NFT Edition.
+								</h4>
+
+								{mintAsNFT && (
+									<div className='mt-4 space-y-3'>
+										<input
+											type='number'
+											placeholder='How many copies?'
+											value={nftCopies}
+											onChange={(e) => setNftCopies(e.target.value)}
+											min='1'
+											step='1'
+											className='w-full rounded-full border border-white/80 bg-transparent px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500'
+										/>
+										<input
+											type='number'
+											placeholder='Mint price (USDT per NFT)'
+											value={nftPrice}
+											onChange={(e) => setNftPrice(e.target.value)}
+											min='0.01'
+											step='0.01'
+											className='w-full rounded-full border border-white/80 bg-transparent px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-orange-500'
+										/>
+									</div>
+								)}
+							</div>
+						</label>
+					</div>
+
 					{/* Action Buttons */}
-					<div className='space-y-3'>
+					<div className='space-y-3 mt-8'>
 						<button
-							onClick={() => setShowForm(true)}
-							className='w-full bg-secondary-200/80 hover:bg-secondary-200 text-black font-semibold py-3 rounded-full transition disabled:cursor-not-allowed disabled:opacity-50'
+							onClick={handleContinue}
+							className='w-full bg-secondary-200/80 hover:bg-secondary-200 text-black font-semibold py-3 rounded-full transition'
 						>
 							Next
 						</button>
 
-						<button className='w-full border border-white/20 text-white/70 hover:text-white hover:bg-white/5 py-3 rounded-full transition'>
+						<button 
+							onClick={onclose}
+							className='w-full border border-white/20 text-white/70 hover:text-white hover:bg-white/5 py-3 rounded-full transition'
+						>
 							Go back
 						</button>
 					</div>
 				</div>
 			)}
 
-			{showForm && <ComicPublisher onclose={() => setShowForm(true)} />}
+			{showPublisher && (
+				<ComicPublisher 
+					onclose={() => setShowPublisher(false)} 
+					comicData={comicData}
+					monetizationData={getMonetizationData()}
+				/>
+			)}
 		</>
 	);
 }

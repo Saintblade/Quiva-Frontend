@@ -131,15 +131,9 @@ const Sidebar = ({
 					})}
 
 					<div className="flex flex-col gap-3 mt-6">
-						<Link href="/auth/login" onClick={toggleSidebar}>
-							<span className="capitalize relative text-lg font-medium font-sans w-fit block border border-white/20 px-4 py-2 rounded-lg text-white hover:bg-white/5 transition">
-								Log In
-							</span>
-						</Link>
-						<Link href="/auth/signup" onClick={toggleSidebar}>
-							<span className="capitalize relative text-lg font-medium font-sans w-fit block rounded-lg bg-primary-100 px-4 py-2 border border-primary-100 text-white">
-								Sign Up
-							</span>
+						<Link href="/marketplace" onClick={toggleSidebar} 
+						className={`bg-secondary-200 text-black-200 font-recursive text-sm rounded-full px-7 py-3 border-[3px] border-black-200 shadow-[2px_2px_0_0_black] transition-all duration-200 font-medium hover:scale-105`}>
+							Getting Started
 						</Link>
 					</div>
 				</ul>
