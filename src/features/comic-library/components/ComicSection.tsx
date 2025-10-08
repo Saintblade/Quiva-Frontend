@@ -124,6 +124,7 @@ export function ComicSection({
             comics.map((comic) => (
               <div key={comic.id} className="flex-shrink-0">
                 <ComicCard 
+                  id={comic.id}
                   title={comic.title}
                   price={comic.price}
                   subtitle={comic.subtitle}

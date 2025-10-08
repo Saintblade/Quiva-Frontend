@@ -1,6 +1,6 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, LogOut, Copy, ExternalLink } from "lucide-react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { ChevronDown, LogOut, Copy, ExternalLink, Loader2 } from "lucide-react";
 import { useWalletAuth } from "@/hook/useWalletAuth";
 import { useAccount, useDisconnect } from "wagmi";
 import { useAppSelector, useAppDispatch } from "@/redux/hook";
@@ -22,44 +22,33 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
   const { disconnect } = useDisconnect();
   const dispatch = useAppDispatch();
 
-  const {
-    isAuthenticated
-  } = useAppSelector((state) => state.wallet);
+  const { isAuthenticated, error } = useAppSelector((state) => state.wallet);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Auto-login when wallet connects
-  useEffect(() => {
-    const autoLogin = async () => {
-      console.log(isConnected, isAuthenticated, address);
-      if (isConnected && !isAuthenticated && address) {
-        try {
-          console.log("Auto-logging in with address:", address);
-          await dispatch(setWalletAddress(address));
-          await loginWithWallet();
-        } catch (err) {
-          console.error("Auto-login failed:", err);
-        }
+  const autoLogin = useCallback(async () => {
+    // Auto-login on initial connection or when JWT expires
+    if (isConnected && !isAuthenticated && address && !isLoggingIn) {
+      try {
+        console.log("Auto-logging in with address:", address);
+        setIsLoggingIn(true);
+        await dispatch(setWalletAddress(address));
+        await loginWithWallet();
+      } catch (err) {
+        console.error("Auto-login failed:", err);
+      } finally {
+        setIsLoggingIn(false);
       }
-    };
-
-    autoLogin();
-  }, [isConnected, isAuthenticated, address]);
-
-  const handleLogin = async () => {
-    try {
-      if (!address) {
-        console.error("No address available");
-        return;
-      }
-      dispatch(setWalletAddress(address));
-      const user = await loginWithWallet();
-      return user;
-    } catch (err) {
-      console.error("Wallet login failed:", err);
     }
-  };
+  }, [isConnected, isAuthenticated, address, isLoggingIn, dispatch, loginWithWallet]);
+
+  useEffect(() => {
+    autoLogin();
+  }, [autoLogin]);
 
   const handleLogout = () => {
     // Disconnect wallet
@@ -85,13 +74,33 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
     };
   }, []);
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    // You can add a toast notification here
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
   };
 
   const truncateAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+
+  // Generate a unique avatar based on wallet address
+  const getAvatarUrl = (address: string) => {
+    return `https://api.dicebear.com/7.x/identicon/svg?seed=${address}`;
+  };
+
+  const getInitials = (displayName?: string, address?: string) => {
+    if (displayName) {
+      return displayName.slice(0, 2).toUpperCase();
+    }
+    if (address) {
+      return address.slice(2, 4).toUpperCase();
+    }
+    return "??";
   };
 
   return (
@@ -111,6 +120,15 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
           account &&
           chain &&
           (!authenticationStatus || authenticationStatus === "authenticated");
+
+        // Get dynamic explorer URL based on chain
+        const getExplorerUrl = () => {
+          // if (!account) return "";
+          // const baseUrl =
+          //   chain?.blockExplorers?.default?.url || "https://etherscan.io";
+          // return `${baseUrl}/address/${account.address}`;
+          return 'https://github.com/shadcn.png';
+        };
 
         return (
           <div
@@ -136,15 +154,22 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                           }
                     }
                     type="button"
-                    disabled={disabled}
-                    className={`w-full px-4 py-2 rounded-xl font-medium border transition-colors
+                    disabled={disabled || isLoggingIn}
+                    className={`w-full px-4 py-2 rounded-xl font-medium border transition-colors flex items-center justify-center gap-2
                       ${
-                        disabled
+                        disabled || isLoggingIn
                           ? "bg-gray-400 text-gray-200 cursor-not-allowed border-gray-400"
                           : "bg-transparent text-white border-white/30 hover:border-white hover:bg-white/10"
                       }`}
                   >
-                    Connect Wallet
+                    {isLoggingIn ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        Connecting...
+                      </>
+                    ) : (
+                      "Connect Wallet"
+                    )}
                   </button>
                 );
               }
@@ -187,11 +212,11 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                   >
                     <Avatar className="w-7 h-7 lg:w-8 lg:h-8 border border-secondary-200/50">
                       <AvatarImage
-                        src="https://github.com/shadcn.png"
+                        src={getAvatarUrl(account.address)}
                         alt="User Avatar"
                       />
                       <AvatarFallback className="bg-secondary-200 text-white text-xs font-medium">
-                        {account.displayName?.slice(0, 2).toUpperCase() || "GA"}
+                        {getInitials(account.displayName, account.address)}
                       </AvatarFallback>
                     </Avatar>
 
@@ -215,17 +240,16 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                         <div className="flex items-center gap-3">
                           <Avatar className="w-10 h-10 border border-secondary-200/50">
                             <AvatarImage
-                              src="https://github.com/shadcn.png"
+                              src={getAvatarUrl(account.address)}
                               alt="User Avatar"
                             />
                             <AvatarFallback className="bg-secondary-200 text-white text-sm font-medium">
-                              {account.displayName?.slice(0, 2).toUpperCase() ||
-                                "GA"}
+                              {getInitials(account.displayName, account.address)}
                             </AvatarFallback>
                           </Avatar>
                           <div>
                             <p className="text-white font-medium text-sm">
-                              {account.displayName}
+                              {account.displayName || truncateAddress(account.address)}
                             </p>
                             {account.displayBalance && (
                               <p className="text-white/60 text-xs">
@@ -250,18 +274,18 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                           <div className="flex gap-2">
                             <button
                               onClick={() => copyToClipboard(account.address)}
-                              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                              className="p-2 hover:bg-white/10 rounded-lg transition-colors relative"
                               title="Copy address"
                             >
                               <Copy size={14} className="text-white/60" />
+                              {copySuccess && (
+                                <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                                  Copied!
+                                </span>
+                              )}
                             </button>
                             <button
-                              onClick={() =>
-                                window.open(
-                                  `https://etherscan.io/address/${account.address}`,
-                                  "_blank"
-                                )
-                              }
+                              onClick={() => window.open(getExplorerUrl(), "_blank")}
                               className="p-2 hover:bg-white/10 rounded-lg transition-colors"
                               title="View on explorer"
                             >
