@@ -266,7 +266,7 @@ const comicSlice = createSlice({
       })
       .addCase(getComicById.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.currentComic = action.payload;
+        state.currentComic = action.payload.data.comic;
       })
       .addCase(getComicById.rejected, (state, action) => {
         state.isLoading = false;
@@ -281,18 +281,18 @@ const comicSlice = createSlice({
       })
       .addCase(updateComic.fulfilled, (state, action) => {
         state.isUpdating = false;
-        const index = state.comics.findIndex((c) => c.id === action.payload.id);
-        if (index !== -1) {
-          state.comics[index] = action.payload;
-        }
-        const userIndex = state.userComics.findIndex(
-          (c) => c.id === action.payload.id
-        );
-        if (userIndex !== -1) {
-          state.userComics[userIndex] = action.payload;
-        }
-        if (state.currentComic?.id === action.payload.id) {
-          state.currentComic = action.payload;
+        // const index = state.comics.findIndex((c) => c.id === action.payload.id);
+        // if (index !== -1) {
+        //   state.comics[index] = action.payload;
+        // }
+        // const userIndex = state.userComics.findIndex(
+        //   (c) => c.id === action.payload.id
+        // );
+        // if (userIndex !== -1) {
+        //   state.userComics[userIndex] = action.payload;
+        // }
+        if (state.currentComic?._id === action.payload.data.comic._id) {
+          state.currentComic = action.payload.data.comic;
         }
         state.successMessage = "Comic updated successfully";
       })
@@ -309,18 +309,18 @@ const comicSlice = createSlice({
       })
       .addCase(updateComicCover.fulfilled, (state, action) => {
         state.isUpdating = false;
-        const index = state.comics.findIndex((c) => c.id === action.payload.id);
-        if (index !== -1) {
-          state.comics[index] = action.payload;
-        }
-        const userIndex = state.userComics.findIndex(
-          (c) => c.id === action.payload.id
-        );
-        if (userIndex !== -1) {
-          state.userComics[userIndex] = action.payload;
-        }
-        if (state.currentComic?.id === action.payload.id) {
-          state.currentComic = action.payload;
+        // const index = state.comics.findIndex((c) => c._id === action.payload.data._id);
+        // if (index !== -1) {
+        //   state.comics[index] = action.payload.data.comic;
+        // }
+        // const userIndex = state.userComics.findIndex(
+        //   (c) => c.id === action.payload.data.comic._id
+        // );
+        // if (userIndex !== -1) {
+        //   state.userComics[userIndex] = action.payload;
+        // }
+        if (state.currentComic?._id === action.payload.data._id) {
+          state.currentComic = action.payload.data.comic;
         }
         state.successMessage = "Comic cover updated successfully";
       })
@@ -337,10 +337,10 @@ const comicSlice = createSlice({
       })
       .addCase(deleteComic.fulfilled, (state, action) => {
         state.isDeleting = false;
-        state.comics = state.comics.filter((c) => c.id !== action.payload);
-        state.userComics = state.userComics.filter(
-          (c) => c.id !== action.payload
-        );
+        // state.comics = state.comics.filter((c) => c.id !== action.payload);
+        // state.userComics = state.userComics.filter(
+        //   (c) => c.id !== action.payload
+        // );
         if (state.currentComic?.id === action.payload) {
           state.currentComic = null;
         }

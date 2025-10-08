@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 
 interface ComicCardProps {
+  id?:string
   title: string
   price?: string
   subtitle?: string
@@ -19,6 +20,7 @@ interface ComicCardProps {
 }
 
 export function ComicCard({ 
+  id,
   title, 
   price, 
   subtitle, 
@@ -132,7 +134,7 @@ export function ComicCard({
           {/* Explore Button */}
           <Button 
             onClick={
-              () => router.push("/marketplace/detail")
+              () => router.push(`/marketplace/detail?id=${id}`)
             }
             className={`w-full font-semibold transition-all duration-200 bg-secondary-200 hover:bg-secondary-200/80 text-black-500 rounded-full focus:ring-none`}
             variant={buttonVariant}

@@ -1,9 +1,12 @@
 "use client";
 import MyComicCard from "@/components/cards/MyComicCard";
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { soloLevel } from "../../../../../public/dev_images";
 import { motion, AnimatePresence } from "framer-motion";
 import { MY_COMICS_DATA } from "@/components/utils/constant";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { getUserComics } from "@/redux/slices/comicSlice";
+import { Loader2 } from "lucide-react";
 
 const TABS = ["All", "Recent", "Popular", "Free", "Paid"];
 
@@ -19,11 +22,61 @@ const containerVariants = {
 
 const MyComicList = () => {
 	const [activeTab, setActiveTab] = useState("All");
+	const dispatch = useAppDispatch();
+	const { userComics, isLoading } = useAppSelector((state) => state.comic);
 
-	const filteredComics =
-		activeTab === "All"
-			? MY_COMICS_DATA
-			: MY_COMICS_DATA.filter((c) => c.category === activeTab);
+	// Fetch user comics on component mount
+	useEffect(() => {
+		dispatch(getUserComics());
+	}, [dispatch]);
+
+	// Transform API comics to match your UI format
+	const transformedComics = useMemo(() => {
+		if (!userComics?.data?.comics?.data) return [];
+
+		return userComics.data.comics.data.map((comic: any) => ({
+			id: comic._id,
+			title: comic.title,
+			subtitle: comic.description || "",
+			imageSrc: comic.coverImage || soloLevel,
+			category: comic.premium ? "Paid" : "Free",
+			createdAt: comic.createdAt,
+			views: comic.views || 0,
+		}));
+	}, [userComics]);
+
+	// Sort by recent (latest first)
+	const sortedByRecent = useMemo(() => {
+		return [...transformedComics].sort(
+			(a, b) =>
+				new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+		);
+	}, [transformedComics]);
+
+	// Sort by popular (most views)
+	const sortedByPopular = useMemo(() => {
+		return [...transformedComics].sort((a, b) => b.views - a.views);
+	}, [transformedComics]);
+
+	// Filter comics based on active tab
+	const filteredComics = useMemo(() => {
+		const comics = transformedComics.length > 0 ? transformedComics : MY_COMICS_DATA;
+
+		switch (activeTab) {
+			case "All":
+				return comics;
+			case "Recent":
+				return transformedComics.length > 0 ? sortedByRecent : comics.filter((c) => c.category === "Recent");
+			case "Popular":
+				return transformedComics.length > 0 ? sortedByPopular : comics.filter((c) => c.category === "Popular");
+			case "Free":
+				return comics.filter((c) => c.category === "Free");
+			case "Paid":
+				return comics.filter((c) => c.category === "Paid");
+			default:
+				return comics;
+		}
+	}, [activeTab, transformedComics, sortedByRecent, sortedByPopular]);
 
 	// Add these additional variants for comic-style animations
 	const comicCardVariants = {
@@ -80,6 +133,17 @@ const MyComicList = () => {
 		},
 	};
 
+	const loadingVariants = {
+		hidden: { opacity: 0, scale: 0.8 },
+		visible: { 
+			opacity: 1, 
+			scale: 1,
+			transition: {
+				duration: 0.3
+			}
+		},
+	};
+
 	return (
 		<div className='mt-6'>
 			{/* Comic-style Tabs */}
@@ -104,16 +168,17 @@ const MyComicList = () => {
 					<motion.button
 						key={tab}
 						onClick={() => setActiveTab(tab)}
+						disabled={isLoading}
 						className={`flex-shrink-0 px-4 py-0.5 rounded-full border-2 border-yellow-700 text-sm text-black-100 font-bold relative overflow-hidden ${
 							activeTab === tab
 								? "bg-yellow-700 !text-white"
 								: "text-yellow-700 bg-white"
-						}`}
+						} ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
 						variants={comicTabVariants}
 						initial='initial'
 						animate='animate'
-						whileHover='hover'
-						whileTap='tap'
+						whileHover={!isLoading ? 'hover' : undefined}
+						whileTap={!isLoading ? 'tap' : undefined}
 						style={{
 							fontFamily: "'Bangers', cursive, sans-serif",
 						}}
@@ -132,36 +197,74 @@ const MyComicList = () => {
 				))}
 			</motion.div>
 
-			{/* Comic-style Comic List */}
-			<AnimatePresence mode='wait'>
-				<motion.div
-					key={activeTab}
-					className='grid grid-cols-2 lg:flex gap-4 flex-wrap px-3 sm:px-0'
+			{/* Loading State */}
+			{isLoading ? (
+				<motion.div 
+					className='flex justify-center items-center py-20'
+					variants={loadingVariants}
 					initial='hidden'
 					animate='visible'
-					exit='hidden'
-					variants={containerVariants}
 				>
-					{filteredComics.map((comic, index) => (
-						<motion.div
-							key={comic.id}
-							//  @ts-ignore
-							variants={comicCardVariants}
-							whileHover='hover'
-							whileTap='tap'
-							custom={index}
-							className='relative'
-						>
-							<MyComicCard
-								id={comic.id}
-								imageSrc={comic.imageSrc}
-								subtitle={comic.subtitle}
-								title={comic.title}
-							/>
-						</motion.div>
-					))}
+					<div className='text-center'>
+						<Loader2 className='w-12 h-12 text-yellow-700 animate-spin mx-auto mb-4' />
+						<p className='text-white/60 text-sm font-medium'>Loading your comics...</p>
+					</div>
 				</motion.div>
-			</AnimatePresence>
+			) : (
+				<>
+					{/* Empty State */}
+					{filteredComics.length === 0 ? (
+						<motion.div 
+							className='text-center py-20'
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.5 }}
+						>
+							<div className='max-w-md mx-auto'>
+								<div className='text-6xl mb-4'>📚</div>
+								<h3 className='text-white text-xl font-bold mb-2'>No Comics Found</h3>
+								<p className='text-white/60 text-sm'>
+									{activeTab === "All" 
+										? "You haven't created any comics yet. Start creating your first comic!"
+										: `No comics found in the "${activeTab}" category.`
+									}
+								</p>
+							</div>
+						</motion.div>
+					) : (
+						/* Comic-style Comic List */
+						<AnimatePresence mode='wait'>
+							<motion.div
+								key={activeTab}
+								className='grid grid-cols-2 lg:flex gap-4 flex-wrap px-3 sm:px-0'
+								initial='hidden'
+								animate='visible'
+								exit='hidden'
+								variants={containerVariants}
+							>
+								{filteredComics.map((comic, index) => (
+									<motion.div
+										key={comic.id}
+										// @ts-ignore
+										variants={comicCardVariants}
+										whileHover='hover'
+										whileTap='tap'
+										custom={index}
+										className='relative'
+									>
+										<MyComicCard
+											id={comic.id}
+											imageSrc={comic.imageSrc}
+											subtitle={comic.subtitle}
+											title={comic.title}
+										/>
+									</motion.div>
+								))}
+							</motion.div>
+						</AnimatePresence>
+					)}
+				</>
+			)}
 		</div>
 	);
 };

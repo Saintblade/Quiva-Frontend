@@ -6,6 +6,8 @@ import { WagmiProvider } from "wagmi";
 import { mainnet, polygon, optimism, arbitrum, base } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
+import type { Chain } from "wagmi/chains";
+
 //testnet.hashio.io/api
 // const avalanche = {
 //   id: 43_114,
@@ -39,7 +41,7 @@ const hederaTestnet = {
     default: { name: 'SnowTrace', url: 'https://hashscan.io/testnet/home' },
   },
   
-} as const satisfies Chain;
+} as const;
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
   projectId: "f3d83563bb23a44e9e7a1fa7133c740a",
