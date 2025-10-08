@@ -11,7 +11,7 @@ const page = async (props: PageProps) => {
 	const { id } = props.params;
 
 	return (
-		<ComicPadlayout className='text-white pt-4'>
+		<ComicPadlayout>
 			{id && <ComicViewPage id={id} />}
 		</ComicPadlayout>
 	);

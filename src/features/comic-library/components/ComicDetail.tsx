@@ -1,6 +1,5 @@
 'use client'
 
-// updating folder name
 import React from 'react'
 import {  User, Calendar, BookOpen, FileText, ChevronLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -74,11 +73,13 @@ const ComicDetail = ({
         <div className="grid grid-cols-1 lg:grid-cols-[0.5fr_1fr] gap-8 mb-12">
           {/* Cover Image */}
            <div className="relative">
-            <img
-              src={coverImage}
-              alt={`${title} Issue ${issueNumber}`}
-              className="w-full max-w-md mx-auto lg:mx-0 rounded-tl-3xl rounded-br-3xl shadow-2xl"
-            />
+            <div className="w-full max-w-md mx-auto lg:mx-0 aspect-[3/4] rounded-tl-3xl rounded-br-3xl shadow-2xl overflow-hidden">
+              <img
+                src={coverImage}
+                alt={`${title} Issue ${issueNumber}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
             {isFree && (
               <div className="absolute top-0 left-10 bg-[#000] text-white px-2 py-1 text-sm">
                 Free
@@ -126,7 +127,6 @@ const ComicDetail = ({
             {/* Read Button */}
             <MainButton 
               onClick={onReadIssue}
-              // className="bg-secondary-200 hover:bg-secondary-200 text-white px-8 py-3 text-lg font-semibold rounded-lg"
             >
               Read Issue
             </MainButton>
@@ -136,7 +136,7 @@ const ComicDetail = ({
               <img
                 src={author.avatar}
                 alt={author.name}
-                className="w-10 h-10 rounded-full border border-dashed"
+                className="w-10 h-10 rounded-full border border-dashed object-cover"
               />
               <div className='flex font-light text-sm gap-1'>
                 <p className="">By</p>
@@ -231,6 +231,5 @@ const ComicDetail = ({
     </div>
   )
 }
-
 
 export default ComicDetail;
