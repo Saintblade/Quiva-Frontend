@@ -5,7 +5,7 @@ import { AlertCircle, CheckCircle } from "lucide-react";
 import { ComicNotification } from "./ComicNotification";
 import Picture from "@/components/picture/Index";
 import { createFullComic } from "@/redux/slices/comicSlice";
-import { useAppDispatch } from "@/redux/hook";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
 
 interface ExtractedFile {
 	name: string;
@@ -43,6 +43,7 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 	const [error, setError] = useState<string | null>(null);
 	const [validationErrors, setValidationErrors] = useState<string[]>([]);
 	const dispatch = useAppDispatch();
+	const {user} = useAppSelector((state) => state.wallet);
 
 	const validateComicData = (): boolean => {
 		const errors: string[] = [];
@@ -104,11 +105,21 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 			return;
 		}
 
+		if (!user) {
+			setError("Please connect your wallet to publish your comic");
+			return;
+		}
+
 		try {
 			setIsPublishing(true);
 
+			const creatorId = user._id;
+
 			// Create FormData for multipart/form-data upload
 			const formData = new FormData();
+
+			// Add creator ID
+			formData.append('creatorId', creatorId)
 
 			// Add text fields
 			formData.append('title', comicData.title.trim());
@@ -163,8 +174,6 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 
 			// Make API request
 			const response = await dispatch(createFullComic(formData as any)).unwrap();
-
-			console.log('Comic published successfully:', response);
 
 			// Show success notification
 			setShowNotification(true);

@@ -1,3 +1,5 @@
+'use client'; 	
+
 import { Button } from "@/components/ui/button";
 import { ComicSection } from "@/features/comic-library/components/ComicSection";
 import { CreatorsSection } from "@/features/comic-library/components/CreatorsSection";
@@ -14,8 +16,20 @@ import {
 	FeaturesComics,
 	heroComics,
 } from "@/features/comic-library/data/sampleData";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+
+import {getUserComics} from "@/redux/slices/comicSlice";
+import { useEffect } from "react";
 
 export default function MainPage() {
+
+	const { userComics } = useAppSelector((state) => state.comic);
+	const dispatch = useAppDispatch();
+
+	useEffect(() => {
+		dispatch(getUserComics());
+	}, [dispatch]);
+	
 	return (
 		<>
 			<HeroComicSlider comics={heroComics} />

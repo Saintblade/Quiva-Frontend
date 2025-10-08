@@ -19,11 +19,11 @@ const page = () => {
 		onClose: onCloseUserProfile,
 	} = useDisclosure();
 
-	// useEffect(() => {
-	// 	if (!user.creatorProfile.verified) {
-	// 		onOpenUserProfile();
-	// 	}
-	// }, []);
+	useEffect(() => {
+		if (!user?.username) {
+			onOpenUserProfile();
+		}
+	}, []);
 
 	const handleProfileComplete = () => {
 		// Close the user profile modal
@@ -32,7 +32,7 @@ const page = () => {
 
 	return (
 		<>
-			<ComicPadlayout className='text-white pt-24 sm:pt-28 pb-20 sm:pb-12 w-full'>
+			<ComicPadlayout>
 				<div className='px-2 sm:px-10 w-full'>
 					<StartNewComicFast />
 					<RecentFile />

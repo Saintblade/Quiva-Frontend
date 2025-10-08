@@ -32,7 +32,7 @@ export function useWalletAuth() {
       }
 
       if(verifyRes.user){
-        dispatch(getUserProfile(verifyRes.user._id))
+        dispatch(getUserProfile(verifyRes.user._id));
       }
 
       return verifyRes.user;

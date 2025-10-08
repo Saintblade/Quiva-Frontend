@@ -3,8 +3,8 @@ import axiosInstance from "../axios-instance";
 
 // Initial state
 const initialState = {
-  comics: [],
-  userComics: [],
+  comics: null,
+  userComics: null,
   currentComic: null,
   isLoading: false,
   isCreating: false,

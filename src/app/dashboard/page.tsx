@@ -25,7 +25,6 @@ const DashboardPage = () => {
 
 	const handleLogout = () => {
 		// TODO: Implement actual logout logic
-		console.log("Logging out...");
 		router.push("/");
 	};
 

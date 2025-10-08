@@ -3,7 +3,6 @@
 import { Search, Bell, User, Menu, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { useState, useEffect, useRef } from 'react'
 import { QuivaLogo } from '@/components/utils/function'

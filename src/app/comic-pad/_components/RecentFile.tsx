@@ -36,7 +36,6 @@ const RecentFile = () => {
 					value={sortBy}
 					onChange={(value) => {
 						setSortBy(value);
-						console.log("Selected sort:", value);
 					}}
 				>
 					<div className='relative w-24'>

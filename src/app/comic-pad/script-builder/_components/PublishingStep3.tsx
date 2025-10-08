@@ -23,7 +23,6 @@ interface PublishingStep3Props {
 
 const PublishingStep3 = ({ onNext, onBack, setFormData, formData }: PublishingStep3Props) => {
   const handleNext = () => {
-    console.log("Step 3 - Moving to next step");
     onNext();
   };
 
