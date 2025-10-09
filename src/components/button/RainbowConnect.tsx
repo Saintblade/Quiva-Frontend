@@ -4,7 +4,7 @@ import { ChevronDown, LogOut, Copy, ExternalLink, Loader2 } from "lucide-react";
 import { useWalletAuth } from "@/hook/useWalletAuth";
 import { useAccount, useDisconnect } from "wagmi";
 import { useAppSelector, useAppDispatch } from "@/redux/hook";
-import { logout } from "@/redux/slices/authSlice";
+import { logout } from "@/redux/slices/walletSlice";
 import { setWalletAddress } from "@/redux/slices/walletSlice";
 
 // Import your Avatar components (adjust path as needed)
@@ -34,7 +34,6 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
     // Auto-login on initial connection or when JWT expires
     if (isConnected && !isAuthenticated && address && !isLoggingIn) {
       try {
-        console.log("Auto-logging in with address:", address);
         setIsLoggingIn(true);
         await dispatch(setWalletAddress(address));
         await loginWithWallet();

@@ -118,12 +118,14 @@ const walletAuthSlice = createSlice({
     },
     logout: (state) => {
       state.token = null;
+      state.refreshToken = null; 
       state.user = null;
       state.isAuthenticated = false;
       state.walletAddress = null;
       state.message = null;
       state.error = null;
       localStorage.removeItem('authToken');
+      localStorage.removeItem('token');
     },
     setWalletAddress: (state, action) => {
       state.walletAddress = action.payload;

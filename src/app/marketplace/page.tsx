@@ -53,7 +53,7 @@ export default function MainPage() {
       {/* Trending Comics - Use API data or fallback */}
       <ComicSection 
         title="Trending Comics"
-        comics={transformedComics.length > 0 ? transformedComics.slice(0, 4) : trendingComics} 
+        comics={transformedComics.length > 0 ? transformedComics.slice(0, 50) : trendingComics} 
         isLoading={isLoading}
       />
 
