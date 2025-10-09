@@ -1,8 +1,13 @@
 // src/hooks/useMintComic.ts
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useChainId } from 'wagmi';
 import { parseEther, decodeEventLog } from 'viem';
+import { mainnet } from 'wagmi/chains';
+import type { Chain } from 'wagmi/chains';
 import { QUIVA_COMICS_ADDRESS, QUIVA_COMICS_ABI } from '../contracts/QuivaComics';
 import { useState } from 'react';
+
+
+
 
 interface MintComicParams {
   comicId: string;
@@ -12,8 +17,26 @@ interface MintComicParams {
   royaltyPercentage: number;
 }
 
+// Define Hedera Testnet chain
+const hederaTestnet = {
+  id: 296,
+  name: 'HederaTestnet',
+  nativeCurrency: { name: 'Hedera Testnet', symbol: 'HBAR', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://testnet.hashio.io/api'] },
+  },
+  blockExplorers: {
+    default: { name: 'HashScan', url: 'https://hashscan.io/testnet/home' },
+  },
+} as const satisfies Chain;
+
 export function useMintComic() {
   const [tokenId, setTokenId] = useState<bigint | null>(null);
+  const { address } = useAccount();
+  const chainId = useChainId();
+  
+  // Get current chain - default to mainnet if not found
+  const currentChain = chainId === 296 ? hederaTestnet : mainnet;
 
   const {
     data: hash,
@@ -24,7 +47,7 @@ export function useMintComic() {
 
   const {
     isLoading: isConfirming,
-    isSuccess: isConfirmed,
+    isSuccess,
     data: receipt,
   } = useWaitForTransactionReceipt({
     hash,
@@ -56,6 +79,8 @@ export function useMintComic() {
           BigInt(maxSupply),
           royaltyBasisPoints,
         ],
+        account: address,
+        chain: currentChain,
       });
     } catch (error) {
       console.error('Error minting comic:', error);
@@ -64,7 +89,7 @@ export function useMintComic() {
   };
 
   // Extract tokenId from transaction receipt when confirmed
-  if (isConfirmed && receipt && !tokenId) {
+  if (isSuccess && receipt && !tokenId) {
     try {
       // Find the ComicMinted event in the logs
       const comicMintedLog = receipt.logs.find((log) => {
@@ -88,7 +113,9 @@ export function useMintComic() {
         });
 
         if (decoded.eventName === 'ComicMinted') {
-          setTokenId(decoded.args.tokenId);
+          // The ComicMinted event args: [tokenId, creator, comicId, price, maxSupply]
+          const [eventTokenId] = decoded.args as readonly [bigint, string, string, bigint, bigint];
+          setTokenId(eventTokenId);
         }
       }
     } catch (error) {
@@ -102,7 +129,7 @@ export function useMintComic() {
     tokenId,
     isWritePending,
     isConfirming,
-    isConfirmed,
+    isSuccess,
     writeError,
     receipt,
   };

@@ -136,6 +136,25 @@ export default function OnboardingPage({ onclose, comicData }: OnboardingPagePro
 						</div>
 					</div>
 
+					{/* Pay-per-read Info Box */}
+					{publishType === "paid" && (
+						<div className='mb-6 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border border-orange-500/30 rounded-lg p-4'>
+							<div className='flex items-start gap-3'>
+								<div className='w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0'>
+									<span className='text-white text-sm font-bold'>💡</span>
+								</div>
+								<div>
+									<h4 className='text-orange-300 font-semibold mb-1'>Smart Integration Enabled!</h4>
+									<p className='text-orange-200/80 text-sm leading-relaxed'>
+										Since you've chosen "Pay Per Read", your comic will be automatically uploaded to IPFS 
+										for decentralized storage and blockchain integration. This ensures permanent availability 
+										and enables future NFT features.
+									</p>
+								</div>
+							</div>
+						</div>
+					)}
+
 					{/* NFT Section */}
 					<div className='mb-8'>
 						<h2 className='text-white font-medium tracking-widest mb-4'>

@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { AlertCircle, CheckCircle } from "lucide-react";
+import { AlertCircle, CheckCircle, Upload, Zap, Database } from "lucide-react";
 import { ComicNotification } from "./ComicNotification";
 import Picture from "@/components/picture/Index";
 import { createFullComic } from "@/redux/slices/comicSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { useComicMinting } from "@/hook/useComicMinting";
+import { useAccount } from "wagmi";
 
 interface ExtractedFile {
 	name: string;
@@ -42,8 +44,26 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 	const [isPublishing, setIsPublishing] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [validationErrors, setValidationErrors] = useState<string[]>([]);
+	const [publishingStep, setPublishingStep] = useState<string>('');
+	
 	const dispatch = useAppDispatch();
 	const {user} = useAppSelector((state) => state.wallet);
+	const { isConnected } = useAccount();
+	
+	// Use the new comic minting hook
+	const {
+		publishComic,
+		isUploading,
+		isMinting,
+		uploadProgress,
+		mintingProgress,
+		isWritePending,
+		isConfirming,
+		isMintSuccess,
+		mintError,
+		tokenId,
+		mintHash,
+	} = useComicMinting();
 
 	const validateComicData = (): boolean => {
 		const errors: string[] = [];
@@ -98,6 +118,7 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 		// Clear previous errors
 		setError(null);
 		setValidationErrors([]);
+		setPublishingStep('');
 
 		// Validate data first
 		if (!validateComicData()) {
@@ -110,70 +131,23 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 			return;
 		}
 
+		// Additional validation for paid comics and NFTs
+		if ((monetizationData.publishType === "paid" || monetizationData.mintAsNFT) && !isConnected) {
+			setError("Please connect your wallet to publish paid comics or mint NFTs");
+			return;
+		}
+
 		try {
 			setIsPublishing(true);
 
-			const creatorId = user._id;
-
-			// Create FormData for multipart/form-data upload
-			const formData = new FormData();
-
-			// Add creator ID
-			formData.append('creatorId', creatorId)
-
-			// Add text fields
-			formData.append('title', comicData.title.trim());
-			formData.append('description', comicData.description.trim());
-			
-			// Add genres as array
-			comicData.genre.forEach(genre => {
-				formData.append('genre', genre);
+			// Use the new comic minting hook for enhanced publishing
+			const result = await publishComic({
+				comicData,
+				monetizationData,
+				user,
 			});
 
-			// Add tags as array
-			comicData.tags.forEach(tag => {
-				formData.append('tags', tag);
-			});
-
-			// Add age rating
-			formData.append('ageRating', comicData.ageRating);
-
-			// Add status
-			formData.append('status', 'published');
-
-			// Add publish type and price
-			formData.append('publishType', monetizationData.publishType);
-			if (monetizationData.publishType === 'paid' && monetizationData.price) {
-				formData.append('price', monetizationData.price.toString());
-			}
-
-			// Add NFT data
-			formData.append('mintAsNFT', monetizationData.mintAsNFT.toString());
-			if (monetizationData.mintAsNFT) {
-				if (monetizationData.nftCopies) {
-					formData.append('nftCopies', monetizationData.nftCopies.toString());
-				}
-				if (monetizationData.nftPrice) {
-					formData.append('nftPrice', monetizationData.nftPrice.toString());
-				}
-			}
-
-			// Add cover image if provided
-			if (comicData.coverImage) {
-				formData.append('coverImage', comicData.coverImage);
-			}
-
-			// Add all pages with proper file formatting
-			comicData.pages.forEach((page, index) => {
-				// Convert blob to file with proper name and type
-				const file = new File([page.blob], page.name, { 
-					type: page.blob.type || 'image/jpeg' 
-				});
-				formData.append('pages', file);
-			});
-
-			// Make API request
-			const response = await dispatch(createFullComic(formData as any)).unwrap();
+			console.log('🎉 Comic published successfully:', result);
 
 			// Show success notification
 			setShowNotification(true);
@@ -203,11 +177,18 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 				errorMessage = 'Authentication error. Please log in again.';
 			} else if (errorMessage.toLowerCase().includes('validation')) {
 				errorMessage = 'Validation error. Please check your comic details.';
+			} else if (errorMessage.toLowerCase().includes('wallet')) {
+				errorMessage = 'Wallet connection error. Please check your wallet and try again.';
+			} else if (errorMessage.toLowerCase().includes('gas')) {
+				errorMessage = 'Insufficient gas fees. Please add funds to your wallet and try again.';
+			} else if (errorMessage.toLowerCase().includes('rejected')) {
+				errorMessage = 'Transaction was rejected. Please approve the transaction in your wallet.';
 			}
 
 			setError(errorMessage);
 		} finally {
 			setIsPublishing(false);
+			setPublishingStep('');
 		}
 	};
 
@@ -359,29 +340,124 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 						</div>
 					)}
 
+					{/* Publishing Progress */}
+					{(isUploading || isMinting || isWritePending || isConfirming) && (
+						<div className='mx-6 mb-4 bg-blue-500/20 border border-blue-500/50 rounded-lg p-4'>
+							<div className='space-y-3'>
+								{/* Upload Progress */}
+								{isUploading && (
+									<div className='flex items-center gap-3'>
+										<Upload size={18} className='text-blue-400' />
+										<div className='flex-1'>
+											<div className='flex justify-between items-center mb-1'>
+												<span className='text-blue-300 text-sm font-medium'>Uploading to IPFS...</span>
+												<span className='text-blue-300 text-xs'>{uploadProgress}%</span>
+											</div>
+											<div className='w-full bg-white/10 rounded-full h-2'>
+												<div 
+													className='bg-blue-400 h-2 rounded-full transition-all duration-300'
+													style={{ width: `${uploadProgress}%` }}
+												/>
+											</div>
+										</div>
+									</div>
+								)}
+
+								{/* Minting Progress */}
+								{(isMinting || isWritePending || isConfirming) && (
+									<div className='flex items-center gap-3'>
+										<Zap size={18} className='text-yellow-400' />
+										<div className='flex-1'>
+											<div className='flex justify-between items-center mb-1'>
+												<span className='text-yellow-300 text-sm font-medium'>
+													{isWritePending ? 'Preparing blockchain transaction...' : 
+													 isConfirming ? 'Confirming on blockchain...' : 
+													 'Minting NFT...'}
+												</span>
+												{isMinting && <span className='text-yellow-300 text-xs'>{mintingProgress}%</span>}
+											</div>
+											{isMinting && (
+												<div className='w-full bg-white/10 rounded-full h-2'>
+													<div 
+														className='bg-yellow-400 h-2 rounded-full transition-all duration-300'
+														style={{ width: `${mintingProgress}%` }}
+													/>
+												</div>
+											)}
+											{isWritePending && (
+												<div className='w-full bg-white/10 rounded-full h-2'>
+													<div className='bg-yellow-400 h-2 rounded-full animate-pulse w-1/3' />
+												</div>
+											)}
+											{isConfirming && (
+												<div className='w-full bg-white/10 rounded-full h-2'>
+													<div className='bg-yellow-400 h-2 rounded-full animate-pulse w-2/3' />
+												</div>
+											)}
+										</div>
+									</div>
+								)}
+
+								{/* Success Messages */}
+								{tokenId && (
+									<div className='flex items-center gap-2 text-green-400 text-sm'>
+										<CheckCircle size={16} />
+										<span>NFT minted successfully! Token ID: {tokenId.toString()}</span>
+									</div>
+								)}
+
+								{mintHash && (
+									<div className='flex items-center gap-2 text-green-400 text-sm'>
+										<CheckCircle size={16} />
+										<span>Transaction: {mintHash.slice(0, 10)}...{mintHash.slice(-8)}</span>
+									</div>
+								)}
+							</div>
+						</div>
+					)}
+
+					{/* Mint Error */}
+					{mintError && (
+						<div className='mx-6 mb-4 bg-red-500/20 border border-red-500/50 rounded-lg p-3'>
+							<div className='flex items-start gap-2'>
+								<AlertCircle size={18} className='text-red-400 flex-shrink-0 mt-0.5' />
+								<div>
+									<p className='text-red-400 font-semibold text-sm mb-1'>NFT Minting Error</p>
+									<p className='text-red-300 text-sm'>{mintError.message || 'Failed to mint NFT'}</p>
+								</div>
+							</div>
+						</div>
+					)}
+
 					{/* Action Buttons */}
 					<div className='px-6 pb-6 space-y-3 mt-4'>
 						<button
 							onClick={handlePublish}
-							disabled={isPublishing}
+							disabled={isPublishing || isUploading || isMinting || isWritePending || isConfirming}
 							className='w-full bg-secondary-200/80 hover:bg-secondary-200 text-black font-semibold py-3 rounded-full transition disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2'
 						>
-							{isPublishing ? (
+							{isPublishing || isUploading || isMinting || isWritePending || isConfirming ? (
 								<>
 									<div className='animate-spin rounded-full h-5 w-5 border-b-2 border-black'></div>
-									Publishing...
+									{isUploading ? 'Uploading to IPFS...' : 
+									 isMinting || isWritePending ? 'Minting NFT...' : 
+									 isConfirming ? 'Confirming...' : 
+									 'Publishing...'}
 								</>
 							) : (
-								'Publish Comic'
+								<>
+									<Database size={18} />
+									{monetizationData.mintAsNFT ? 'Publish & Mint NFT' : 'Publish Comic'}
+								</>
 							)}
 						</button>
 
 						<button
 							onClick={onclose}
-							disabled={isPublishing}
+							disabled={isPublishing || isUploading || isMinting || isWritePending || isConfirming}
 							className='w-full border border-white/20 text-white/70 hover:text-white hover:bg-white/5 py-3 rounded-full transition disabled:cursor-not-allowed disabled:opacity-50'
 						>
-							{isPublishing ? 'Please wait...' : 'Go Back'}
+							{isPublishing || isUploading || isMinting ? 'Please wait...' : 'Go Back'}
 						</button>
 					</div>
 				</div>
