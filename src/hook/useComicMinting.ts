@@ -87,7 +87,7 @@ export function useComicMinting() {
       setUploadProgress(50);
 
       // Upload to IPFS via backend endpoint
-      const response = await fetch('/api/ipfs/upload-comic', {
+      const response = await fetch('/api/comics/:comicId/nft/prepare', {
         method: 'POST',
         body: formData,
         headers: {
