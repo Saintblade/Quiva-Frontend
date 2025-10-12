@@ -167,7 +167,6 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onBookClick }) => {
 					{book.rating}
 				</div>
 
-				{/* Price Overlay */}
 				<div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3'>
 					<div className='flex items-center justify-between'>
 						<span className='text-white font-semibold text-sm'>
