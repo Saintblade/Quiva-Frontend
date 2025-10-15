@@ -1,258 +1,533 @@
-// src/hooks/useComicMinting.ts
-import { useState } from 'react';
-import { useMintComic } from './useMintComic';
-import { useAppDispatch } from '@/redux/hook';
-import { createFullComic } from '@/redux/slices/comicSlice';
 
-interface ComicMintingParams {
-  comicData: {
-    title: string;
-    description: string;
-    genre: string[];
-    tags: string[];
-    ageRating: string;
-    coverImage: File | null;
-    pages: Array<{
-      name: string;
-      blob: Blob;
-      preview: string;
-    }>;
-  };
-  monetizationData: {
-    publishType: "free" | "paid";
-    price?: number;
-    mintAsNFT: boolean;
-    nftCopies?: number;
-    nftPrice?: number;
-  };
-  user: {
-    _id: string;
-  };
+import { useState, useEffect } from 'react';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useChainId, useReadContract } from 'wagmi';
+import { parseEther } from 'viem';
+import axios from 'axios';
+import { QUIVA_COMICS_ABI, QUIVA_COMICS_ADDRESS } from '../contracts/QuivaComics';
+import { mainnet } from 'wagmi/chains';
+import type { Chain } from 'wagmi/chains';
+interface ComicData {
+  title: string;
+  description: string;
+  genre: string[];
+  tags: string[];
+  ageRating: string;
+  coverImage: File | null;
+  pages: any[];
 }
 
-interface IPFSUploadResponse {
-  metadataUri: string;
-  coverImageUri: string;
-  pagesUris: string[];
+interface MonetizationData {
+  publishType: 'free' | 'paid';
+  price?: number;
+  mintAsNFT: boolean;
+  nftCopies?: number;
+  nftPrice?: number;
 }
 
-export function useComicMinting() {
+interface User {
+  _id: string;
+  email: string;
+  walletAddress?: string;
+}
+
+interface PublishComicParams {
+  comicData: ComicData;
+  monetizationData: MonetizationData;
+  user: User;
+}
+
+
+const hederaTestnet = {
+  id: 296,
+  name: 'HederaTestnet',
+  nativeCurrency: { name: 'Hedera Testnet', symbol: 'HBAR', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://testnet.hashio.io/api'] },
+  },
+  blockExplorers: {
+    default: { name: 'HashScan', url: 'https://hashscan.io/testnet/home' },
+  },
+} as const satisfies Chain;
+
+
+export const useComicMinting = () => {
+  const { address, isConnected } = useAccount();
+   const chainId = useChainId();
   const [isUploading, setIsUploading] = useState(false);
   const [isMinting, setIsMinting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [mintingProgress, setMintingProgress] = useState(0);
-  const dispatch = useAppDispatch();
-  
-  const {
-    mintComic,
-    hash: mintHash,
-    tokenId,
-    isWritePending,
-    isConfirming,
-    isSuccess: isMintSuccess,
-    writeError: mintError,
-  } = useMintComic();
+  const [mintError, setMintError] = useState<Error | null>(null);
+  const [tokenId, setTokenId] = useState<bigint | null>(null);
+  const [comicId, setComicId] = useState<string | null>(null);
+  const [isComplete, setIsComplete] = useState(false);
 
-  // Upload comic data to IPFS and get metadata URI
-  const uploadToIPFS = async (comicData: ComicMintingParams['comicData']): Promise<IPFSUploadResponse> => {
-    setIsUploading(true);
-    setUploadProgress(10);
+  // Wagmi hooks for contract interaction
+  const { 
+    data: hash, 
+    writeContract, 
+    error: writeError,
+    isPending: isWritePending 
+  } = useWriteContract();
 
-    try {
-      // Create FormData for IPFS upload
-      const formData = new FormData();
-      
-      // Add cover image if exists
-      if (comicData.coverImage) {
-        formData.append('coverImage', comicData.coverImage);
-      }
-      
-      // Add all comic pages
-      comicData.pages.forEach((page, index) => {
-        const file = new File([page.blob], page.name, { 
-          type: page.blob.type || 'image/jpeg' 
+  const { 
+    isLoading: isConfirming, 
+    isSuccess: isMintSuccess 
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+
+// Monitor transaction status
+useEffect(() => {
+  if (hash) {
+    console.log('🔗 Transaction hash received:', hash);
+    console.log('⏳ Waiting for blockchain confirmation...');
+    setMintingProgress(70);
+  }
+}, [hash]);
+
+useEffect(() => {
+  const fetchTokenId = async () => {
+    if (isMintSuccess && comicId && !tokenId) {
+      try {
+        await useReadContract({
+          address: QUIVA_COMICS_ADDRESS,
+          abi: QUIVA_COMICS_ABI,
+          functionName: 'comicIdToTokenId',
+          args: [comicId],
         });
-        formData.append('pages', file);
-      });
-
-      setUploadProgress(30);
-      
-      // Add metadata
-      formData.append('title', comicData.title);
-      formData.append('description', comicData.description);
-      formData.append('genre', JSON.stringify(comicData.genre));
-      formData.append('tags', JSON.stringify(comicData.tags));
-      formData.append('ageRating', comicData.ageRating);
-
-      setUploadProgress(50);
-
-      // Upload to IPFS via backend endpoint
-      const response = await fetch('/api/comics/:comicId/nft/prepare', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to upload to IPFS');
+        setTokenId(tokenId);
+        console.log('🎫 Token ID from contract:', tokenId?.toString());
+      } catch (error) {
+        console.error('Error reading tokenId from contract:', error);
       }
-
-      const data = await response.json();
-      setUploadProgress(100);
-      
-      return {
-        metadataUri: data.metadataUri,
-        coverImageUri: data.coverImageUri,
-        pagesUris: data.pagesUris,
-      };
-    } catch (error) {
-      console.error('IPFS upload failed:', error);
-      throw error;
-    } finally {
-      setIsUploading(false);
     }
   };
 
-  // Main function to publish comic with optional NFT minting
-  const publishComic = async (params: ComicMintingParams) => {
-    const { comicData, monetizationData, user } = params;
+  fetchTokenId();
+}, [isMintSuccess, comicId, tokenId]);
+
+// useEffect(() => {
+//   if (isMintSuccess && hash) {
+//     console.log('✅ NFT minted successfully!');
+//     console.log('Transaction hash:', hash);
+//     console.log('Token ID:', tokenId);
+//     setMintingProgress(100);
     
-    try {
-      let ipfsData: IPFSUploadResponse | null = null;
-      let blockchainTokenId: bigint | null = null;
+//     // Update backend with mint data
+//     if (comicId && tokenId) {
+//        try {
+//                 const result = useReadContract({
+//                   address: QUIVA_COMICS_ADDRESS,
+//                   abi: QUIVA_COMICS_ABI,
+//                   functionName: 'comicIdToTokenId',
+//                   args: [comicId],
+//                 });
+//                 if (result.data) {
+//                   setTokenId(result.data as bigint);
+//                   console.log('🎫 Token ID from contract:', (result.data as bigint).toString());
+//                 }
+//               } catch (error) {
+//                 console.error('Error reading tokenId from contract:', error);
+//               }
+     
+//     }
+//   }
+// }, [isMintSuccess, hash, tokenId, comicId]);
 
-      // Step 1: If it's a paid comic or NFT, upload to IPFS first
-      if (monetizationData.publishType === 'paid' || monetizationData.mintAsNFT) {
-        console.log('📤 Uploading comic to IPFS...');
-        ipfsData = await uploadToIPFS(comicData);
-        console.log('✅ IPFS upload complete:', ipfsData.metadataUri);
-      }
 
-      // Step 2: If NFT minting is enabled, mint on blockchain
-      if (monetizationData.mintAsNFT && ipfsData && monetizationData.nftPrice && monetizationData.nftCopies) {
-        console.log('🔗 Minting NFT on blockchain...');
-        setIsMinting(true);
-        setMintingProgress(20);
-
+ 
+ // Monitor transaction success and auto-update backend
+  useEffect(() => {
+    const updateBackend = async () => {
+      if (isMintSuccess && hash && comicId && tokenId && !isComplete) {
+        console.log('✅ NFT minted successfully!');
+        console.log('📝 Transaction hash:', hash);
+        console.log('🎫 Token ID:', tokenId.toString());
+        setMintingProgress(90);
+        
+        // Update backend with mint data
+        console.log('💾 Updating backend with mint data...');
         try {
-          await mintComic({
-            comicId: `comic_${Date.now()}_${user._id}`, // Unique comic ID
-            metadataUri: ipfsData.metadataUri,
-            price: monetizationData.nftPrice,
-            maxSupply: monetizationData.nftCopies,
-            royaltyPercentage: 10, // 10% royalty to creator
-          });
-
-          setMintingProgress(60);
-          
-          // Wait for blockchain confirmation
-          // Note: The useMintComic hook handles the transaction confirmation
-          console.log('⏳ Waiting for blockchain confirmation...');
-          
+          await updateComicWithMintData(comicId, tokenId, hash);
+          setMintingProgress(100);
+          setIsMinting(false);
+          setIsComplete(true);
+          console.log('🎉 All done! Comic is now fully live.');
         } catch (error) {
-          console.error('Blockchain minting failed:', error);
-          throw new Error('Failed to mint NFT on blockchain');
+          console.error('❌ Error updating backend:', error);
+          setMintError(error as Error);
         }
       }
+    };
 
-      // Step 3: Save comic to backend database
-      console.log('💾 Saving comic to database...');
-      setMintingProgress(80);
+    updateBackend();
+  }, [isMintSuccess, hash, comicId, tokenId, isComplete]);
 
-      const backendFormData = new FormData();
-      
-      // Add creator ID
-      backendFormData.append('creatorId', user._id);
-      
-      // Add basic comic data
-      backendFormData.append('title', comicData.title.trim());
-      backendFormData.append('description', comicData.description.trim());
-      
-      // Add genres and tags
-      comicData.genre.forEach(genre => {
-        backendFormData.append('genre', genre);
-      });
-      comicData.tags.forEach(tag => {
-        backendFormData.append('tags', tag);
-      });
-      
-      backendFormData.append('ageRating', comicData.ageRating);
-      backendFormData.append('status', 'published');
-      
-      // Add monetization data
-      backendFormData.append('publishType', monetizationData.publishType);
-      if (monetizationData.publishType === 'paid' && monetizationData.price) {
-        backendFormData.append('price', monetizationData.price.toString());
-      }
-      
-      // Add NFT and blockchain data
-      backendFormData.append('mintAsNFT', monetizationData.mintAsNFT.toString());
-      if (monetizationData.mintAsNFT) {
-        if (monetizationData.nftCopies) {
-          backendFormData.append('nftCopies', monetizationData.nftCopies.toString());
-        }
-        if (monetizationData.nftPrice) {
-          backendFormData.append('nftPrice', monetizationData.nftPrice.toString());
-        }
-        
-        // Add blockchain and IPFS data
-        if (ipfsData) {
-          backendFormData.append('metadataUri', ipfsData.metadataUri);
-          backendFormData.append('coverImageUri', ipfsData.coverImageUri);
-          backendFormData.append('pagesUris', JSON.stringify(ipfsData.pagesUris));
-        }
-        
-        // Add blockchain data when available
-        if (tokenId) {
-          backendFormData.append('blockchainTokenId', tokenId.toString());
-        }
-        if (mintHash) {
-          backendFormData.append('blockchainTxHash', mintHash);
-        }
-      }
-      
-      // Add cover image if not already uploaded to IPFS
-      if (comicData.coverImage && !ipfsData) {
-        backendFormData.append('coverImage', comicData.coverImage);
-      }
-      
-      // Add comic pages if not already uploaded to IPFS
-      if (!ipfsData) {
-        comicData.pages.forEach((page) => {
-          const file = new File([page.blob], page.name, { 
-            type: page.blob.type || 'image/jpeg' 
-          });
-          backendFormData.append('pages', file);
-        });
-      }
 
-      // Save to backend
-      const response = await dispatch(createFullComic(backendFormData as any)).unwrap();
-      setMintingProgress(100);
-      
-      console.log('🎉 Comic published successfully!');
-      
-      return {
-        success: true,
-        comicId: response._id,
-        tokenId: blockchainTokenId,
-        metadataUri: ipfsData?.metadataUri,
-        txHash: mintHash,
-      };
-
-    } catch (error) {
-      console.error('Comic publishing failed:', error);
-      throw error;
-    } finally {
+//Monitor write errors
+useEffect(() => {
+    if (writeError) {
+      console.error('❌ Write contract error:', writeError);
+      setMintError(writeError as Error);
       setIsMinting(false);
       setMintingProgress(0);
     }
+  }, [writeError]);
+
+// useEffect(() => {
+//   if (writeError) {
+//     console.error('❌ Write contract error:', writeError);
+//     setMintError(writeError);
+//   }
+// }, [writeError]);
+
+ // Monitor confirmation status
+  useEffect(() => {
+    if (isConfirming) {
+      console.log('⏳ Transaction confirming...');
+      setMintingProgress(80);
+    }
+  }, [isConfirming]);
+
+
+
+
+  
+  /**
+   * Check if the connected wallet is an approved creator
+   */
+  const checkCreatorApproval = async (): Promise<boolean> => {
+    if (!address) return false;
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `http://localhost:5000/api/creators/check-approval/${address}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      return response.data.isApproved;
+    } catch (error) {
+      console.error('Error checking creator approval:', error);
+      return false;
+    }
+  };
+
+  /**
+   * Request creator approval from backend
+   */
+  const requestCreatorApproval = async (): Promise<boolean> => {
+    if (!address) return false;
+    
+    try {
+      console.log('🔐 Requesting creator approval...');
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'http://localhost:5000/api/creators/approve-creator',
+        { creatorAddress: address },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      console.log('✅ Creator approval successful:', response.data);
+      return true;
+    } catch (error) {
+      console.error('❌ Error requesting creator approval:', error);
+      return false;
+    }
+  };
+
+  /**
+   * Main function to publish comic and optionally mint NFT
+   */
+  const publishComic = async ({
+    comicData,
+    monetizationData,
+    user,
+  }: PublishComicParams) => {
+    try {
+      // setIsUploading(true);
+      // setUploadProgress(10);
+      // setMintError(null);
+      setIsComplete(false);
+      setTokenId(null);
+      setComicId(null);
+      setMintError(null);
+      // resetWrite();
+      
+      setIsUploading(true);
+      setUploadProgress(10);
+
+      // Step 1: Create FormData for backend upload
+      const formData = new FormData();
+
+      // Add cover image if exists
+      // if (comicData.coverImage) {
+      //   formData.append('coverImage', comicData.coverImage);
+      // }
+// Add cover image if exists
+if (comicData.coverImage) {
+  // If it's already a File, use it directly
+  // If it's a Blob, convert it
+  if (comicData.coverImage instanceof File) {
+    formData.append('coverImage', comicData.coverImage);
+  } else {
+    const coverFile = new File(
+      [comicData.coverImage],
+      'cover.jpg',
+      { type: (comicData.coverImage as Blob).type || 'image/jpeg' }
+    );
+    formData.append('coverImage', coverFile);
+  }
+}
+      // Add page images
+      // comicData.pages.forEach((page, index) => {
+      //   if (page.blob) {
+      //     formData.append('pages', page.blob, page.name || `page-${index + 1}.jpg`);
+      //   }
+      // });
+      // Add page images
+comicData.pages.forEach((page, index) => {
+  if (page.blob) {
+    // Ensure proper file name with extension
+    const fileName = page.name || `page-${index + 1}.jpg`;
+    
+    // Create a File object with explicit MIME type
+    const file = new File(
+      [page.blob], 
+      fileName, 
+      { type: page.blob.type || 'image/jpeg' }
+    );
+    
+    formData.append('pages', file);
+  }
+}); 
+
+      // Prepare comic data
+      const comicPayload = {
+        title: comicData.title,
+        description: comicData.description,
+        genre: comicData.genre,
+        tags: comicData.tags,
+        publishType: monetizationData.mintAsNFT ? 'nft' : monetizationData.publishType,
+      };
+
+      // Add NFT details if minting
+      if (monetizationData.mintAsNFT) {
+        (comicPayload as any).nftDetails = {
+          price: monetizationData.nftPrice || 0,
+          maxSupply: monetizationData.nftCopies || 100,
+          royaltyPercentage: 10, // Default 10% royalty
+        };
+      }
+
+      formData.append('comicData', JSON.stringify(comicPayload));
+
+      setUploadProgress(30);
+
+      // Step 2: Upload to backend (which handles IPFS upload and metadata generation)
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        // `${process.env.NEXT_PUBLIC_API_URL}/comic/create-full`,
+        // `${process.env.NEXT_LOCAL_API_URL}/comics/full`,
+        'http://localhost:5000/api/comics/full',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              const progress = Math.round((progressEvent.loaded * 70) / progressEvent.total);
+              setUploadProgress(30 + progress);
+            }
+          },
+        }
+      );
+
+      setUploadProgress(100);
+      setIsUploading(false);
+
+      const createdComic = response.data.data.comic;
+      const metadataCid = createdComic.nftMetadataCid;
+      const dbComicId = createdComic._id;
+
+      setComicId(dbComicId);
+
+      console.log('✅ Comic created:', createdComic);
+      console.log('📦 Metadata CID:', metadataCid);
+
+       console.log('🔍 NFT Minting Check:', {
+      mintAsNFT: monetizationData.mintAsNFT,
+      metadataCid: metadataCid,
+      isConnected: isConnected,
+      address: address,
+      chainId: chainId,
+    });
+
+      // Step 3: If NFT minting is enabled, interact with smart contract
+      if (monetizationData.mintAsNFT && metadataCid && isConnected && address) {
+        setIsMinting(true);
+        setMintingProgress(10);
+        // Check and request creator approval
+     console.log('🔍 Checking creator approval status...');
+     const isApproved = await checkCreatorApproval();
+     if (!isApproved) {
+          console.log('⚠️ Creator not approved. Requesting approval...');
+          setMintingProgress(15);
+          
+          const approvalSuccess = await requestCreatorApproval();
+          
+          if (!approvalSuccess) {
+            throw new Error('Failed to get creator approval. Please contact support.');
+          }
+          console.log('✅ Creator approved successfully!');
+         // Wait for blockchain to process approval
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        } else {
+          console.log('✅ Creator already approved');
+        }
+          setMintingProgress(20);
+        const currentChain = chainId === 296 ? hederaTestnet : mainnet;
+
+        // Construct IPFS gateway URL for metadata
+        const metadataURI = `https://gray-tough-elk-417.mypinata.cloud/ipfs/${metadataCid}`;
+
+        // Convert price to Wei (assuming price is in ETH/MATIC)
+        const priceInWei = parseEther((monetizationData.nftPrice || 0).toString());
+
+        // Convert royalty to basis points (10% = 1000)
+        const royaltyBasisPoints = 10 * 100; // 10% royalty
+
+        setMintingProgress(30);
+
+        console.log('🔄 Minting NFT with params:', {
+          comicId: dbComicId,
+          metadataURI,
+          price: priceInWei.toString(),
+          maxSupply: monetizationData.nftCopies || 100,
+          royaltyPercentage: royaltyBasisPoints,
+           contractAddress: QUIVA_COMICS_ADDRESS,
+           currentChain: currentChain,
+        });
+
+        // Call smart contract with proper typing
+        
+        try {
+          
+          
+          await writeContract({
+          address: QUIVA_COMICS_ADDRESS,
+          abi: QUIVA_COMICS_ABI,
+          functionName: 'mintComic',
+          args: [
+            dbComicId,
+            metadataURI,
+            priceInWei,
+            BigInt(monetizationData.nftCopies || 100),
+            BigInt(royaltyBasisPoints),
+          ],
+          account: address,
+          chain: currentChain,
+        });
+
+         console.log('✅ writeContract called successfully');
+        setMintingProgress(60);
+      } catch (contractError) {
+        console.error('❌ Contract write error:', contractError);
+        throw contractError;
+      }
+    } else {
+      console.log('⚠️ Skipping NFT minting:', {
+        reason: !monetizationData.mintAsNFT ? 'mintAsNFT is false' :
+                !metadataCid ? 'No metadata CID' :
+                !isConnected ? 'Wallet not connected' :
+                !address ? 'No wallet address' : 'Unknown'
+      });
+          //If not minting NFT, mark as complete immediately
+        setIsComplete(true);
+      }
+
+      return {
+        success: true,
+        comic: createdComic,
+        metadataCid,
+        requiresMinting: monetizationData.mintAsNFT && !hash,
+      };
+    } catch (error: any) {
+      console.error('❌ Error publishing comic:', error);
+      setMintError(error);
+      throw error;
+    } finally {
+      setIsUploading(false);
+      if (!writeError) {
+        setIsMinting(false);
+      }
+    }
+  };
+
+  /**
+   * Update backend with minting results
+   */
+  const updateComicWithMintData = async (
+    comicId: string,
+    tokenId: bigint,
+    transactionHash: string
+  ) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.patch(
+        // `${process.env.NEXT_PUBLIC_API_URL}/api/comic/${comicId}`,
+        `http://localhost:5000/api/comics/${comicId}`,
+        {
+          nftDetails: {
+            mintStatus: 'minted',
+            tokenId: tokenId.toString(),
+            contractAddress: QUIVA_COMICS_ADDRESS,
+            transactionHash,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log('✅ Comic updated with mint data');
+    } catch (error) {
+      console.error('❌ Error updating comic with mint data:', error);
+    }
+  };
+
+
+    // Reset function
+  const reset = () => {
+    setIsUploading(false);
+    setIsMinting(false);
+    setUploadProgress(0);
+    setMintingProgress(0);
+    setMintError(null);
+    setTokenId(null);
+    setComicId(null);
+    setIsComplete(false);
+    // resetWrite();
   };
 
   return {
     publishComic,
+    updateComicWithMintData,
+    reset,
     isUploading,
     isMinting,
     uploadProgress,
@@ -260,8 +535,564 @@ export function useComicMinting() {
     isWritePending,
     isConfirming,
     isMintSuccess,
-    mintError,
+    mintError: writeError || mintError,
     tokenId,
-    mintHash,
+    mintHash: hash,
+    comicId,
+    setTokenId,
+    walletStatus: {
+      isConnected,
+      address,
+      chainId,
+    }
   };
+};
+
+
+
+function resetWrite() {
+  throw new Error('Function not implemented.');
 }
+// src/hooks/useComicMinting.ts
+
+// import { useState, useEffect } from 'react';
+// import { useAccount, useWriteContract, useWaitForTransactionReceipt, useChainId, usePublicClient, useReadContract } from 'wagmi';
+// import { parseEther } from 'viem';
+// import axios from 'axios';
+// import { QUIVA_COMICS_ABI, QUIVA_COMICS_ADDRESS } from '../contracts/QuivaComics';
+// import type { Chain } from 'wagmi/chains';
+// import { current } from '@reduxjs/toolkit';
+
+// interface ComicData {
+//   title: string;
+//   description: string;
+//   genre: string[];
+//   tags: string[];
+//   ageRating: string;
+//   coverImage: File | null;
+//   pages: any[];
+// }
+
+// interface MonetizationData {
+//   publishType: 'free' | 'paid';
+//   price?: number;
+//   mintAsNFT: boolean;
+//   nftCopies?: number;
+//   nftPrice?: number;
+// }
+
+// interface User {
+//   _id: string;
+//   email: string;
+//   walletAddress?: string;
+// }
+
+// interface PublishComicParams {
+//   comicData: ComicData;
+//   monetizationData: MonetizationData;
+//   user: User;
+// }
+
+// const hederaTestnet = {
+//   id: 296,
+//   name: 'HederaTestnet',
+//   nativeCurrency: { name: 'Hedera Testnet', symbol: 'HBAR', decimals: 18 },
+//   rpcUrls: {
+//     default: { http: ['https://testnet.hashio.io/api'] },
+//   },
+//   blockExplorers: {
+//     default: { name: 'HashScan', url: 'https://hashscan.io/testnet/home' },
+//   },
+// } as const satisfies Chain;
+
+// export const useComicMinting = () => {
+//   const { address, isConnected } = useAccount();
+//   const chainId = useChainId();
+
+  
+//   const [isUploading, setIsUploading] = useState(false);
+//   const [isMinting, setIsMinting] = useState(false);
+//   const [uploadProgress, setUploadProgress] = useState(0);
+//   const [mintingProgress, setMintingProgress] = useState(0);
+//   const [mintError, setMintError] = useState<Error | null>(null);
+//   const [tokenId, setTokenId] = useState<bigint | null>(null);
+//   const [comicId, setComicId] = useState<string | null>(null);
+//   const [isComplete, setIsComplete] = useState(false);
+
+//   // Wagmi hooks for contract interaction
+//   const { 
+//     data: hash, 
+//     writeContract, 
+//     error: writeError,
+//     isPending: isWritePending,
+//     reset: resetWrite 
+//   } = useWriteContract();
+
+//   const { 
+//     isLoading: isConfirming, 
+//     isSuccess: isMintSuccess,
+//     data: receipt 
+//   } = useWaitForTransactionReceipt({
+//     hash,
+//   });
+
+//   const {
+//     data: readContractData,
+//     error: readContractError,
+//     isError: isReadContractError,
+//     isLoading: isReadContractLoading,
+//     refetch: refetchReadContract
+//   } = useReadContract();
+
+//   // ============ useEffect Hooks ============
+
+//   // Monitor when transaction hash is received
+//   useEffect(() => {
+//     if (hash) {
+//       console.log('🔗 Transaction hash received:', hash);
+//       console.log('⏳ Waiting for blockchain confirmation...');
+//       setMintingProgress(70);
+//     }
+//   }, [hash]);
+
+//   // Extract tokenId from transaction receipt
+//   useEffect(() => {
+//     const extractTokenId = async () => {
+//       if (isMintSuccess && receipt && !tokenId) {
+//         try {
+//           console.log('📄 Transaction receipt received:', receipt);
+          
+//           // Find the ComicMinted event in logs
+//           const comicMintedEvent = receipt.logs.find((log: any) => {
+//             try {
+//               // The first topic is the event signature
+//               const eventSignature = log.topics[0];
+//               // ComicMinted event signature
+//               const comicMintedSignature = '0x...'; // You can compute this or find it
+              
+//               // For now, we'll try to decode all logs
+//               return log.address.toLowerCase() === QUIVA_COMICS_ADDRESS.toLowerCase();
+//             } catch {
+//               return false;
+//             }
+//           });
+
+//           if (comicMintedEvent && comicMintedEvent.topics.length > 1) {
+//             // The tokenId is the first indexed parameter (second topic)
+//             const extractedTokenId = BigInt(comicMintedEvent.topics[1]);
+//             console.log('🎫 Token ID extracted from receipt:', extractedTokenId.toString());
+//             setTokenId(extractedTokenId);
+//           } else {
+//             console.warn('⚠️ Could not find ComicMinted event in receipt');
+//             // Fallback: try to get tokenId from contract
+//             if (comicId) {
+//               try {
+//                 const data = useReadContract({
+//                   address: QUIVA_COMICS_ADDRESS,
+//                   abi: QUIVA_COMICS_ABI,
+//                   functionName: 'comicIdToTokenId',
+//                   args: [comicId],
+//                 });
+//                 setTokenId(data as bigint);
+//                 console.log('🎫 Token ID from contract:', (data as bigint).toString());
+//               } catch (error) {
+//                 console.error('Error reading tokenId from contract:', error);
+//               }
+//             }
+//           }
+//         } catch (error) {
+//           console.error('❌ Error extracting tokenId:', error);
+//         }
+//       }
+//     };
+
+//     extractTokenId();
+//   }, [isMintSuccess, receipt, tokenId, comicId]);
+
+//   // Monitor transaction success and auto-update backend
+//   useEffect(() => {
+//     const updateBackend = async () => {
+//       if (is MintSuccess && hash && comicId && tokenId && !isComplete) {
+//         console.log('✅ NFT minted successfully!');
+//         console.log('📝 Transaction hash:', hash);
+//         console.log('🎫 Token ID:', tokenId.toString());
+//         setMintingProgress(90);
+        
+//         // Update backend with mint data
+//         console.log('💾 Updating backend with mint data...');
+//         try {
+//           await updateComicWithMintData(comicId, tokenId, hash);
+//           setMintingProgress(100);
+//           setIsMinting(false);
+//           setIsComplete(true);
+//           console.log('🎉 All done! Comic is now fully live.');
+//         } catch (error) {
+//           console.error('❌ Error updating backend:', error);
+//           setMintError(error as Error);
+//         }
+//       }
+//     };
+
+//     updateBackend();
+//   }, [isMintSuccess, hash, comicId, tokenId, isComplete]);
+
+//   // Monitor write errors
+//   useEffect(() => {
+//     if (writeError) {
+//       console.error('❌ Write contract error:', writeError);
+//       setMintError(writeError as Error);
+//       setIsMinting(false);
+//       setMintingProgress(0);
+//     }
+//   }, [writeError]);
+
+//   // Monitor confirmation status
+//   useEffect(() => {
+//     if (isConfirming) {
+//       console.log('⏳ Transaction confirming...');
+//       setMintingProgress(80);
+//     }
+//   }, [isConfirming]);
+
+//   // ============ Helper Functions ============
+
+//   /**
+//    * Check if the connected wallet is an approved creator
+//    */
+//   const checkCreatorApproval = async (): Promise<boolean> => {
+//     if (!address) return false;
+    
+//     try {
+//       const token = localStorage.getItem('token');
+//       const response = await axios.get(
+//         `http://localhost:5000/api/creator/check-approval/${address}`,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
+      
+//       return response.data.isApproved;
+//     } catch (error) {
+//       console.error('Error checking creator approval:', error);
+//       return false;
+//     }
+//   };
+
+//   /**
+//    * Request creator approval from backend
+//    */
+//   const requestCreatorApproval = async (): Promise<boolean> => {
+//     if (!address) return false;
+    
+//     try {
+//       console.log('🔐 Requesting creator approval...');
+//       const token = localStorage.getItem('token');
+//       const response = await axios.post(
+//         'http://localhost:5000/api/creator/approve-creator',
+//         { creatorAddress: address },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
+      
+//       console.log('✅ Creator approval successful:', response.data);
+//       return true;
+//     } catch (error) {
+//       console.error('❌ Error requesting creator approval:', error);
+//       return false;
+//     }
+//   };
+
+//   /**
+//    * Update backend with minting results
+//    */
+//   const updateComicWithMintData = async (
+//     comicId: string,
+//     tokenId: bigint,
+//     transactionHash: string
+//   ) => {
+//     try {
+//       const token = localStorage.getItem('token');
+//       await axios.patch(
+//         `http://localhost:5000/api/comics/${comicId}`,
+//         {
+//           nftDetails: {
+//             mintStatus: 'minted',
+//             tokenId: tokenId.toString(),
+//             contractAddress: QUIVA_COMICS_ADDRESS,
+//             transactionHash,
+//           },
+//         },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
+
+//       console.log('✅ Comic updated with mint data');
+//     } catch (error) {
+//       console.error('❌ Error updating comic with mint data:', error);
+//       throw error;
+//     }
+//   };
+
+//   // ============ Main Function ============
+
+//   /**
+//    * Main function to publish comic and optionally mint NFT
+//    */
+//   const publishComic = async ({
+//     comicData,
+//     monetizationData,
+//     user,
+//   }: PublishComicParams) => {
+//     try {
+//       // Reset states
+//       setIsComplete(false);
+//       setTokenId(null);
+//       setComicId(null);
+//       setMintError(null);
+//       resetWrite();
+      
+//       setIsUploading(true);
+//       setUploadProgress(10);
+
+//       // Step 1: Create FormData for backend upload
+//       const formData = new FormData();
+
+//       // Add cover image if exists
+//       if (comicData.coverImage) {
+//         if (comicData.coverImage instanceof File) {
+//           formData.append('coverImage', comicData.coverImage);
+//         } else {
+//           const coverFile = new File(
+//             [comicData.coverImage],
+//             'cover.jpg',
+//             { type: comicData.coverImage.type || 'image/jpeg' }
+//           );
+//           formData.append('coverImage', coverFile);
+//         }
+//       }
+
+//       // Add page images
+//       comicData.pages.forEach((page, index) => {
+//         if (page.blob) {
+//           const fileName = page.name || `page-${index + 1}.jpg`;
+          
+//           const file = new File(
+//             [page.blob], 
+//             fileName, 
+//             { type: page.blob.type || 'image/jpeg' }
+//           );
+          
+//           formData.append('pages', file);
+//         }
+//       });
+
+//       // Prepare comic data
+//       const comicPayload = {
+//         title: comicData.title,
+//         description: comicData.description,
+//         genre: comicData.genre,
+//         tags: comicData.tags,
+//         publishType: monetizationData.mintAsNFT ? 'nft' : monetizationData.publishType,
+//       };
+
+//       // Add NFT details if minting
+//       if (monetizationData.mintAsNFT) {
+//         (comicPayload as any).nftDetails = {
+//           price: monetizationData.nftPrice || 0,
+//           maxSupply: monetizationData.nftCopies || 100,
+//           royaltyPercentage: 10,
+//         };
+//       }
+
+//       formData.append('comicData', JSON.stringify(comicPayload));
+
+//       setUploadProgress(30);
+
+//       // Step 2: Upload to backend
+//       const token = localStorage.getItem('token');
+//       const response = await axios.post(
+//         'http://localhost:5000/api/comics/full',
+//         formData,
+//         {
+//           headers: {
+//             'Content-Type': 'multipart/form-data',
+//             Authorization: `Bearer ${token}`,
+//           },
+//           onUploadProgress: (progressEvent) => {
+//             if (progressEvent.total) {
+//               const progress = Math.round((progressEvent.loaded * 70) / progressEvent.total);
+//               setUploadProgress(30 + progress);
+//             }
+//           },
+//         }
+//       );
+
+//       setUploadProgress(100);
+//       setIsUploading(false);
+
+//       const createdComic = response.data.data.comic;
+//       const metadataCid = createdComic.nftMetadataCid;
+//       const dbComicId = createdComic._id;
+
+//       setComicId(dbComicId);
+
+//       console.log('✅ Comic created:', createdComic);
+//       console.log('📦 Metadata CID:', metadataCid);
+      
+//       // Debugging logs for NFT minting
+//       console.log('🔍 NFT Minting Check:', {
+//         mintAsNFT: monetizationData.mintAsNFT,
+//         metadataCid: metadataCid,
+//         isConnected: isConnected,
+//         address: address,
+//         chainId: chainId,
+//       });
+
+//       // Step 3: If NFT minting is enabled, interact with smart contract
+//       if (monetizationData.mintAsNFT && metadataCid && isConnected && address) {
+//         console.log('🚀 Starting NFT minting process...');
+//         setIsMinting(true);
+//         setMintingProgress(10);
+
+//         // Check and request creator approval
+//         console.log('🔍 Checking creator approval status...');
+//         const isApproved = await checkCreatorApproval();
+        
+//         if (!isApproved) {
+//           console.log('⚠️ Creator not approved. Requesting approval...');
+//           setMintingProgress(15);
+          
+//           const approvalSuccess = await requestCreatorApproval();
+          
+//           if (!approvalSuccess) {
+//             throw new Error('Failed to get creator approval. Please contact support.');
+//           }
+          
+//           console.log('✅ Creator approved successfully!');
+          
+//           // Wait for blockchain to process approval
+//           await new Promise(resolve => setTimeout(resolve, 3000));
+//         } else {
+//           console.log('✅ Creator already approved');
+//         }
+        
+//         setMintingProgress(20);
+
+//         // Construct IPFS gateway URL for metadata
+//         const metadataURI = `https://gray-tough-elk-417.mypinata.cloud/ipfs/${metadataCid}`;
+
+//         // Convert price to Wei
+//         const priceInWei = parseEther((monetizationData.nftPrice || 0).toString());
+
+//         // Convert royalty to basis points (10% = 1000)
+//         const royaltyBasisPoints = 10 * 100;
+
+//         setMintingProgress(30);
+
+//         console.log('🔗 Minting NFT with params:', {
+//           comicId: dbComicId,
+//           metadataURI,
+//           price: priceInWei.toString(),
+//           maxSupply: monetizationData.nftCopies || 100,
+//           royaltyPercentage: royaltyBasisPoints,
+//           contractAddress: QUIVA_COMICS_ADDRESS,
+//           chainId: chainId,
+//         });
+
+//         try {
+//           // Call smart contract
+//           await writeContract({
+//             address: QUIVA_COMICS_ADDRESS,
+//             abi: QUIVA_COMICS_ABI,
+//             functionName: 'mintComic',
+//             args: [
+//               dbComicId,
+//               metadataURI,
+//               priceInWei,
+//               BigInt(monetizationData.nftCopies || 100),
+//               BigInt(royaltyBasisPoints),
+//             ],
+//             account: address,
+//             chain: currentChainid
+//           });
+
+//           console.log('✅ writeContract called - waiting for user confirmation...');
+//           setMintingProgress(50);
+          
+//         } catch (contractError) {
+//           console.error('❌ Contract write error:', contractError);
+//           throw contractError;
+//         }
+//       } else {
+//         console.log('⚠️ Skipping NFT minting:', {
+//           reason: !monetizationData.mintAsNFT ? 'mintAsNFT is false' :
+//                   !metadataCid ? 'No metadata CID' :
+//                   !isConnected ? 'Wallet not connected' :
+//                   !address ? 'No wallet address' : 'Unknown'
+//         });
+        
+//         // If not minting NFT, mark as complete immediately
+//         setIsComplete(true);
+//       }
+
+//       return {
+//         success: true,
+//         comic: createdComic,
+//         metadataCid,
+//         comicId: dbComicId,
+//         requiresMinting: monetizationData.mintAsNFT,
+//       };
+//     } catch (error: any) {
+//       console.error('❌ Error publishing comic:', error);
+//       setMintError(error);
+//       setIsUploading(false);
+//       setIsMinting(false);
+//       throw error;
+//     }
+//   };
+
+//   // Reset function
+//   const reset = () => {
+//     setIsUploading(false);
+//     setIsMinting(false);
+//     setUploadProgress(0);
+//     setMintingProgress(0);
+//     setMintError(null);
+//     setTokenId(null);
+//     setComicId(null);
+//     setIsComplete(false);
+//     resetWrite();
+//   };
+
+//   return {
+//     publishComic,
+//     updateComicWithMintData,
+//     reset,
+//     isUploading,
+//     isMinting,
+//     uploadProgress,
+//     mintingProgress,
+//     isWritePending,
+//     isConfirming,
+//     isMintSuccess,
+//     isComplete,
+//     mintError: writeError || mintError,
+//     tokenId,
+//     mintHash: hash,
+//     comicId,
+//     setTokenId,
+//     walletStatus: {
+//       isConnected,
+//       address,
+//       chainId,
+//     },
+//   };
+// };
