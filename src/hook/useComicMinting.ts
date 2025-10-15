@@ -547,4 +547,3 @@ comicData.pages.forEach((page, index) => {
     }
   };
 };
-
