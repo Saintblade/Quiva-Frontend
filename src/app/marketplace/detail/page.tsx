@@ -1,32 +1,47 @@
 'use client'
 
 import ComicDetail from '@/features/comic-library/components/ComicDetail'
-import { useEffect, useMemo } from 'react'
+import ComicPreviewModal from '@/features/comic-library/components/ComicPreviewModal'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useAppDispatch, useAppSelector } from '@/redux/hook'
-import { getComicById, clearCurrentComic } from '@/redux/slices/comicSlice'
+import { 
+  getComicById, 
+  clearCurrentComic, 
+  getComicPreview, 
+  clearPreviewComic 
+} from '@/redux/slices/comicSlice'
 import { Loader2 } from 'lucide-react'
 
 function Page() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const { currentComic, isLoading } = useAppSelector((state) => state.comic)
+  const { 
+    currentComic, 
+    previewComic, 
+    isLoading, 
+    isPreviewing 
+  } = useAppSelector((state) => state.comic)
+  
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   
   // Get comic ID from URL query params
-  const comicId = searchParams.get('id')
-
+  const id = searchParams.get('id')
+ 
   // Fetch comic data on mount
   useEffect(() => {
-    if (comicId) {
-      dispatch(getComicById(comicId))
+    if (id) {
+      console.log('Fetching comic with ID:', id)
+      dispatch(getComicById({id:id} as any));
     }
 
     // Cleanup on unmount
     return () => {
       dispatch(clearCurrentComic())
+      dispatch(clearPreviewComic())
     }
-  }, [comicId, dispatch])
+  }, [id, dispatch])
 
   // Transform API data to match ComicDetail component interface
   const transformedComic = useMemo(() => {
@@ -48,7 +63,7 @@ function Page() {
       issueDetails: {
         creators: comic.creatorId?.username || "Unknown",
         pages: comic.totalPages || 0,
-        publisher: "Independent", // Adjust if you have publisher data
+        publisher: "Independent",
         publicationDate: new Date(comic.createdAt).toLocaleDateString('en-US', {
           day: 'numeric',
           month: 'long',
@@ -86,7 +101,7 @@ function Page() {
   }
 
   // Error state (comic not found)
-  if (!comicId) {
+  if (!id) {
     return (
       <div className='flex justify-center items-center min-h-screen'>
         <div className='text-center'>
@@ -132,31 +147,43 @@ function Page() {
   }
 
   const handleReadIssue = () => {
-    // Navigate to reader page with comic ID
-    router.push(`/reader?id=${comicId}`)
+    router.push(`/reader?id=${id}`);
   }
 
-  const handlePreviewIssue = () => {
-    // Navigate to preview page or open preview modal
-    console.log('Preview issue:', comicId)
-    // router.push(`/preview?id=${comicId}`)
+  const handlePreviewIssue = async () => {
+    console.log('Opening preview for comic:', id);
+    await dispatch(getComicPreview({id} as any));
+    setIsPreviewOpen(true)
+  }
+
+  const handleClosePreview = () => {
+    setIsPreviewOpen(false)
+    dispatch(clearPreviewComic())
   }
 
   const handleEnlargeCover = () => {
-    // Open cover image in modal or new tab
     if (transformedComic.coverImage) {
       window.open(transformedComic.coverImage, '_blank')
     }
   }
 
   return (
-    <ComicDetail
-      {...transformedComic}
-      onBack={handleBack}
-      onReadIssue={handleReadIssue}
-      onPreviewIssue={handlePreviewIssue}
-      onEnlargeCover={handleEnlargeCover}
-    />
+    <>
+      <ComicDetail
+        {...transformedComic}
+        onBack={handleBack}
+        onReadIssue={handleReadIssue}
+        onPreviewIssue={handlePreviewIssue}
+        onEnlargeCover={handleEnlargeCover}
+      />
+      
+      <ComicPreviewModal
+        isOpen={isPreviewOpen}
+        onClose={handleClosePreview}
+        previewComic={previewComic}
+        isLoading={isPreviewing}
+      />
+    </>
   )
 }
 

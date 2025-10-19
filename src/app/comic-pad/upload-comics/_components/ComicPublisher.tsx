@@ -463,7 +463,7 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 				</div>
 			)}
 
-			{showNotification && <ComicNotification onclose={() => setShowNotification(true)} />}
+			{showNotification && <ComicNotification onclose={() => setShowNotification(true)} comicData={comicData} />}
 		</>
 	);
 }
