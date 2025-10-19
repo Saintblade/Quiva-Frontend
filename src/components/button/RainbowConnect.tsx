@@ -32,6 +32,8 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
   // Auto-login when wallet connects
   const autoLogin = useCallback(async () => {
     // Auto-login on initial connection or when JWT expires
+    console.log("Auto-login check:", { isConnected, isAuthenticated, address, isLoggingIn });
+    console.log(isConnected && !isAuthenticated && address && !isLoggingIn)
     if (isConnected && !isAuthenticated && address && !isLoggingIn) {
       try {
         setIsLoggingIn(true);
