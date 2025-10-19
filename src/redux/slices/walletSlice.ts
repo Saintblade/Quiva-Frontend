@@ -54,7 +54,7 @@ export const walletAuth = createAsyncThunk<
   { rejectValue: string }
 >("auth/walletAuth", async ({ walletAddress }, { rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post("/wallet/message", {
+    const response = await axiosInstance.post("/auth/wallet/message", {
       walletAddress,
     });
     return response.data;
@@ -73,7 +73,7 @@ export const walletVerifyAuth = createAsyncThunk<
   { rejectValue: string }
 >("auth/walletVerifyAuth", async (payload, { rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post("/wallet/verify", payload);
+    const response = await axiosInstance.post("/auth/wallet/verify", payload);
     
     // Store token in localStorage if needed
     if (response.data.data.accessToken) {

@@ -37,7 +37,9 @@ export const useComicAccess = (comicId: string, tokenId?: string) => {
         setAccessResult(prev => ({ ...prev, isLoading: true }));
 
         // Fetch comic details from backend
-        const token = localStorage.getItem('token');
+
+
+         const token = localStorage.getItem('token');
         const response = await axios.get(`http://localhost:5000/api/comics/${comicId}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
@@ -66,76 +68,81 @@ export const useComicAccess = (comicId: string, tokenId?: string) => {
             });
             return;
           }
-
-          const balance = nftBalance ? Number(nftBalance) : 0;
-
-          if (balance > 0) {
-            setAccessResult({
-              hasAccess: true,
-              accessType: 'nft_owner',
-              nftBalance: balance,
-              isLoading: false,
-              error: null,
-            });
-            return;
-          } else {
-            setAccessResult({
-              hasAccess: false,
-              accessType: 'none',
-              nftBalance: 0,
-              isLoading: false,
-              error: new Error('You must own this NFT to read'),
-            });
-            return;
-          }
         }
+        //   const balance = nftBalance ? Number(nftBalance) : 0;
+
+        //   if (balance > 0) {
+        //     setAccessResult({
+        //       hasAccess: true,
+        //       accessType: 'nft_owner',
+        //       nftBalance: balance,
+        //       isLoading: false,
+        //       error: null,
+        //     });
+        //     return;
+        //   } else {
+        //     setAccessResult({
+        //       hasAccess: false,
+        //       accessType: 'none',
+        //       nftBalance: 0,
+        //       isLoading: false,
+        //       error: new Error('You must own this NFT to read'),
+        //     });
+        //     return;
+        //   }
+        // }
 
         // Case 3: Paid Per-Read - Check database for purchase
-        if (comic.publishType === 'paid') {
-          if (!token) {
-            setAccessResult({
-              hasAccess: false,
-              accessType: 'none',
-              isLoading: false,
-              error: new Error('Please login to access paid comic'),
-            });
-            return;
-          }
+    //     if (comic.publishType === 'paid') {
+    //       if (!token) {
+    //         setAccessResult({
+    //           hasAccess: false,
+    //           accessType: 'none',
+    //           isLoading: false,
+    //           error: new Error('Please login to access paid comic'),
+    //         });
+    //         return;
+    //       }
 
-          // Check if user has purchased
-          const purchaseCheck = await axios.get(
-            `http://localhost:5000/api/library/check-access/${comicId}`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
+    //       // Check if user has purchased
+    //       const purchaseCheck = await axios.get(
+    //         `http://localhost:5000/api/library/check-access/${comicId}`,
+    //         {
+    //           headers: { Authorization: `Bearer ${token}` },
+    //         }
+    //       );
 
-          if (purchaseCheck.data.hasAccess) {
-            setAccessResult({
-              hasAccess: true,
-              accessType: 'purchased',
-              isLoading: false,
-              error: null,
-            });
-          } else {
-            setAccessResult({
-              hasAccess: false,
-              accessType: 'none',
-              isLoading: false,
-              error: new Error('Please purchase this comic to read'),
-            });
-          }
-          return;
-        }
+    //       if (purchaseCheck.data.hasAccess) {
+    //         setAccessResult({
+    //           hasAccess: true,
+    //           accessType: 'purchased',
+    //           isLoading: false,
+    //           error: null,
+    //         });
+    //       } else {
+    //         setAccessResult({
+    //           hasAccess: false,
+    //           accessType: 'none',
+    //           isLoading: false,
+    //           error: new Error('Please purchase this comic to read'),
+    //         });
+    //       }
+    //       return;
+    //     }
 
-        // Default: No access
-        setAccessResult({
-          hasAccess: false,
-          accessType: 'none',
-          isLoading: false,
-          error: null,
+    //     // Default: No access
+    //     setAccessResult({
+    //       hasAccess: false,
+    //       accessType: 'none',
+    //       isLoading: false,
+    //       error: null,
+    //     });
+     const purchaseCheck = await  axios.get(`http://localhost:5000/api/transactions/user/verify_nft/${comicId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {
+            
+          },
         });
-
+        
       } catch (error: any) {
         console.error('Error checking access:', error);
         setAccessResult({
@@ -145,10 +152,10 @@ export const useComicAccess = (comicId: string, tokenId?: string) => {
           error: error,
         });
       }
-    };
+    }
 
     checkAccess();
-  }, [comicId, tokenId, address, isConnected, nftBalance]);
+  }, [comicId, tokenId, address, isConnected]);
 
   return accessResult;
 };

@@ -4,6 +4,7 @@ import { parseEther } from 'viem';
 import { QUIVA_COMICS_ABI, QUIVA_COMICS_ADDRESS } from '../contracts/QuivaComics';
 import { mainnet } from 'wagmi/chains';
 import type { Chain } from 'wagmi/chains';
+import { useComicMinting } from './useComicMinting';
 
 const hederaTestnet = {
   id: 296,
@@ -54,6 +55,8 @@ export const useComicPurchase = () => {
   } = useWaitForTransactionReceipt({
     hash,
   });
+
+   const { sellerAddress, tokenId } = useComicMinting();
 
   /**
    * Get listing details for a specific comic and seller
@@ -121,6 +124,7 @@ export const useComicPurchase = () => {
       console.log('💰 Purchasing comic:', {
         tokenId: tokenId.toString(),
         seller,
+        // sellerAddress,
         amount: amount.toString(),
         pricePerToken: pricePerToken.toString(),
         totalPrice: totalPrice.toString(),
