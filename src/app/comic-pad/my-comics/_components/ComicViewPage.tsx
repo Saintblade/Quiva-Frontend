@@ -21,7 +21,7 @@ const ComicViewPage = ({ id }: ComicViewPageProps) => {
 	// Fetch comic by ID on component mount
 	useEffect(() => {
 		if (id) {
-			dispatch(getComicById(id));
+			dispatch(getComicById({id} as any));
 		}
 
 		// Cleanup on unmount
@@ -34,7 +34,7 @@ const ComicViewPage = ({ id }: ComicViewPageProps) => {
 	const handleDelete = async () => {
 		try {
 			if(id){
-				await dispatch(deleteComic(id)).unwrap();
+				await dispatch(deleteComic({id} as any)).unwrap();
 				// Navigate back after successful deletion
 				router.push("/my-comics"); // Adjust route as needed
 			}
@@ -72,10 +72,10 @@ const ComicViewPage = ({ id }: ComicViewPageProps) => {
 						The comic you're looking for doesn't exist or has been removed.
 					</p>
 					<button
-						onClick={() => router.push("/my-comics")}
+						onClick={() => router.push("/comic-pad/my-comics")}
 						className='bg-yellow-600 hover:bg-yellow-700 text-black font-medium px-6 py-3 rounded-full transition-all'
 					>
-						Back to Comics
+						Back to Comics	
 					</button>
 				</div>
 			</div>
@@ -86,12 +86,12 @@ const ComicViewPage = ({ id }: ComicViewPageProps) => {
 	const comic = {
 		title: currentComic.title || "Untitled Comic",
 		visibility: currentComic.visibility || "Public",
-		access: currentComic.premium
-			? `Pay-Per-Read (${currentComic.price || "N/A"})`
+		access: currentComic.publishType === "nft"
+			? `Pay-Per-Read (${currentComic?.nftId?.price || "N/A"})`
 			: "Free",
-		nftEdition: currentComic.isNFT ? "Yes" : "No",
-		editionSize: currentComic.editionSize || 0,
-		mintPrice: currentComic.mintPrice || "N/A",
+		nftEdition: currentComic.nftId ? "Yes" : "No",
+		editionSize: currentComic.nftId?.curentSupply || 0,
+		mintPrice: currentComic.nftId?.price || "N/A",
 		launch: currentComic.launchDate
 			? new Date(currentComic.launchDate).toLocaleDateString()
 			: "Immediately",

@@ -8,9 +8,11 @@ import {QuivaLogo} from '@/components/utils/function'
 import {useRouter} from 'next/navigation'
 import {FaStore, FaCog, FaSignOutAlt, FaArrowLeft} from 'react-icons/fa'
 import {RainbowConnect} from '@/components/button/RainbowConnect'
+import { useAppSelector } from '@/redux/hook'
 
 export function ComicPadHeader({onMobileMenuToggle, isMobileMenuOpen}) {
     const router = useRouter()
+    const {user} = useAppSelector((state) => state.wallet)
     const [notifications,
         setNotifications] = useState([
         {
@@ -125,7 +127,7 @@ export function ComicPadHeader({onMobileMenuToggle, isMobileMenuOpen}) {
                     <div className="flex flex-col items-center justify-center">
                         <h4
                             className="text-white text-sm lg:text-base xl:text-xl font-medium tracking-wider">
-                            Welcome Mary!
+                            Welcome {user?.username || 'Creator'}!
                         </h4>
                         <p className="text-white/60 text-xs xl:text-sm">
                             Let&apos;s build something epic.

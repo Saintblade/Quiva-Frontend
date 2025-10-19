@@ -96,7 +96,7 @@ export const creatorRegister = createAsyncThunk<
   { rejectValue: string }
 >("auth/creatorRegister", async (id, { rejectWithValue }) => {
   try {
-    const response = await axiosInstance.put(`/${id}/become-creator`, {});
+    const response = await axiosInstance.put(`/auth/${id}/become-creator`, {});
     return response;
   } catch (error: any) {
     return rejectWithValue(

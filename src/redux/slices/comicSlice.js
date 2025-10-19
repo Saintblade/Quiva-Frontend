@@ -6,10 +6,12 @@ const initialState = {
   comics: null,
   userComics: null,
   currentComic: null,
+  previewComic: null,
   isLoading: false,
   isCreating: false,
   isUpdating: false,
   isDeleting: false,
+  isPreviewing: false,
   error: null,
   successMessage: null,
 };
@@ -38,10 +40,6 @@ export const createComic = createAsyncThunk(
       return response.data;
     } catch (error) {
         throw error.response || "Failed to create comic"
-    //   return rejectWithValue(
-    //     error.response ||
-    //       "Failed to create comic"
-    //   );
     }
   }
 );
@@ -60,13 +58,7 @@ export const createFullComic = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-
         throw error.response || "Failed to create full comic"
-    //   return rejectWithValue(
-    //     error.response?.data?.message ||
-    //       error.response?.data ||
-    //       "Failed to create full comic"
-    //   );
     }
   }
 );
@@ -106,7 +98,7 @@ export const getUserComics = createAsyncThunk(
 // Get comic by ID
 export const getComicById = createAsyncThunk(
   "comics/getById",
-  async (id, { rejectWithValue }) => {
+  async ({id}, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`/comics/${id}`);
       return response.data;
@@ -114,6 +106,23 @@ export const getComicById = createAsyncThunk(
       return rejectWithValue(
         error.response ||
           "Failed to fetch comic"
+      );
+    }
+  }
+);
+
+// Get comic preview
+export const getComicPreview = createAsyncThunk(
+  "comics/preview",
+  async ({id}, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/comics/preview/${id}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+        error.response ||
+        "Failed to fetch comic preview"
       );
     }
   }
@@ -165,7 +174,7 @@ export const updateComicCover = createAsyncThunk(
 // Delete comic
 export const deleteComic = createAsyncThunk(
   "comics/delete",
-  async (id, { rejectWithValue }) => {
+  async ({id}, { rejectWithValue }) => {
     try {
       await axiosInstance.delete(`/api/comics/${id}`);
       return id;
@@ -193,6 +202,9 @@ const comicSlice = createSlice({
     },
     clearCurrentComic: (state) => {
       state.currentComic = null;
+    },
+    clearPreviewComic: (state) => {
+      state.previewComic = null;
     },
   },
   extraReducers: (builder) => {
@@ -273,6 +285,21 @@ const comicSlice = createSlice({
         state.error = action.payload || "Failed to fetch comic";
       });
 
+    // Get Comic Preview
+    builder
+      .addCase(getComicPreview.pending, (state) => {
+        state.isPreviewing = true;
+        state.error = null;
+      })
+      .addCase(getComicPreview.fulfilled, (state, action) => {
+        state.isPreviewing = false;
+        state.previewComic = action.payload.data.comic;
+      })
+      .addCase(getComicPreview.rejected, (state, action) => {
+        state.isPreviewing = false;
+        state.error = action.payload || "Failed to fetch comic preview";
+      });
+
     // Update Comic
     builder
       .addCase(updateComic.pending, (state) => {
@@ -281,16 +308,6 @@ const comicSlice = createSlice({
       })
       .addCase(updateComic.fulfilled, (state, action) => {
         state.isUpdating = false;
-        // const index = state.comics.findIndex((c) => c.id === action.payload.id);
-        // if (index !== -1) {
-        //   state.comics[index] = action.payload;
-        // }
-        // const userIndex = state.userComics.findIndex(
-        //   (c) => c.id === action.payload.id
-        // );
-        // if (userIndex !== -1) {
-        //   state.userComics[userIndex] = action.payload;
-        // }
         if (state.currentComic?._id === action.payload.data.comic._id) {
           state.currentComic = action.payload.data.comic;
         }
@@ -309,16 +326,6 @@ const comicSlice = createSlice({
       })
       .addCase(updateComicCover.fulfilled, (state, action) => {
         state.isUpdating = false;
-        // const index = state.comics.findIndex((c) => c._id === action.payload.data._id);
-        // if (index !== -1) {
-        //   state.comics[index] = action.payload.data.comic;
-        // }
-        // const userIndex = state.userComics.findIndex(
-        //   (c) => c.id === action.payload.data.comic._id
-        // );
-        // if (userIndex !== -1) {
-        //   state.userComics[userIndex] = action.payload;
-        // }
         if (state.currentComic?._id === action.payload.data._id) {
           state.currentComic = action.payload.data.comic;
         }
@@ -337,10 +344,6 @@ const comicSlice = createSlice({
       })
       .addCase(deleteComic.fulfilled, (state, action) => {
         state.isDeleting = false;
-        // state.comics = state.comics.filter((c) => c.id !== action.payload);
-        // state.userComics = state.userComics.filter(
-        //   (c) => c.id !== action.payload
-        // );
         if (state.currentComic?.id === action.payload) {
           state.currentComic = null;
         }
@@ -359,16 +362,19 @@ export const {
   clearSuccessMessage,
   setCurrentComic,
   clearCurrentComic,
+  clearPreviewComic,
 } = comicSlice.actions;
 
 // Selectors
 export const selectComics = (state) => state.comics.comics;
 export const selectUserComics = (state) => state.comics.userComics;
 export const selectCurrentComic = (state) => state.comics.currentComic;
+export const selectPreviewComic = (state) => state.comics.previewComic;
 export const selectIsLoading = (state) => state.comics.isLoading;
 export const selectIsCreating = (state) => state.comics.isCreating;
 export const selectIsUpdating = (state) => state.comics.isUpdating;
 export const selectIsDeleting = (state) => state.comics.isDeleting;
+export const selectIsPreviewing = (state) => state.comics.isPreviewing;
 export const selectComicError = (state) => state.comics.error;
 export const selectSuccessMessage = (state) => state.comics.successMessage;
 
