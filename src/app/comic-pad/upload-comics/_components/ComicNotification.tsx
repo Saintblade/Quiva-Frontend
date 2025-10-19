@@ -7,9 +7,10 @@ import { QuivaLogo } from "@/components/utils/function";
 
 interface ComicNotificationProps {
 	onclose: () => void;
+	comicData: any;
 }
 
-export function ComicNotification({ onclose }: ComicNotificationProps) {
+export function ComicNotification({ onclose, comicData }: ComicNotificationProps) {
 	return (
 		<div className=''>
 			{/* Header with Quiva logo */}
@@ -74,7 +75,7 @@ export function ComicNotification({ onclose }: ComicNotificationProps) {
 
 			{/* Status text */}
 			<p className='text-white text-2xl font-medium text-center mt-2 mb-4 tracking-wider'>
-				Your comic <span className='text-orange-400'>&quot;Darling&quot;</span>{" "}
+				Your comic <span className='text-orange-400'>&quot;{comicData.title || "Untitled"}&quot;</span>{" "}
 				is LIVE!
 			</p>
 

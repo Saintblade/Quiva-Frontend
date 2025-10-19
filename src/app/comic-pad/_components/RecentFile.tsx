@@ -67,17 +67,17 @@ const RecentFile = () => {
 	}, [transformedComics, sortBy]);
 
 	// Fallback data for development/empty state
-	const FALLBACK_ITEMS = [
-		{ id: "1", title: "The North Face", imageSrc: theNorthFace },
-		{ id: "2", title: "Patagonia", imageSrc: theNorthFace },
-		{ id: "3", title: "Columbia Sportswear", imageSrc: theNorthFace },
-		{ id: "4", title: "Arc'teryx", imageSrc: theNorthFace },
-		{ id: "5", title: "Marmot", imageSrc: theNorthFace },
-		{ id: "6", title: "Mountain Hardwear", imageSrc: theNorthFace },
-	];
+	// const FALLBACK_ITEMS = [
+	// 	{ id: "1", title: "The North Face", imageSrc: theNorthFace },
+	// 	{ id: "2", title: "Patagonia", imageSrc: theNorthFace },
+	// 	{ id: "3", title: "Columbia Sportswear", imageSrc: theNorthFace },
+	// 	{ id: "4", title: "Arc'teryx", imageSrc: theNorthFace },
+	// 	{ id: "5", title: "Marmot", imageSrc: theNorthFace },
+	// 	{ id: "6", title: "Mountain Hardwear", imageSrc: theNorthFace },
+	// ];
 
 	const displayComics =
-		sortedComics.length > 0 ? sortedComics : FALLBACK_ITEMS;
+		sortedComics.length > 0 ? sortedComics : [];
 
 	return (
 		<div className='mt-8'>
@@ -138,11 +138,15 @@ const RecentFile = () => {
 				<>
 					{/* Empty State */}
 					{sortedComics.length === 0 && (
-						<div className='mt-8 text-center'>
-							<p className='text-white/60 text-sm'>
-								No recent comics found. Create your first comic to get started!
-							</p>
-						</div>
+						<div className='flex justify-center items-center my-8'>
+								<div className='text-center'>
+									<div className='text-6xl mb-4'>📚</div>
+									<h3 className='text-white text-xl font-bold mb-2'>Start A Comic Project!</h3>
+									<p className='text-white/60 text-sm mb-6'>
+										No recent comics found. Create your first comic to get started!
+									</p>
+								</div>
+							</div>
 					)}
 
 					{/* Comics Grid */}

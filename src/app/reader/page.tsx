@@ -34,7 +34,7 @@ const ComicReaderViewer = () => {
     // Fetch comic data on mount
     useEffect(() => {
         if (comicId) {
-            dispatch(getComicById(comicId));
+            dispatch(getComicById({id:comicId} as any));
         }
 
         // Cleanup on unmount
