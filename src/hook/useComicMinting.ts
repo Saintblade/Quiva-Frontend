@@ -4,7 +4,7 @@ import axios from 'axios';
 import { QUIVA_COMICS_ABI, QUIVA_COMICS_ADDRESS } from '../contracts/QuivaComics';
 import { mainnet } from 'wagmi/chains';
 import type { Chain } from 'wagmi/chains';
-import { parseEther, decodeEventLog } from 'viem';
+import { parseEther, decodeEventLog, Address } from 'viem';
 
 interface ComicData {
   title: string;
@@ -67,6 +67,8 @@ export const useComicMinting = () => {
   const [mintingProgress, setMintingProgress] = useState(0);
   const [mintError, setMintError] = useState<Error | null>(null);
   const [tokenId, setTokenId] = useState<bigint | null>(null);
+  const [sellerAddress, setSellerAddress] = useState<string | null>(null);
+  const [pricePerToken, setPricePerToken] = useState<number | null>(null);
   const [comicId, setComicId] = useState<string | null>(null);
   const [isComplete, setIsComplete] = useState(false);
   const [savedMonetizationData, setSavedMonetizationData] = useState<MonetizationData | null>(null);
@@ -133,8 +135,11 @@ export const useComicMinting = () => {
             if ((decoded as any).eventName === 'ComicMinted') {
               const decodedEvent = decoded as { eventName: string; args: { tokenId: bigint } };
               const extractedTokenId = decodedEvent.args.tokenId;
+              const extractedCreator = (decodedEvent.args as any).creator;
               console.log('✅ Token ID extracted from event:', extractedTokenId.toString());
+              console.log('✅ Creator address extracted from event:', extractedCreator);
               setTokenId(extractedTokenId);
+         
               return;
             }
           }
@@ -155,6 +160,9 @@ export const useComicMinting = () => {
     extractTokenId();
   }, [isMintSuccess, receipt, tokenId, publicClient, hash]);
 
+
+  
+
   // Auto-list NFT after successful minting and update backend
   useEffect(() => {
     const listAfterMint = async () => {
@@ -170,7 +178,7 @@ export const useComicMinting = () => {
             console.log('📋 Step 2: Listing NFT on marketplace...');
             setIsListing(true);
             
-            const pricePerToken = parseEther((savedMonetizationData.nftPrice || 0).toString());
+            const pricePerToken = BigInt(savedMonetizationData.nftPrice || 0);
             const amountToList = BigInt(savedMonetizationData.nftCopies || 100);
             const currentChain = chainId === 296 ? hederaTestnet : mainnet;
             
@@ -214,7 +222,7 @@ export const useComicMinting = () => {
         // STEP 3: Update backend with mint data
         console.log('💾 Step 3: Updating backend with mint data...');
         try {
-          await updateComicWithMintData(comicId, tokenId, hash);
+          await updateComicWithMintData(comicId, tokenId);
           setMintingProgress(100);
           setIsMinting(false);
           setIsComplete(true);
@@ -229,6 +237,61 @@ export const useComicMinting = () => {
     listAfterMint();
   }, [isMintSuccess, hash, comicId, tokenId, isComplete, savedMonetizationData, chainId, address, writeContract]);
 
+  //   useEffect(() => {
+  //   const extractedPriceCreator = async () => {
+  //     if (isMintSuccess && receipt && !tokenId) {
+  //       console.log('📄 Transaction receipt received:', receipt);
+
+  //       try {
+  //         // Method 1: Parse logs for ComicMinted event
+  //         const mintedLog = receipt.logs.find((log) => {
+  //           try {
+  //             const decoded = decodeEventLog({
+  //               abi: QUIVA_COMICS_ABI,
+  //               data: log.data,
+  //               topics: log.topics,
+  //             });
+  //             return (decoded as any).eventName ==='ComicListed';
+  //           } catch {
+  //             return false;
+  //           }
+  //         });
+
+  //         if (mintedLog) {
+  //           const decoded = decodeEventLog({
+  //             abi: QUIVA_COMICS_ABI,
+  //             data: mintedLog.data,
+  //             topics: mintedLog.topics,
+  //           });
+
+  //           if ((decoded as any).eventName === 'ComicListed') {
+  //             const decodedEvent = decoded as { eventName: string; args: { tokenId: bigint, pricePerToken: number,  seller: Address} };
+  //             const extractedPrice = decodedEvent.args.pricePerToken;
+  //             const extractedCreator = decodedEvent.args.seller;
+  //             console.log('✅ Token ID extracted from event:', extractedPrice.toString());
+  //             console.log('✅ Creator address extracted from event:', extractedCreator);
+  //             setPricePerToken(Number(extractedPrice));
+  //             setSellerAddress(extractedCreator);
+         
+  //             return;
+  //           }
+  //         }
+
+  //         // Method 2: If event parsing fails, try getting from return value
+  //         // if (publicClient && hash) {
+  //         //   const transaction = await publicClient.getTransaction({ hash });
+  //         //   console.log('📄 Transaction data:', transaction);
+  //         // }
+
+  //         // console.warn('⚠️ Could not extract token ID from receipt');
+  //       } catch (error) {
+  //         console.error('❌ Error extracting token ID:', error);
+  //       }
+  //     }
+  //   };
+
+  //   extractedPriceCreator();
+  // }, [isMintSuccess, receipt, tokenId, publicClient, hash]);
   // Monitor write errors
   useEffect(() => {
     if (writeError) {
@@ -511,22 +574,49 @@ export const useComicMinting = () => {
   /**
    * Update backend with minting results
    */
+  // const updateComicWithMintData = async (
+  //   comicId: string,
+  //   tokenId: bigint,
+  //   transactionHash: string
+  // ) => {
+  //   try {
+  //     const token = localStorage.getItem('token');
+  //     await axios.patch(
+  //       `http://localhost:5000/api/comics/${comicId}`,
+  //       {
+  //         nftDetails: {
+  //           mintStatus: 'minted',
+  //           tokenId: tokenId.toString(),
+  //           contractAddress: QUIVA_COMICS_ADDRESS,
+  //           transactionHash,
+  //         },
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     console.log('✅ Comic updated with mint data');
+  //   } catch (error) {   
+  //     console.error('❌ Error updating comic with mint data:', error);
+  //   }
+  // };
+
+  //Reset function
+  // 
   const updateComicWithMintData = async (
     comicId: string,
     tokenId: bigint,
-    transactionHash: string
+    // transactionHash: string
   ) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(
-        `http://localhost:5000/api/comics/${comicId}`,
+      await axios.put(
+        `http://localhost:5000/api/comics/token/${comicId}`,
         {
-          nftDetails: {
-            mintStatus: 'minted',
             tokenId: tokenId.toString(),
-            contractAddress: QUIVA_COMICS_ADDRESS,
-            transactionHash,
-          },
         },
         {
           headers: {
@@ -535,13 +625,12 @@ export const useComicMinting = () => {
         }
       );
 
-      console.log('✅ Comic updated with mint data');
-    } catch (error) {   
-      console.error('❌ Error updating comic with mint data:', error);
+      console.log('✅ Comic updated with tokenId data');
+    } catch (error) {
+      console.error('❌ Error updating comic with tokenId data:', error);
     }
   };
-
-  // Reset function
+  
   const reset = () => {
     setIsUploading(false);
     setIsMinting(false);
@@ -570,6 +659,8 @@ export const useComicMinting = () => {
     isMintSuccess,
     mintError: writeError || mintError,
     tokenId,
+    sellerAddress,
+    pricePerToken,
     mintHash: hash,
     comicId,
     setTokenId,
