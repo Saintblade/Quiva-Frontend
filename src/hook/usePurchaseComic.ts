@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useChainId, useReadContract } from 'wagmi';
 import { parseEther } from 'viem';
 import { QUIVA_COMICS_ABI, QUIVA_COMICS_ADDRESS } from '../contracts/QuivaComics';
 import { mainnet } from 'wagmi/chains';
 import type { Chain } from 'wagmi/chains';
 import { useComicMinting } from './useComicMinting';
+import axios from 'axios';
+
 
 const hederaTestnet = {
   id: 296,
@@ -39,9 +41,11 @@ export const useComicPurchase = () => {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [purchaseError, setPurchaseError] = useState<Error | null>(null);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
+   const [comicId, setComicId] = useState<string | null>(null);
 
   // Wagmi hooks for contract interaction
   const { 
+    
     data: hash, 
     writeContract, 
     error: writeError,
@@ -57,6 +61,20 @@ export const useComicPurchase = () => {
   });
 
    const { sellerAddress, tokenId } = useComicMinting();
+
+   useEffect(() => {
+     if (isPurchaseComplete && receipt && tokenId && sellerAddress) {
+        console.log('✅ uploading Purchased data to the Backend!');
+        updateBackendData(
+          comicId || '',
+          address || '',
+          receipt.transactionHash,
+           0,
+          'HBAR'
+        );
+     }
+      
+   }, [isPurchaseComplete, receipt, tokenId, sellerAddress, address])
 
   /**
    * Get listing details for a specific comic and seller
@@ -102,6 +120,8 @@ export const useComicPurchase = () => {
     seller,
     amount,
     pricePerToken,
+
+    
   }: PurchaseParams) => {
     if (!isConnected || !address) {
       throw new Error('Please connect your wallet first');
@@ -115,33 +135,34 @@ export const useComicPurchase = () => {
       setIsPurchasing(true);
       setPurchaseError(null);
       setPurchaseSuccess(false);
+    
 
       const currentChain = chainId === 296 ? hederaTestnet : mainnet;
-      
+      // const amount =  BigInt(1);
       // Calculate total price
       const totalPrice = pricePerToken * amount;
 
       console.log('💰 Purchasing comic:', {
         tokenId: tokenId.toString(),
         seller,
-        // sellerAddress,
         amount: amount.toString(),
         pricePerToken: pricePerToken.toString(),
         totalPrice: totalPrice.toString(),
       });
 
-      // Call smart contract
-      await writeContract({
-        address: QUIVA_COMICS_ADDRESS,
-        abi: QUIVA_COMICS_ABI,
-        functionName: 'purchaseComic',
-        args: [tokenId, seller as `0x${string}`, amount],
-        value: totalPrice,
-        account: address,
-        chain: currentChain,
-      });
+  // Call smart contract
+  await writeContract({
+    address: QUIVA_COMICS_ADDRESS,
+    abi: QUIVA_COMICS_ABI,
+    functionName: 'purchaseComic',
+    args: [tokenId, seller as `0x${string}`, amount],
+    value: totalPrice,
+    account: address,
+    chain: currentChain,
+  });
 
-      console.log('✅ Purchase transaction sent');
+  console.log('✅ Purchase transaction sent');
+  return hash;
 
     } catch (error: any) {
       console.error('❌ Purchase error:', error);
@@ -150,6 +171,43 @@ export const useComicPurchase = () => {
       throw error;
     }
   };
+
+
+  const updateBackendData = async (
+     comicId: string,
+     walletAddress: string,
+     txHash: string,
+     price: number,
+     currency: string
+   ) => {
+
+     try {
+
+        setComicId(null);
+       const token = localStorage.getItem('token');
+       await axios.post(
+         `http://localhost:5000/api/transactions`,
+         {
+           
+          comicId,
+          walletAddress,
+          txHash,
+          price,
+          currency
+           
+         },
+         {
+           headers: {
+             Authorization: `Bearer ${token}`,
+           },
+         }
+       );
+ 
+       console.log('✅ Transaction updated with tokenId, hash, walletAddress data');
+     } catch (error) {
+       console.error('❌ Error updating Transaction with tokenId data:', error);
+     }
+   };
 
   /**
    * Batch purchase multiple comics
@@ -238,6 +296,8 @@ export const useComicPurchase = () => {
     purchaseError: writeError || purchaseError,
     purchaseHash: hash,
     reset,
+    comicId,
+    setComicId,
     walletStatus: {
       isConnected,
       address,
