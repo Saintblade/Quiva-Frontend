@@ -50,6 +50,8 @@ import audience from "./audience.png";
 import dashboard from "./dashboard.png";
 import earnings from "./earnings.png";
 import profileImage from "./profile-image.png";
+import creatorIcon from "./creator-icon.png";
+import coinIcon from "./coin-icon.png";
 
 export {
 	canna,
@@ -104,4 +106,6 @@ export {
 	audience,
 	dashboard,
 	earnings,
+	creatorIcon,
+	coinIcon,
 };
