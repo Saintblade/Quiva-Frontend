@@ -5,8 +5,8 @@ import { QUIVA_COMICS_ABI, QUIVA_COMICS_ADDRESS } from '../contracts/QuivaComics
 import { mainnet } from 'wagmi/chains';
 import type { Chain } from 'wagmi/chains';
 import { useComicMinting } from './useComicMinting';
-import axios from 'axios';
-
+import { useAppDispatch } from '@/redux/hook';
+import { createTransaction } from '@/redux/slices/transactionSlice';
 
 const hederaTestnet = {
   id: 296,
@@ -37,15 +37,16 @@ interface ListingData {
 export const useComicPurchase = () => {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
+  const dispatch = useAppDispatch();
   
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [purchaseError, setPurchaseError] = useState<Error | null>(null);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
-   const [comicId, setComicId] = useState<string | null>(null);
+  const [comicId, setComicId] = useState<string | null>(null);
+  const [currentPurchasePrice, setCurrentPurchasePrice] = useState<number>(0);
 
   // Wagmi hooks for contract interaction
   const { 
-    
     data: hash, 
     writeContract, 
     error: writeError,
@@ -60,21 +61,20 @@ export const useComicPurchase = () => {
     hash,
   });
 
-   const { sellerAddress, tokenId } = useComicMinting();
+  const { sellerAddress, tokenId } = useComicMinting();
 
-   useEffect(() => {
-     if (isPurchaseComplete && receipt && tokenId && sellerAddress) {
-        console.log('✅ uploading Purchased data to the Backend!');
-        updateBackendData(
-          comicId || '',
-          address || '',
-          receipt.transactionHash,
-           0,
-          'HBAR'
-        );
-     }
-      
-   }, [isPurchaseComplete, receipt, tokenId, sellerAddress, address])
+  useEffect(() => {
+    if (isPurchaseComplete && receipt && comicId && address) {
+      console.log('✅ Blockchain transaction complete - creating database record');
+      updateBackendData(
+        comicId,
+        address,
+        receipt.transactionHash,
+        currentPurchasePrice,
+        'HBAR'
+      );
+    }
+  }, [isPurchaseComplete, receipt, comicId, address, currentPurchasePrice])
 
   /**
    * Get listing details for a specific comic and seller
@@ -120,8 +120,6 @@ export const useComicPurchase = () => {
     seller,
     amount,
     pricePerToken,
-
-    
   }: PurchaseParams) => {
     if (!isConnected || !address) {
       throw new Error('Please connect your wallet first');
@@ -135,10 +133,12 @@ export const useComicPurchase = () => {
       setIsPurchasing(true);
       setPurchaseError(null);
       setPurchaseSuccess(false);
-    
+
+      // Convert pricePerToken (wei) back to HBAR for database storage
+      const priceInHbar = parseFloat(pricePerToken.toString()) / 1e18;
+      setCurrentPurchasePrice(priceInHbar);
 
       const currentChain = chainId === 296 ? hederaTestnet : mainnet;
-      // const amount =  BigInt(1);
       // Calculate total price
       const totalPrice = pricePerToken * amount;
 
@@ -148,21 +148,22 @@ export const useComicPurchase = () => {
         amount: amount.toString(),
         pricePerToken: pricePerToken.toString(),
         totalPrice: totalPrice.toString(),
+        priceInHbar
       });
 
-  // Call smart contract
-  await writeContract({
-    address: QUIVA_COMICS_ADDRESS,
-    abi: QUIVA_COMICS_ABI,
-    functionName: 'purchaseComic',
-    args: [tokenId, seller as `0x${string}`, amount],
-    value: totalPrice,
-    account: address,
-    chain: currentChain,
-  });
+      // Call smart contract
+      await writeContract({
+        address: QUIVA_COMICS_ADDRESS,
+        abi: QUIVA_COMICS_ABI,
+        functionName: 'purchaseComic',
+        args: [tokenId, seller as `0x${string}`, amount],
+        value: totalPrice,
+        account: address,
+        chain: currentChain,
+      });
 
-  console.log('✅ Purchase transaction sent');
-  return hash;
+      console.log('✅ Purchase transaction sent');
+      return hash;
 
     } catch (error: any) {
       console.error('❌ Purchase error:', error);
@@ -172,42 +173,53 @@ export const useComicPurchase = () => {
     }
   };
 
-
+  /**
+   * Create transaction record using Redux slice
+   */
   const updateBackendData = async (
-     comicId: string,
-     walletAddress: string,
-     txHash: string,
-     price: number,
-     currency: string
-   ) => {
+    comicId: string,
+    walletAddress: string,
+    txHash: string,
+    price: number,
+    currency: string
+  ) => {
+    try {
+      console.log('📝 Creating transaction record via Redux:', {
+        comicId,
+        walletAddress,
+        txHash,
+        price,
+        currency
+      });
 
-     try {
+      const transactionData = {
+        comicId,
+        walletAddress,
+        txHash,
+        price,
+        currency
+      };
 
-        setComicId(null);
-       const token = localStorage.getItem('token');
-       await axios.post(
-         `http://localhost:5000/api/transactions`,
-         {
-           
-          comicId,
-          walletAddress,
-          txHash,
-          price,
-          currency
-           
-         },
-         {
-           headers: {
-             Authorization: `Bearer ${token}`,
-           },
-         }
-       );
- 
-       console.log('✅ Transaction updated with tokenId, hash, walletAddress data');
-     } catch (error) {
-       console.error('❌ Error updating Transaction with tokenId data:', error);
-     }
-   };
+      const result = await dispatch(createTransaction({payload:transactionData} as any)).unwrap();
+      console.log('✅ Transaction record created successfully:', result);
+      
+      // Mark purchase as complete
+      setIsPurchasing(false);
+      setPurchaseSuccess(true);
+      setComicId(null); // Clear for next purchase
+
+    } catch (error) {
+      console.error('❌ Error creating transaction record:', error);
+      
+      // Even if database fails, blockchain succeeded so user should get access
+      setIsPurchasing(false);
+      setPurchaseSuccess(true); // Still mark as success since blockchain completed
+      setComicId(null);
+      
+      // You might want to show a warning to the user that the purchase succeeded
+      // but there was an issue recording it
+    }
+  };
 
   /**
    * Batch purchase multiple comics
@@ -237,9 +249,14 @@ export const useComicPurchase = () => {
         return sum + (p.pricePerToken * p.amount);
       }, BigInt(0));
 
+      // Store total price in HBAR
+      const totalPriceInHbar = parseFloat(totalCost.toString()) / 1e18;
+      setCurrentPurchasePrice(totalPriceInHbar);
+
       console.log('💰 Batch purchasing comics:', {
         count: purchases.length,
         totalCost: totalCost.toString(),
+        totalPriceInHbar
       });
 
       await writeContract({
@@ -264,9 +281,7 @@ export const useComicPurchase = () => {
 
   // Monitor purchase completion
   if (isPurchaseComplete && !purchaseSuccess) {
-    console.log('✅ Purchase completed successfully!');
-    setIsPurchasing(false);
-    setPurchaseSuccess(true);
+    console.log('🔄 Purchase blockchain transaction completed, creating database record...');
   }
 
   // Monitor errors
@@ -280,6 +295,7 @@ export const useComicPurchase = () => {
     setIsPurchasing(false);
     setPurchaseError(null);
     setPurchaseSuccess(false);
+    setCurrentPurchasePrice(0);
   };
 
   return {

@@ -515,3 +515,55 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+
+/* Add this to your global CSS or component styles */
+
+/* Prevent layout shifts and zoom issues */
+.layout-container {
+  /* Force GPU acceleration for smoother transitions */
+  transform: translateZ(0);
+  
+  /* Prevent content jumping */
+  backface-visibility: hidden;
+  
+  /* Ensure consistent rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Fix for grid container */
+.desktop-grid {
+  /* Prevent grid recalculation issues */
+  contain: layout style;
+  
+  /* Ensure proper overflow handling */
+  overflow: hidden;
+}
+
+/* Prevent transitions on initial load */
+.no-transition * {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Apply to your main layout */
+.main-layout {
+  /* Prevent browser zoom/scale issues */
+  position: relative;
+  
+  /* Force hardware acceleration */
+  will-change: transform;
+  
+  /* Prevent content shifts */
+  overflow-anchor: none;
+}
+
+/* For the main content area */
+.main-content {
+  /* Prevent horizontal scrolling issues */
+  min-width: 0;
+  
+  /* Ensure proper containment */
+  contain: layout;
+}

@@ -12,8 +12,14 @@ import {
   getComicPreview, 
   clearPreviewComic 
 } from '@/redux/slices/comicSlice'
+import {
+  verifyNftPurchase,
+  clearError as clearTransactionError,
+  selectIsVerifying,
+  selectTransactionError,
+  clearCurrentTransaction
+} from '@/redux/slices/transactionSlice'
 import { Loader2 } from 'lucide-react'
-import { verifyNFTOwnership } from '../../../hook/useComicAccess'
 import { useComicPurchase } from '../../../hook/usePurchaseComic'
 import { parseEther } from 'viem'
 import { toast } from 'react-toastify'
@@ -22,6 +28,8 @@ function Page() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const dispatch = useAppDispatch()
+  
+  // Comic state
   const { 
     currentComic, 
     previewComic, 
@@ -29,10 +37,15 @@ function Page() {
     isPreviewing 
   } = useAppSelector((state) => state.comic)
   
+  // Transaction state
+  const isVerifyingTransaction = useAppSelector(selectIsVerifying)
+  const transactionError = useAppSelector(selectTransactionError)
+  
+  // Local state
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false)
-  const [isVerifyingNFT, setIsVerifyingNFT] = useState(false)
   const [hasNFTAccess, setHasNFTAccess] = useState<boolean | null>(null)
+  const [accessCheckComplete, setAccessCheckComplete] = useState(false)
   
   // Get comic ID from URL query params
   const id = searchParams.get('id')
@@ -41,10 +54,15 @@ function Page() {
   const {
     purchaseComic,
     isPurchasing,
+    isWritePending,
+    isConfirming,
+    isPurchaseComplete,
     purchaseSuccess,
     purchaseError,
+    purchaseHash,
     reset: resetPurchase,
-    walletStatus
+    walletStatus,
+    setComicId // This will be used to pass comicId to the hook
   } = useComicPurchase()
  
   // Fetch comic data on mount
@@ -57,32 +75,22 @@ function Page() {
     return () => {
       dispatch(clearCurrentComic())
       dispatch(clearPreviewComic())
+      dispatch(clearCurrentTransaction())
     }
   }, [id, dispatch])
 
-  // DEBUG: Log the currentComic data with correct structure
+  // Set comicId in the purchase hook when comic loads
   useEffect(() => {
-    if (currentComic) {
-      console.log('🔍 DEBUG: Current Comic Data:', {
-        publishType: currentComic.publishType,
-        nftId: currentComic.nftId, // This is the NFT document reference
-        nftData: currentComic.nftId, // Log the populated NFT data
-        tokenId: currentComic.nftId?.tokenId, // Token ID is in the NFT document
-        price: currentComic.nftId?.price, // Price is also in NFT document
-        creatorId: currentComic.creatorId,
-        creatorWallet: currentComic.creatorId?.walletAddress,
-        fullComic: currentComic
-      });
+    if (id && currentComic) {
+      setComicId(id)
     }
-  }, [currentComic]);
+  }, [id, currentComic, setComicId])
 
   // Transform API data to match ComicDetail component interface
   const transformedComic = useMemo(() => {
     if (!currentComic) return null
 
     const comic = currentComic
-    
-    // Extract NFT data from populated nftId
     const nftData = comic.nftId || {}
     const tokenId = nftData?.tokenId
     const price = nftData?.price || 0
@@ -108,7 +116,7 @@ function Page() {
         currentSupply: currentSupply,
         mintStatus: nftData?.mintStatus || 'pending'
       },
-      tokenId: tokenId, // Extract from NFT document
+      tokenId: tokenId,
       creatorWalletAddress: comic.creatorId?.walletAddress,
       issueDetails: {
         creators: comic.creatorId?.username || "Unknown",
@@ -120,7 +128,6 @@ function Page() {
           year: 'numeric'
         })
       },
-      // Transform chapters to other issues format
       otherIssues: comic.chapters?.slice(0, 4).map((chapter: any, index: number) => ({
         id: chapter._id,
         title: `${comic.title} - ${chapter.title}`,
@@ -138,51 +145,89 @@ function Page() {
     }
   }, [currentComic])
 
-  // Verify NFT ownership when comic loads (for NFT comics only)
+  // Enhanced access verification using transaction slice
   useEffect(() => {
-    const checkNFTAccess = async () => {
-      if (!transformedComic || !id) return
-      
-      // If it's a free comic, grant access immediately
-      if (transformedComic.publishType === 'free') {
-        setHasNFTAccess(true)
+    const checkUserAccess = async () => {
+      if (!transformedComic || !id) {
+        setAccessCheckComplete(true)
         return
       }
       
-      // If it's an NFT comic, verify ownership
+      console.log('Checking user access for comic:', id, 'Type:', transformedComic.publishType)
+      
+      // If it's a free comic, grant access immediately
+      if (transformedComic.publishType === 'free') {
+        console.log('Free comic - granting access')
+        setHasNFTAccess(true)
+        setAccessCheckComplete(true)
+        return
+      }
+      
+      // If it's an NFT comic, verify purchase through transaction history
       if (transformedComic.publishType === 'nft') {
-        setIsVerifyingNFT(true)
         try {
-          // Get token from localStorage or your auth state
-          const token = localStorage.getItem('authToken') || ''
-          const hasAccess = await verifyNFTOwnership(id, token)
-          setHasNFTAccess(hasAccess)
+          console.log('NFT comic - checking transaction history')
+          
+          const verificationResult = await dispatch(verifyNftPurchase({ comicId: id } as any)).unwrap()
+          
+          console.log('Transaction verification result:', verificationResult)
+          
+          const hasSuccessfulPurchase = verificationResult?.data?.hasPurchased === true
+          
+          setHasNFTAccess(hasSuccessfulPurchase)
+          console.log(hasSuccessfulPurchase ? 'User has purchased this NFT' : 'User has not purchased this NFT')
+          
         } catch (error) {
-          console.error('Error verifying NFT access:', error)
+          console.error('Error verifying NFT purchase:', error)
           setHasNFTAccess(false)
+          
+          if (error?.includes?.('not found') || error?.includes?.('No transaction')) {
+            dispatch(clearTransactionError())
+          }
         } finally {
-          setIsVerifyingNFT(false)
+          setAccessCheckComplete(true)
         }
+      } else {
+        setAccessCheckComplete(true)
       }
     }
 
-    checkNFTAccess()
-  }, [transformedComic, id])
+    checkUserAccess()
+  }, [transformedComic, id, dispatch])
 
-  // Handle purchase success
+  // Handle purchase success - the hook already creates the transaction record
   useEffect(() => {
     if (purchaseSuccess) {
-      // Refresh NFT access status
+      console.log('Purchase successful - updating access status')
       setHasNFTAccess(true)
       setIsPurchaseModalOpen(false)
       resetPurchase()
       
-      // Show success message or redirect to reader
+      // Show success message and redirect to reader
+      toast.success('Purchase successful! You now have access to this comic.')
       setTimeout(() => {
         router.push(`/reader?id=${id}`)
       }, 1500)
     }
   }, [purchaseSuccess, id, router, resetPurchase])
+
+  // Handle purchase errors
+  useEffect(() => {
+    if (purchaseError) {
+      console.error('Purchase error:', purchaseError)
+      toast.error(`Purchase failed: Please try again.`)
+    }
+  }, [purchaseError])
+
+  // Handle transaction errors
+  useEffect(() => {
+    if (transactionError) {
+      console.error('Transaction verification error:', transactionError)
+      if (!transactionError.includes('not found') && !transactionError.includes('No transaction')) {
+        toast.error(`Access verification failed: Try logging out and back in.`)
+      }
+    }
+  }, [transactionError])
 
   // Loading state
   if (isLoading) {
@@ -196,16 +241,14 @@ function Page() {
     )
   }
 
-  // Error state (comic not found)
+  // Error states
   if (!id) {
     return (
       <div className='flex justify-center items-center min-h-screen'>
         <div className='text-center'>
           <div className='text-6xl mb-4'>❌</div>
           <h3 className='text-white text-xl font-bold mb-2'>Invalid Comic ID</h3>
-          <p className='text-white/60 text-sm mb-6'>
-            No comic ID provided in the URL.
-          </p>
+          <p className='text-white/60 text-sm mb-6'>No comic ID provided in the URL.</p>
           <button
             onClick={() => router.push('/marketplace')}
             className='bg-yellow-600 hover:bg-yellow-700 text-black font-medium px-6 py-3 rounded-full transition-all'
@@ -243,19 +286,24 @@ function Page() {
   }
 
   const handleReadIssue = async () => {
-    // If free comic, allow immediate access
+    console.log('Read Issue clicked - Access status:', {
+      publishType: transformedComic.publishType,
+      hasNFTAccess,
+      accessCheckComplete,
+      isVerifying: isVerifyingTransaction
+    })
+    
     if (transformedComic.publishType === 'free') {
       router.push(`/reader?id=${id}`)
       return
     }
     
-    // If NFT comic, check ownership
     if (transformedComic.publishType === 'nft') {
-      if (hasNFTAccess == true) {
-        // User owns the NFT, grant access
+      if (hasNFTAccess === true) {
+        console.log('User has access - navigating to reader')
         router.push(`/reader?id=${id}`)
       } else {
-        // User doesn't own the NFT, show purchase modal
+        console.log('User needs to purchase - showing purchase modal')
         setIsPurchaseModalOpen(true)
       }
     }
@@ -278,68 +326,63 @@ function Page() {
     }
   }
 
+  // This function will be called by the purchase modal
+  // It returns the result that the hook will handle via updateBackendData
   const handlePurchaseNFT = async () => {
-    console.log('🛒 Purchase NFT clicked');
-    console.log('📦 Wallet Status:', walletStatus);
-    console.log('📦 Token ID:', transformedComic.tokenId);
-    console.log('📦 Creator Wallet:', transformedComic.creatorWalletAddress);
-    console.log('📦 Price:', transformedComic.price);
-    console.log('📦 NFT Mint Status:', transformedComic.nftDetails?.mintStatus);
+    console.log('Purchase NFT clicked');
+    console.log('Wallet Status:', walletStatus);
+    console.log('Token ID:', transformedComic.tokenId);
+    console.log('Creator Wallet:', transformedComic.creatorWalletAddress);
+    console.log('Price:', transformedComic.price);
 
     if (!walletStatus.isConnected) {
-      alert('Please connect your wallet first')
-      return
+      toast.error('Please connect your wallet first')
+      throw new Error('Wallet not connected')
     }
-    console.log('✅ Wallet is connected:', walletStatus.address);
-    console.log('🔍 Performing pre-purchase checks...: ', transformedComic);;
-    // Check if NFT has been minted
+
+    // Validation checks
     if (!transformedComic.tokenId) {
-      console.error('❌ Missing tokenId - NFT not minted yet');
-      alert('This NFT has not been minted yet. Please wait for the creator to complete minting, or contact the creator.')
-      return
+      console.error('Missing tokenId - NFT not minted yet');
+      toast.error('This NFT has not been minted yet. Please wait for the creator to complete minting.')
+      throw new Error('NFT not minted')
     }
 
-    // Check mint status
-    // if (transformedComic.nftDetails?.mintStatus !== 'minted') {
-    //   console.error('❌ NFT not fully minted. Status:', transformedComic.nftDetails?.mintStatus);
-    //   alert(`This NFT is not ready for purchase yet. Current status: ${transformedComic.nftDetails?.mintStatus || 'pending'}`)
-    //   return
-    // }
-
-    // Check if creator wallet address exists
     if (!transformedComic.creatorWalletAddress) {
-      console.error('❌ Missing creator wallet address');
-      alert('Creator wallet address is not available.')
-      return
+      console.error('Missing creator wallet address');
+      toast.error('Creator wallet address is not available.')
+      throw new Error('Creator wallet missing')
     }
 
-    // Check if price is valid
     if (!transformedComic.price || transformedComic.price <= 0) {
-      console.error('❌ Invalid price');
-      alert('Invalid NFT price.')
-      return
+      console.error('Invalid price');
+      toast.error('Invalid NFT price.')
+      throw new Error('Invalid price')
     }
 
     try {
-      console.log('✅ All checks passed, proceeding with purchase...');
+      console.log('All checks passed, proceeding with purchase...');
       
       // Convert HBAR to wei for smart contract
       const priceInWei = parseEther(transformedComic.price.toString());
-      console.log('💰 Price conversion:', {
+      console.log('Price conversion:', {
         hbarPrice: transformedComic.price,
         weiPrice: priceInWei.toString()
       });
       
-      await purchaseComic({
+      // The hook will handle the blockchain transaction and backend update
+      const result = await purchaseComic({
         tokenId: BigInt(transformedComic.tokenId),
         seller: transformedComic.creatorWalletAddress,
-        amount: BigInt(1), // Default to 1 copy
+        amount: BigInt(1),
         pricePerToken: priceInWei,
-      
       })
+      
+      console.log('Purchase initiated:', result);
+      return result;
+      
     } catch (error) {
-      toast.error(`Purchase failed: ${error.message || error}`)
-      console.error('❌ Purchase failed:', error)
+      console.error('Purchase failed:', error)
+      throw error;
     }
   }
 
@@ -356,8 +399,13 @@ function Page() {
   // Check if NFT is ready for purchase
   const isNFTReady = transformedComic.publishType === 'nft' && 
                       transformedComic.tokenId && 
-                      transformedComic.creatorWalletAddress 
-                      // transformedComic.nftDetails?.mintStatus === 'minted';
+                      transformedComic.creatorWalletAddress;
+
+  // Determine verification status for UI
+  const isVerifying = isVerifyingTransaction || !accessCheckComplete
+
+  // Determine if purchase is in progress (includes all stages)
+  const isPurchaseInProgress = isPurchasing || isWritePending || isConfirming
 
   return (
     <>
@@ -367,7 +415,7 @@ function Page() {
         onReadIssue={handleReadIssue}
         onPreviewIssue={handlePreviewIssue}
         onEnlargeCover={handleEnlargeCover}
-        isVerifyingAccess={isVerifyingNFT}
+        isVerifyingAccess={isVerifying}
         hasNFTAccess={hasNFTAccess}
       />
       
@@ -386,18 +434,18 @@ function Page() {
           comicImage={transformedComic.coverImage}
           creatorName={transformedComic.author.name}
           creatorAvatar={transformedComic.author.avatar}
-          price={transformedComic.price} // Pass as HBAR number
+          price={transformedComic.price}
           tokenId={BigInt(transformedComic.tokenId)}
           sellerAddress={transformedComic.creatorWalletAddress}
           limitedEdition={limitedEditionString}
           onPurchase={handlePurchaseNFT}
           onPurchaseSuccess={() => setIsPurchaseModalOpen(false)}
-          isPurchasing={isPurchasing}
+          isPurchasing={isPurchaseInProgress}
           purchaseError={purchaseError}
+          purchaseSuccess={purchaseSuccess}
+          comicId={id}
         />
       )}
-      
-      
     </>
   )
 }
