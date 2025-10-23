@@ -468,38 +468,43 @@ const ComicDetail = ({
 
         {/* Issue Details */}
             <div>
-              <h3 className="text-lg font-normal mb-4">Issue Details</h3>
+              {/* <h3 className="text-lg font-normal mb-4">Issue Details</h3> */}
               <div className="grid grid-cols-1 lg:grid-cols-[0.5fr_1fr] gap-8 mb-12">
                 <div></div>
-                <div className="grid grid-cols-2 gap-4 lg:gap-8 w-full">
-                  <div className="flex items-center gap-3 bg-gray-400 py-4 px-8 rounded-2xl">
-                    <User className="w-5 h-5 text-secondary-200" />
-                    <div>
-                      <p className="text-white font-light text-xs">Creators</p>
-                      <p className="font-semibold">{issueDetails.creators}</p>
+                <div>
+                  <h3 className="text-lg font-normal mb-4">Issue Details</h3>
+                  <div className="grid grid-cols-2 gap-4 lg:gap-8 w-full">
+                    <div className="flex items-center gap-3 bg-gray-400 py-4 px-8 rounded-2xl">
+                      <User className="w-5 h-5 text-secondary-200" />
+                      <div>
+                        <p className="text-white font-light text-xs">Creators</p>
+                        <p className="font-semibold">{issueDetails.creators}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 bg-gray-400 py-4 px-8 rounded-2xl">
+                      <BookOpen className="w-5 h-5 text-secondary-200" />
+                      <div>
+                        <p className="text-white font-light text-xs">Issue Length</p>
+                        <p className="font-semibold">{issueDetails.pages} pages</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 bg-gray-400 py-4 px-8 rounded-2xl">
+                      <FileText className="w-5 h-5 text-orange-500" />
+                      <div>
+                        <p className="text-white font-light text-xs">Publisher</p>
+                        <p className="font-semibold">{issueDetails.publisher}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 bg-gray-400 py-4 px-8 rounded-2xl">
+                      <Calendar className="w-5 h-5 text-orange-500" />
+                      <div>
+                        <p className="text-white font-light text-xs">Publication Date</p>
+                        <p className="font-semibold">{issueDetails.publicationDate}</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 bg-gray-400 py-4 px-8 rounded-2xl">
-                    <BookOpen className="w-5 h-5 text-secondary-200" />
-                    <div>
-                      <p className="text-white font-light text-xs">Issue Length</p>
-                      <p className="font-semibold">{issueDetails.pages} pages</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 bg-gray-400 py-4 px-8 rounded-2xl">
-                    <FileText className="w-5 h-5 text-orange-500" />
-                    <div>
-                      <p className="text-white font-light text-xs">Publisher</p>
-                      <p className="font-semibold">{issueDetails.publisher}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 bg-gray-400 py-4 px-8 rounded-2xl">
-                    <Calendar className="w-5 h-5 text-orange-500" />
-                    <div>
-                      <p className="text-white font-light text-xs">Publication Date</p>
-                      <p className="font-semibold">{issueDetails.publicationDate}</p>
-                    </div>
-                  </div>
+
                 </div>
               </div>
 
