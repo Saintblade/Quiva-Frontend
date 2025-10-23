@@ -371,7 +371,7 @@ const ComicDetail = ({
               </div>
             )}
             {publishType === 'nft' && !isFree && (
-              <div className="absolute top-0 left-10 bg-yellow-600 text-black px-3 py-1 text-sm font-bold">
+              <div className="absolute top-0 left-10 bg-[#000] text-black px-3 py-1 text-sm">
                 NFT
               </div>
             )}
