@@ -1,72 +1,90 @@
-'use client'
+"use client";
 
-import { Search, Bell, User, Menu, X } from 'lucide-react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { useState, useEffect, useRef } from 'react'
-import { QuivaLogo } from '@/components/utils/function'
-import { RainbowConnect } from '@/components/button/RainbowConnect'
+import { Search, Bell, User, Menu, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useState, useEffect, useRef } from "react";
+import { QuivaLogo } from "@/components/utils/function";
+import { RainbowConnect } from "@/components/button/RainbowConnect";
+import HashConnectButton from "@/components/button/HashConnectButton";
 
 export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState("");
   const [notifications, setNotifications] = useState([
-    { id: 1, message: "New comic release: Spider-Man #1", read: false, timestamp: Date.now() - 300000 },
-    { id: 2, message: "Your favorite creator posted", read: false, timestamp: Date.now() - 600000 },
-    { id: 3, message: "Weekly digest available", read: true, timestamp: Date.now() - 86400000 }
-  ])
-  const [showNotifications, setShowNotifications] = useState(false)
-  const notificationRef = useRef(null)
+    {
+      id: 1,
+      message: "New comic release: Spider-Man #1",
+      read: false,
+      timestamp: Date.now() - 300000,
+    },
+    {
+      id: 2,
+      message: "Your favorite creator posted",
+      read: false,
+      timestamp: Date.now() - 600000,
+    },
+    {
+      id: 3,
+      message: "Weekly digest available",
+      read: true,
+      timestamp: Date.now() - 86400000,
+    },
+  ]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationRef = useRef(null);
 
   // Count unread notifications
-  const unreadCount = notifications.filter(n => !n.read).length
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   // Mark notification as read
   const markAsRead = (id) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === id ? { ...n, read: true } : n)
-    )
-  }
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+  };
 
   // Mark all notifications as read
   const markAllAsRead = () => {
-    setNotifications(prev => 
-      prev.map(n => ({ ...n, read: true }))
-    )
-  }
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
 
   // Format timestamp
   const formatTime = (timestamp) => {
-    const diff = Date.now() - timestamp
-    const minutes = Math.floor(diff / 60000)
-    const hours = Math.floor(diff / 3600000)
-    const days = Math.floor(diff / 86400000)
-    
-    if (days > 0) return `${days}d ago`
-    if (hours > 0) return `${hours}h ago`
-    return `${minutes}m ago`
-  }
+    const diff = Date.now() - timestamp;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (days > 0) return `${days}d ago`;
+    if (hours > 0) return `${hours}h ago`;
+    return `${minutes}m ago`;
+  };
 
   // Close notifications when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
-        setShowNotifications(false)
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
+        setShowNotifications(false);
       }
-    }
+    };
 
     if (showNotifications) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }
-  }, [showNotifications])
+  }, [showNotifications]);
 
   const handleSearch = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (searchQuery.trim()) {
-      console.log('Searching for:', searchQuery)
+      console.log("Searching for:", searchQuery);
     }
-  }
+  };
 
   return (
     <header className="bg-black-200 border-b border-dashed border-white/30 sticky top-0 z-30">
@@ -81,7 +99,11 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
               className="lg:hidden text-white hover:bg-black-300"
               onClick={onMobileMenuToggle}
             >
-              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {isMobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </Button>
 
             {/* Logo - Mobile Only */}
@@ -107,9 +129,9 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
           {/* User Actions */}
           <div className="flex items-center space-x-2 lg:space-x-3">
             {/* Mobile Search Button */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="md:hidden text-white hover:text-white hover:bg-black-300"
             >
               <Search className="w-5 h-5" />
@@ -117,19 +139,19 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
 
             {/* Notification Bell */}
             <div className="relative" ref={notificationRef}>
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="text-white hover:text-white hover:bg-black-300 relative"
                 onClick={() => setShowNotifications(!showNotifications)}
               >
                 <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
                 {unreadCount > 0 && (
-                  <Badge 
-                    variant="destructive" 
+                  <Badge
+                    variant="destructive"
                     className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center bg-red-500"
                   >
-                    {unreadCount > 9 ? '9+' : unreadCount}
+                    {unreadCount > 9 ? "9+" : unreadCount}
                   </Badge>
                 )}
               </Button>
@@ -140,9 +162,9 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
                   <div className="p-4 border-b border-white/70 flex justify-between items-center">
                     <h3 className="text-white font-semibold">Notifications</h3>
                     {unreadCount > 0 && (
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={markAllAsRead}
                         className="text-xs text-white/60 hover:text-white hover:bg-black-300"
                       >
@@ -156,16 +178,22 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
                         No notifications
                       </div>
                     ) : (
-                      notifications.map(notification => (
+                      notifications.map((notification) => (
                         <div
                           key={notification.id}
                           className={`p-4 border-b border-black-300 hover:bg-black-300 cursor-pointer transition-colors ${
-                            !notification.read ? 'bg-black-300/50' : ''
+                            !notification.read ? "bg-black-300/50" : ""
                           }`}
                           onClick={() => markAsRead(notification.id)}
                         >
                           <div className="flex justify-between items-start">
-                            <p className={`text-sm ${notification.read ? 'text-white/40' : 'text-white'}`}>
+                            <p
+                              className={`text-sm ${
+                                notification.read
+                                  ? "text-white/40"
+                                  : "text-white"
+                              }`}
+                            >
                               {notification.message}
                             </p>
                             {!notification.read && (
@@ -191,7 +219,8 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
               </AvatarFallback>
             </Avatar> */}
 
-            <RainbowConnect/>
+            {/* <RainbowConnect/> */}
+            <HashConnectButton />
           </div>
         </div>
 
@@ -210,5 +239,5 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
         </div>
       </div>
     </header>
-  )
+  );
 }

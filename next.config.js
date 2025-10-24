@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+   transpilePackages: [
+    "@hashgraph/hedera-wallet-connect",
+    "@reown/walletkit",
+    "@walletconnect/modal",
+    "ethers",
+  ],
   images: {
     remotePatterns: [
       {
