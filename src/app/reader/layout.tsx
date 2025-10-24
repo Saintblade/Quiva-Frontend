@@ -4,7 +4,7 @@ import {Header} from '@/components/global/comic-library/Header'
 import {Sidebar} from '@/components/global/comic-library/Sidebar'
 import {useState} from 'react'
 
-export default function MainPage({children}) {
+export default function Page({children}) {
     const [isMobileMenuOpen,
         setIsMobileMenuOpen] = useState(false)
 
@@ -22,7 +22,8 @@ export default function MainPage({children}) {
             <div className="lg:hidden">
                 <Header
                     onMobileMenuToggle={toggleMobileMenu}
-                    isMobileMenuOpen={isMobileMenuOpen}/>
+                    isMobileMenuOpen={isMobileMenuOpen}
+                />
                 <Sidebar
                     isMobileMenuOpen={isMobileMenuOpen}
                     onMobileMenuClose={closeMobileMenu}/>

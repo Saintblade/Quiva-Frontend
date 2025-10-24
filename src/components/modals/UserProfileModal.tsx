@@ -56,8 +56,6 @@ const UserProfileModal = ({ onClose, onComplete }: UserProfileModalProps) => {
 		onSubmit: async (values) => {
 			setIsLoading(true);
 			try {
-				// TODO: Replace with actual profile creation API call
-				console.log("User profile values:", values);
 				
 				// Simulate API call
 				await new Promise(resolve => setTimeout(resolve, 2000));

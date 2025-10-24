@@ -31,6 +31,7 @@ import jumbleImg from "./jumble.png";
 import scrabbleImg from "./scrabble.png";
 import walletImg from "./wallet.png";
 import avatarImg from "./avatar.png";
+import avatar2Img from "./avatar-2.png";
 import theNorthFace from "./the-north-face.png";
 import toolOne from "./tool-1.png";
 import envelopeImg from "./envelope.png";
@@ -48,9 +49,14 @@ import UploadImage from "../upload-img.png";
 import audience from "./audience.png";
 import dashboard from "./dashboard.png";
 import earnings from "./earnings.png";
+import profileImage from "./profile-image.png";
+import creatorIcon from "./creator-icon.png";
+import coinIcon from "./coin-icon.png";
 
 export {
 	canna,
+	profileImage,
+	avatar2Img,
 	UploadImage,
 	userOnbard,
 	oneClick,
@@ -99,5 +105,7 @@ export {
 	hinataPicture,
 	audience,
 	dashboard,
-	earnings
+	earnings,
+	creatorIcon,
+	coinIcon,
 };

@@ -87,7 +87,7 @@ export const getUserProfile = createAsyncThunk(
     'auth/getUserProfile',
     async (id, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`/${id}`);
+            const response = await axiosInstance.get(`/auth/${id}`);
             return response.data;
         } catch (error) {
             return rejectWithValue(
@@ -288,7 +288,6 @@ const authSlice = createSlice({
                 
                 // Set user data if verification includes auth data
                 if (action.payload.token) {
-                    console.log(action.payload);
                     state.user.token = action.payload.token;
                     state.user.data = action.payload.user;
                     state.user.isAuthenticated = true;
@@ -313,7 +312,6 @@ const authSlice = createSlice({
                 state.profile.error = null;
             })
             .addCase(getUserProfile.fulfilled, (state, action) => {
-                console.log(action.payload); 
                 state.profile.isLoading = false;
                 state.profile.data = action.payload.data;
             })
@@ -432,7 +430,7 @@ const authSlice = createSlice({
                 state.verifyOtp.isLoading = false;
                 state.verifyOtp.success = true;
 
-                if (action.payload.token) {
+                if (action.payload.token) { 
                 state.user.token = action.payload.token;
                 state.user.data = action.payload.user;
                 state.user.isAuthenticated = true;

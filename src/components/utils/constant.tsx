@@ -4,6 +4,7 @@ import { soloLevel } from "../../../public/dev_images";
 import { FaBook, FaCog, FaHome, FaMoneyBill } from "react-icons/fa";
 import { FcMoneyTransfer } from "react-icons/fc";
 import { FaArrowTrendUp } from "react-icons/fa6";
+import { BiAt, BiEnvelope, BiPhone, BiSolidUser } from "react-icons/bi";
 
 export type NavLink = {
 	label: string;
@@ -223,5 +224,110 @@ export const OVERVIEW_CARDS = [
 		changeBg: "bg-amber-900/30",
 		Icon: FiArrowDown,
 		Icon2: FaArrowTrendUp,
+	},
+];
+
+export const profileInfo = [
+	{
+		icon: BiSolidUser,
+		text: "Male",
+		key: "gender",
+	},
+	{
+		icon: BiEnvelope,
+		text: "example@marytesting.com",
+		key: "email",
+	},
+	{
+		icon: BiPhone,
+		text: "33757005467",
+		key: "phone",
+	},
+	{
+		icon: BiAt,
+		text: "@maryalex",
+		key: "username",
+	},
+];
+
+export interface BookType {
+	id: number;
+	image: string;
+	title: string;
+	author: string;
+	price: number;
+	rating: number;
+	isFree: boolean;
+	category: "all" | "paid" | "free";
+}
+
+export const BOOK_TABS = [
+	{
+		id: "all",
+		label: "All Books",
+		count: 24,
+	},
+	{
+		id: "paid",
+		label: "Paid Books",
+		count: 18,
+	},
+	{
+		id: "free",
+		label: "Free Books",
+		count: 6,
+	},
+];
+
+export const SAMPLE_BOOKS: BookType[] = [
+	{
+		id: 1,
+		image: "/dev_images/avatar-2.png",
+		title: "The Last Odyssey",
+		author: "Sarah Chen",
+		price: 49.99,
+		rating: 4.8,
+		isFree: false,
+		category: "paid",
+	},
+	{
+		id: 2,
+		image: "/dev_images/avatar-2.png",
+		title: "Echoes of Time",
+		author: "Marcus Johnson",
+		price: 0,
+		rating: 4.5,
+		isFree: true,
+		category: "free",
+	},
+	{
+		id: 3,
+		image: "/dev_images/avatar-2.png",
+		title: "Neon Dreams",
+		author: "Alex Rivera",
+		price: 39.99,
+		rating: 4.9,
+		isFree: false,
+		category: "paid",
+	},
+	{
+		id: 4,
+		image: "/dev_images/avatar-2.png",
+		title: "Silent Whispers",
+		author: "Emma Zhang",
+		price: 0,
+		rating: 4.3,
+		isFree: true,
+		category: "free",
+	},
+	{
+		id: 5,
+		image: "/dev_images/avatar-2.png",
+		title: "Quantum Legacy",
+		author: "David Kim",
+		price: 54.99,
+		rating: 4.7,
+		isFree: false,
+		category: "paid",
 	},
 ];

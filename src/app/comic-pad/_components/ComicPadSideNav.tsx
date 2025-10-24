@@ -1,75 +1,138 @@
-"use client";
-import React from "react";
-import { useRouter } from "next/navigation";
-import styles from "../../css/Scrollbar.module.css";
-import { QuivaLogo } from "@/components/utils/function";
-import { usePathname } from "next/navigation";
+'use client'
 
-const ComicPadSideNav = () => {
-	const pathname = usePathname();
-	const router = useRouter();
+import { Button } from '@/components/ui/button'
+import { QuivaLogo } from '@/components/utils/function'
+import { X } from 'lucide-react'
+import { useRouter, usePathname } from 'next/navigation'
 
-	const handleCreateNewComic = () => {
-		router.push("/comic-pad/script-builder");
-	};
+export function ComicPadSideNav({ isMobileMenuOpen, onMobileMenuClose }) {
+  const router = useRouter()
+  const pathname = usePathname()
 
-	const NAV_ITEMS = [
-		{
-			href: "/comic-pad",
-			label: "Home",
-			pathname: "/comic-pad",
-		},
-		{
-			href: "/comic-pad/my-comics",
-			label: "My Comics",
-			pathname: "/comic-pad/my-comics",
-		},
-		{
-			href: "/comic-pad/earnings",
-			label: "Earnings",
-			pathname: "/comic-pad/earnings",
-		},
-	];
-	return (
-		<div
-			className={`bg-black-200 w-[18%] hidden lg:block h-full shadow-lg py-10 px-1 lg:pl-3 xl:pl-10 ${styles["inner-sidebar-scroll"]} border-r dashed-border-strong-3`}
-		>
-			<QuivaLogo
-				showText
-				className={`invert lg:invert transition-[.4] !text-xl`}
-				logoClassName='!w-8 lg:!w-8 xl:!w-12'
-			/>
+  // Navigation items
+  const navigationItems = [
+    {
+      label: 'Home',
+      path: '/comic-pad',
+      isActive: pathname === '/comic-pad'
+    },
+    {
+      label: 'My Comics', 
+      path: '/comic-pad/my-comics',
+      isActive: pathname === '/comic-pad/my-comics'
+    },
+    {
+      label: 'Earnings',
+      path: '/comic-pad/earnings',
+      isActive: pathname === '/comic-pad/earnings'
+    }
+  ]
 
-			<div className='space-y-6 shrink-0 mt-12'>
-				{NAV_ITEMS.map((item) => (
-					<a
-						key={item.href}
-						href={item.href}
-						className={`flex items-center gap-2.5 group mx-auto py-1 rounded-md group transition-[.3] hover:text-white ${
-							pathname === item.pathname
-								? "text-white"
-								: "text-light-100/40 hover:text-white"
-						}`}
-					>
-						<h2
-							className={`text-sm xl:text-lg capitalize font-semibold line-clamp-1`}
-						>
-							{item.label}
-						</h2>
-					</a>
-				))}
+  const handleNavigation = (path) => {
+    router.push(path)
+    if (onMobileMenuClose) {
+      onMobileMenuClose()
+    }
+  }
 
-				<button
-					onClick={handleCreateNewComic}
-					className='text-black-200 bg-secondary-300 rounded-full px-5 py-2 font-medium hover:bg-secondary-300 transition-[.4] hover:scale-105'
-				>
-					{/* </button> */}
-					{/* <button className='text-black-200 text-sm xl:text-base bg-secondary-300 rounded-full px-2 lg:px-5 py-2 font-medium hover:bg-secondary-300 transition-[.4] hover:scale-105'> */}
-					Create New Comic
-				</button>
-			</div>
-		</div>
-	);
-};
+  const handleCreateNewComic = () => {
+    router.push('/comic-pad/script-builder')
+    if (onMobileMenuClose) {
+      onMobileMenuClose()
+    }
+  }
 
-export default ComicPadSideNav;
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex w-[15%] h-screen fixed bg-black-200 border-r border-dashed border-white/30 py-10 px-1 lg:pl-3 xl:pl-10 flex-col z-40">
+        {/* Logo */}
+        <div className="flex items-center justify-left mb-12">
+          <QuivaLogo 
+            showText 
+            className="invert !text-xl" 
+            logoClassName="!w-8 lg:!w-8 xl:!w-12"
+          />
+        </div>
+
+        {/* Navigation Menu */}
+        <nav className="space-y-6 mb-8">
+          {navigationItems.map((item) => (
+            <Button 
+              key={item.path}
+              variant="ghost" 
+              className={`w-full justify-start font-semibold text-sm xl:text-lg transition-colors hover:text-white ${
+                item.isActive 
+                  ? 'text-white' 
+                  : 'text-white/40 hover:bg-transparent'
+              }`}
+              onClick={() => handleNavigation(item.path)}
+            >
+              {item.label}
+            </Button>
+          ))}
+        </nav>
+
+        {/* Create New Comic Button */}
+        <Button
+          onClick={handleCreateNewComic}
+          className="bg-secondary-300 hover:bg-secondary-300/90 text-black-200 font-medium rounded-full transition-all hover:scale-105 px-5 py-2 text-sm xl:text-base"
+        >
+          Create New Comic
+        </Button>
+      </aside>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 z-50 bg-black/50" 
+          onClick={onMobileMenuClose} 
+        />
+      )}
+
+      {/* Mobile Sidebar */}
+      <aside className={`lg:hidden fixed top-0 left-0 h-full w-[280px] bg-black-200 border-r border-dashed border-white/30 px-4 py-6 flex flex-col z-50 transform transition-transform duration-300 ease-in-out ${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        {/* Logo and Close Button */}
+        <div className="flex justify-between items-center mb-12">
+          <QuivaLogo showText className="invert" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-white hover:bg-black-400"
+            onClick={onMobileMenuClose}
+          >
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+
+        {/* Navigation Menu */}
+        <nav className="space-y-6 mb-8">
+          {navigationItems.map((item) => (
+            <Button 
+              key={item.path}
+              variant="ghost" 
+              className={`w-full justify-start font-semibold transition-colors hover:text-white ${
+                item.isActive 
+                  ? 'text-white bg-black-400 hover:bg-black-300' 
+                  : 'text-white/40 hover:bg-black-400'
+              }`}
+              onClick={() => handleNavigation(item.path)}
+            >
+              {item.label}
+            </Button>
+          ))}
+        </nav>
+
+        {/* Create New Comic Button */}
+        <Button 
+          className="bg-secondary-300 hover:bg-secondary-300/90 text-black-200 font-medium rounded-full transition-all hover:scale-105"
+          onClick={handleCreateNewComic}
+        >
+          Create New Comic
+        </Button>
+      </aside>
+    </>
+  )
+}

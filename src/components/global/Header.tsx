@@ -87,7 +87,7 @@ const Header = () => {
 		<>
 			{/* Desktop Navigation */}
 			<header
-				className={`fixed max-w-[1700px] w-full flex items-center z-20 h-16 lg:h-fit lg:py-3 top-0 ${
+				className={`fixed w-full flex items-center z-20 h-16 lg:h-fit lg:py-3 top-0 ${
 					isScrolled
 						? "backdrop-blur-lg bg-white/40"
 						: "lg:border-b dashed-border-strong"

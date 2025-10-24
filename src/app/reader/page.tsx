@@ -1,0 +1,401 @@
+'use client'
+
+import React, {useState, useRef, useEffect, useMemo} from 'react';
+import {
+    X,
+    ZoomIn,
+    ZoomOut,
+    ChevronUp,
+    ChevronDown,
+    Loader2
+} from 'lucide-react';
+import {useSearchParams, useRouter} from 'next/navigation';
+import {useAppDispatch, useAppSelector} from '@/redux/hook';
+import {getComicById, clearCurrentComic} from '@/redux/slices/comicSlice';
+
+const ComicReaderViewer = () => {
+    const [currentPage,
+        setCurrentPage] = useState(1);
+    const [zoom,
+        setZoom] = useState(1);
+    const scrollContainerRef = useRef(null);
+    const [showControls,
+        setShowControls] = useState(true);
+    const hideControlsTimeout = useRef(null);
+
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const dispatch = useAppDispatch();
+    const {currentComic, isLoading} = useAppSelector((state) => state.comic);
+
+    // Get comic ID from URL query params
+    const comicId = searchParams.get('id');
+
+    // Fetch comic data on mount
+    useEffect(() => {
+        if (comicId) {
+            dispatch(getComicById({id:comicId} as any));
+        }
+
+        // Cleanup on unmount
+        return () => {
+            dispatch(clearCurrentComic());
+        };
+    }, [comicId, dispatch]);
+
+    // Extract all pages from all chapters
+    const comicPages = useMemo(() => {
+        if (!currentComic
+            ?.chapters) 
+            return [];
+        
+        const pages = [];
+        currentComic
+            .chapters
+            .forEach((chapter) => {
+                if (chapter.pages && Array.isArray(chapter.pages)) {
+                    chapter
+                        .pages
+                        .forEach((page) => {
+                            pages.push({imageUrl: page.imageUrl, pageNumber: page.pageNumber, chapterNumber: chapter.chapterNumber, chapterTitle: chapter.title});
+                        });
+                }
+            });
+
+        return pages;
+    }, [currentComic]);
+
+    const totalPages = comicPages.length;
+
+    // Auto-hide controls
+    const resetHideControlsTimer = () => {
+        setShowControls(true);
+        if (hideControlsTimeout.current) {
+            clearTimeout(hideControlsTimeout.current);
+        }
+        hideControlsTimeout.current = setTimeout(() => {
+            setShowControls(false);
+        }, 3000);
+    };
+
+    useEffect(() => {
+        resetHideControlsTimer();
+        return () => {
+            if (hideControlsTimeout.current) {
+                clearTimeout(hideControlsTimeout.current);
+            }
+        };
+    }, []);
+
+    // Track scroll position to update current page
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (!container) 
+            return;
+        
+        const handleScroll = () => {
+            resetHideControlsTimer();
+            const scrollTop = container.scrollTop;
+            const pageHeight = window.innerHeight;
+            const page = Math.round(scrollTop / pageHeight) + 1;
+            setCurrentPage(Math.min(Math.max(1, page), totalPages));
+        };
+
+        container.addEventListener('scroll', handleScroll);
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, [totalPages]);
+
+    // Scroll to specific page
+    const scrollToPage = (pageNumber) => {
+        const container = scrollContainerRef.current;
+        if (!container) 
+            return;
+        
+        const pageHeight = window.innerHeight;
+        container.scrollTo({
+            top: (pageNumber - 1) * pageHeight,
+            behavior: 'smooth'
+        });
+    };
+
+    const goToNextPage = () => {
+        if (currentPage < totalPages) {
+            scrollToPage(currentPage + 1);
+        }
+    };
+
+    const goToPreviousPage = () => {
+        if (currentPage > 1) {
+            scrollToPage(currentPage - 1);
+        }
+    };
+
+    const handleZoomIn = () => {
+        if (zoom < 2) 
+            setZoom(zoom + 0.25);
+        };
+    
+    const handleZoomOut = () => {
+        if (zoom > 0.5) 
+            setZoom(zoom - 0.25);
+        };
+    
+    const handleClose = () => {
+        router.back();
+    };
+
+    // Keyboard navigation
+    useEffect(() => {
+        const handleKeyPress = (e) => {
+            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+                e.preventDefault();
+                goToNextPage();
+            }
+            if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                e.preventDefault();
+                goToPreviousPage();
+            }
+            if (e.key === 'Escape') {
+                handleClose();
+            }
+        };
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, [currentPage, totalPages]);
+
+    // Loading state
+    if (isLoading) {
+        return (
+            <div className="fixed inset-0 bg-black flex items-center justify-center">
+                <div className="text-center">
+                    <Loader2 className="w-12 h-12 text-yellow-500 animate-spin mx-auto mb-4"/>
+                    <p className="text-white/60 text-sm font-medium">Loading comic...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Error states
+    if (!comicId) {
+        return (
+            <div className="fixed inset-0 bg-black flex items-center justify-center">
+                <div className="text-center">
+                    <div className="text-6xl mb-4">❌</div>
+                    <h3 className="text-white text-xl font-bold mb-2">Invalid Comic ID</h3>
+                    <p className="text-white/60 text-sm mb-6">
+                        No comic ID provided in the URL.
+                    </p>
+                    <button
+                        onClick={() => router.push('/marketplace')}
+                        className="bg-yellow-600 hover:bg-yellow-700 text-black font-medium px-6 py-3 rounded-full transition-all">
+                        Back to Marketplace
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    if (!currentComic || comicPages.length === 0) {
+        return (
+            <div className="fixed inset-0 bg-black flex items-center justify-center">
+                <div className="text-center">
+                    <div className="text-6xl mb-4">📚</div>
+                    <h3 className="text-white text-xl font-bold mb-2">No Pages Found</h3>
+                    <p className="text-white/60 text-sm mb-6">
+                        This comic doesn't have any pages yet or couldn't be loaded.
+                    </p>
+                    <button
+                        onClick={() => router.push('/marketplace')}
+                        className="bg-yellow-600 hover:bg-yellow-700 text-black font-medium px-6 py-3 rounded-full transition-all">
+                        Back to Marketplace
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div
+            className="fixed inset-0 bg-black flex flex-col overflow-hidden"
+            onMouseMove={resetHideControlsTimer}
+            onClick={resetHideControlsTimer}>
+            {/* Header Controls */}
+            <div
+                className={`absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/90 to-transparent p-4 transition-opacity duration-300 ${showControls
+                ? 'opacity-100'
+                : 'opacity-0 pointer-events-none'}`}>
+                <div className="max-w-7xl mx-auto flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <button
+                            className="text-white hover:text-gray-300 transition-colors p-2 rounded-full hover:bg-white/10"
+                            onClick={handleClose}
+                            title="Close reader">
+                            <X size={24}/>
+                        </button>
+                        <div className="text-white">
+                            <h2 className="font-bold text-lg">{currentComic.title}</h2>
+                            {comicPages[currentPage - 1] && (
+                                <p className="text-sm text-white/60">
+                                    Chapter {comicPages[currentPage - 1].chapterNumber}
+                                    - {comicPages[currentPage - 1].chapterTitle}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Back to Details Button */}
+                    <button
+                        onClick={() => router.push(`/marketplace/detail?id=${comicId}`)}
+                        className="text-white hover:text-yellow-500 transition-colors px-4 py-2 rounded-full hover:bg-white/10 text-sm font-medium">
+                        Back to Details
+                    </button>
+
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={handleZoomOut}
+                            disabled={zoom <= 0.5}
+                            className="text-white hover:text-gray-300 transition-colors p-2 rounded-full hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed">
+                            <ZoomOut size={20}/>
+                        </button>
+
+                        <span className="text-white text-sm font-medium min-w-[60px] text-center">
+                            {Math.round(zoom * 100)}%
+                        </span>
+
+                        <button
+                            onClick={handleZoomIn}
+                            disabled={zoom >= 2}
+                            className="text-white hover:text-gray-300 transition-colors p-2 rounded-full hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed">
+                            <ZoomIn size={20}/>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Vertical Scroll Container */}
+            <div
+                ref={scrollContainerRef}
+                className="flex-1 overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth"
+                style={{
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none'
+            }}>
+                <style jsx>
+                    {
+                        ` div::-webkit-scrollbar {
+                            display: none;
+                        }
+                        `
+                    }</style>
+
+                {comicPages.map((page, index) => (
+                    <div
+                        key={`${page.chapterNumber}-${page.pageNumber}`}
+                        className="w-full h-screen flex items-center justify-center snap-start snap-always bg-black">
+                        <img
+                            src={page.imageUrl}
+                            alt={`Chapter ${page.chapterNumber} - Page ${page.pageNumber}`}
+                            className="max-w-full max-h-full object-contain transition-transform duration-300"
+                            style={{
+                            transform: `scale(${zoom})`,
+                            maxWidth: zoom > 1
+                                ? `${ 100 * zoom}%`
+                                : '100%'
+                        }}
+                            loading={index > currentPage + 2
+                            ? 'lazy'
+                            : 'eager'}/>
+                    </div>
+                ))}
+            </div>
+
+            {/* Navigation Arrows */}
+            <div
+                className={`absolute right-6 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3 transition-opacity duration-300 ${showControls
+                ? 'opacity-100'
+                : 'opacity-0 pointer-events-none'}`}>
+                <button
+                    onClick={goToPreviousPage}
+                    disabled={currentPage === 1}
+                    className="bg-black/60 hover:bg-black/80 text-white p-3 rounded-full transition-all disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm">
+                    <ChevronUp size={24}/>
+                </button>
+
+                <button
+                    onClick={goToNextPage}
+                    disabled={currentPage === totalPages}
+                    className="bg-black/60 hover:bg-black/80 text-white p-3 rounded-full transition-all disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-sm">
+                    <ChevronDown size={24}/>
+                </button>
+            </div>
+
+            {/* Footer - Page Counter */}
+            <div
+                className={`absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/90 to-transparent p-6 transition-opacity duration-300 ${showControls
+                ? 'opacity-100'
+                : 'opacity-0'}`}>
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center">
+                        <span className="text-white text-lg font-medium">
+                            <span className="text-yellow-500">{currentPage} </span>
+                            page out of{' '}
+                            <span className="text-yellow-500">{totalPages}</span>
+                        </span>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="mt-4 w-full max-w-md mx-auto">
+                        <div className="h-1 bg-gray-700 rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-yellow-500 transition-all duration-300"
+                                style={{
+                                width: `${ (currentPage / totalPages) * 100}%`
+                            }}/>
+                        </div>
+                    </div>
+
+                    {/* Page Thumbnails */}
+                    <div
+                        className="mt-4 flex gap-2 justify-center overflow-x-auto pb-2 max-w-full px-4">
+                        {comicPages
+                            .slice(0, 20)
+                            .map((page, index) => (
+                                <button
+                                    key={`thumb-${page.chapterNumber}-${page.pageNumber}`}
+                                    onClick={() => scrollToPage(index + 1)}
+                                    className={`flex-shrink-0 relative transition-all ${currentPage === index + 1
+                                    ? 'ring-2 ring-yellow-500 scale-110'
+                                    : 'opacity-50 hover:opacity-100'}`}>
+                                    <img
+                                        src={page.imageUrl}
+                                        alt={`Page ${index + 1}`}
+                                        className="w-12 h-16 object-cover rounded"/>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <span className="text-white text-xs font-bold drop-shadow-lg">
+                                            {index + 1}
+                                        </span>
+                                    </div>
+                                </button>
+                            ))}
+                        {comicPages.length > 20 && (
+                            <div
+                                className="flex-shrink-0 w-12 h-16 flex items-center justify-center text-white/60 text-xs">
+                                +{comicPages.length - 20}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Swipe Hint */}
+            <div
+                className={`absolute bottom-32 left-1/2 transform -translate-x-1/2 text-white/40 text-xs transition-opacity duration-300 ${showControls && currentPage === 1
+                ? 'opacity-100'
+                : 'opacity-0'}`}>
+                Swipe up/down or use ↑ ↓ arrow keys to navigate
+            </div>
+        </div>
+    );
+};
+
+export default ComicReaderViewer;

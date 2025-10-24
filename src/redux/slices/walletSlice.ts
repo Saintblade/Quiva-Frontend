@@ -54,7 +54,7 @@ export const walletAuth = createAsyncThunk<
   { rejectValue: string }
 >("auth/walletAuth", async ({ walletAddress }, { rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post("/wallet/message", {
+    const response = await axiosInstance.post("/auth/wallet/message", {
       walletAddress,
     });
     return response.data;
@@ -73,7 +73,7 @@ export const walletVerifyAuth = createAsyncThunk<
   { rejectValue: string }
 >("auth/walletVerifyAuth", async (payload, { rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post("/wallet/verify", payload);
+    const response = await axiosInstance.post("/auth/wallet/verify", payload);
     
     // Store token in localStorage if needed
     if (response.data.data.accessToken) {
@@ -90,6 +90,22 @@ export const walletVerifyAuth = createAsyncThunk<
   }
 });
 
+export const creatorRegister = createAsyncThunk<
+  any,
+  any,
+  { rejectValue: string }
+>("auth/creatorRegister", async (id, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.put(`/auth/${id}/become-creator`, {});
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message ||
+        "Creator registration failed"
+    );
+  }
+});
+
 const walletAuthSlice = createSlice({
   name: "walletAuth",
   initialState,
@@ -102,12 +118,14 @@ const walletAuthSlice = createSlice({
     },
     logout: (state) => {
       state.token = null;
+      state.refreshToken = null; 
       state.user = null;
       state.isAuthenticated = false;
       state.walletAddress = null;
       state.message = null;
       state.error = null;
       localStorage.removeItem('authToken');
+      localStorage.removeItem('token');
     },
     setWalletAddress: (state, action) => {
       state.walletAddress = action.payload;
@@ -147,6 +165,26 @@ const walletAuthSlice = createSlice({
         state.isVerifying = false;
         state.error = action.payload || "Wallet verification failed";
         state.isAuthenticated = false;
+      });
+
+    // Creator Register
+    builder
+      .addCase(creatorRegister.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(creatorRegister.fulfilled, (state, action) => {
+        state.isLoading = false;
+        console.log(action.payload);
+        // if (state.user) {
+        //   state.user.isCreator = true;
+        // } else {
+        //   state.error = "User data not found";
+        // }
+      })
+      .addCase(creatorRegister.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || "Creator registration failed";
       });
   },
 });
