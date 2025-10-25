@@ -74,7 +74,7 @@ export function ComicSection({
   return (
     <section className="my-8 mt-12">
       {/* Section Header */}
-      <div className="flex items-center justify-between mb-4 max-w-7xl'">
+      <div className="flex items-center justify-between mb-4 max-w-3xl xl:max-w-7xl w-full">
         <h2 className="text-white text-xl font-bold">{title}</h2>
         {showNavigation && !isLoading && comics.length > 0 && (
           <div className="flex space-x-2">
@@ -101,7 +101,7 @@ export function ComicSection({
       </div>
 
       {/* Comics Grid */}
-      <div className='overflow-hidden max-w-7xl'>
+      <div className='overflow-hidden max-w-3xl xl:max-w-7xl w-full'>
         <div 
           ref={scrollContainerRef}
           className="flex w-full space-x-4 overflow-x-scroll scrollbar-hide pb-2"
