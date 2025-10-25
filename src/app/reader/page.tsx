@@ -216,7 +216,7 @@ const ComicReaderViewer = () => {
 
     return (
         <div
-            className="fixed inset-0 bg-black flex flex-col overflow-hidden"
+            className="relative bg-black flex flex-col overflow-hidden"
             onMouseMove={resetHideControlsTimer}
             onClick={resetHideControlsTimer}>
             {/* Header Controls */}
