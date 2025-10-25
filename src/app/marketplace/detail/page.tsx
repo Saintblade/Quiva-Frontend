@@ -18,7 +18,7 @@ import {
   selectIsVerifying,
   selectTransactionError,
   clearCurrentTransaction
-} from '@/redux/slices/transactionSlice'
+} from '@/redux/slices/TransactionSlice'
 import { Loader2 } from 'lucide-react'
 import { useComicPurchase } from '../../../hook/usePurchaseComic'
 import { parseEther } from 'viem'
