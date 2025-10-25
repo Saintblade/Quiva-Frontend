@@ -5,6 +5,7 @@ import generalReducer from './slices/generalSlice';
 import authReducer from './slices/authSlice';
 import walletReducer from './slices/walletSlice';
 import comicReducer from './slices/comicSlice';
+import transactionReducer from './slices/transactionSlice';
 
 const persistConfig = {
   key: 'root',
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({
   general: generalReducer,
   auth: authReducer,
   wallet: walletReducer,
-  comic: comicReducer
+  comic: comicReducer,
+  transactions: transactionReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
