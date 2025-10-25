@@ -6,7 +6,7 @@ import { bifrost, mainnet } from 'wagmi/chains';
 import type { Chain } from 'wagmi/chains';
 import { useComicMinting } from './useComicMinting';
 import { useAppDispatch } from '@/redux/hook';
-import { createTransaction } from '@/redux/slices/TransactionSlice';
+import { createTransaction } from '@/redux/slices/transactionSlice';
 
 const hederaTestnet = {
   id: 296,

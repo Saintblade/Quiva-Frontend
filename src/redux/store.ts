@@ -5,7 +5,7 @@ import generalReducer from './slices/generalSlice';
 import authReducer from './slices/authSlice';
 import walletReducer from './slices/walletSlice';
 import comicReducer from './slices/comicSlice';
-import transactionReducer from './slices/TransactionSlice';
+import transactionReducer from './slices/transactionSlice';
 
 const persistConfig = {
   key: 'root',
