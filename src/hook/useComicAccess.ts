@@ -162,8 +162,9 @@
 
 
 import axios from 'axios';
+import axiosInstance from '../redux/axios-instance';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 interface VerifyNFTResponse {
   success: boolean;
@@ -181,8 +182,8 @@ export const verifyNFTOwnership = async (
   token: string
 ): Promise<boolean> => {
   try {
-    const response = await axios.get<VerifyNFTResponse>(
-      `${API_BASE_URL}/transactions/user/verify_nft/${comicId}`,
+    const response = await axiosInstance.get<VerifyNFTResponse>(
+      `/transactions/user/verify_nft/${comicId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
