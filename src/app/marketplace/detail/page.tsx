@@ -172,7 +172,7 @@ function Page() {
           
           console.log('Transaction verification result:', verificationResult)
           
-          const hasSuccessfulPurchase = verificationResult?.data?.hasPurchased === true
+          const hasSuccessfulPurchase = verificationResult?.data?.purchased === true
           
           setHasNFTAccess(hasSuccessfulPurchase)
           console.log(hasSuccessfulPurchase ? 'User has purchased this NFT' : 'User has not purchased this NFT')
@@ -371,7 +371,7 @@ function Page() {
       
       // The hook will handle the blockchain transaction and backend update
       const result = await purchaseComic({
-        tokenId: BigInt(transformedComic.tokenId),
+        tokenId: transformedComic.tokenId,
         seller: transformedComic.creatorWalletAddress,
         amount: BigInt(1),
         pricePerToken: priceInWei,
@@ -435,7 +435,7 @@ function Page() {
           creatorName={transformedComic.author.name}
           creatorAvatar={transformedComic.author.avatar}
           price={transformedComic.price}
-          tokenId={BigInt(transformedComic.tokenId)}
+          tokenId={transformedComic.tokenId}
           sellerAddress={transformedComic.creatorWalletAddress}
           limitedEdition={limitedEditionString}
           onPurchase={handlePurchaseNFT}

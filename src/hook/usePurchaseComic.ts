@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useChainId, useReadContract } from 'wagmi';
 import { parseEther } from 'viem';
 import { QUIVA_COMICS_ABI, QUIVA_COMICS_ADDRESS } from '../contracts/QuivaComics';
-import { mainnet } from 'wagmi/chains';
+import { bifrost, mainnet } from 'wagmi/chains';
 import type { Chain } from 'wagmi/chains';
 import { useComicMinting } from './useComicMinting';
 import { useAppDispatch } from '@/redux/hook';
@@ -79,12 +79,12 @@ export const useComicPurchase = () => {
   /**
    * Get listing details for a specific comic and seller
    */
-  const getListing = (tokenId: bigint, sellerAddress: string) => {
+  const getListing = (tokenId: bigint | string, sellerAddress: string) => {
     return useReadContract({
       address: QUIVA_COMICS_ADDRESS,
       abi: QUIVA_COMICS_ABI,
       functionName: 'getListing',
-      args: [tokenId, sellerAddress as `0x${string}`],
+      args: [BigInt(tokenId), sellerAddress as `0x${string}`],
     });
   };
 
@@ -163,6 +163,7 @@ export const useComicPurchase = () => {
       });
 
       console.log('✅ Purchase transaction sent');
+      console.log(hash)
       return hash;
 
     } catch (error: any) {
