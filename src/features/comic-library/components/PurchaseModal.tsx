@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { MainButton } from '@/components/button'
 import { coinIcon, creatorIcon } from '../../../../public/dev_images'
@@ -17,14 +17,14 @@ interface PurchaseNFTModalProps {
   tokenId: bigint
   sellerAddress: string
   limitedEdition: string
-  onPurchase: () => void
+  onPurchase: () => Promise<any>
   onPurchaseSuccess?: () => void
   isPurchasing?: boolean
   purchaseError?: Error | null
   purchaseSuccess?: boolean
+  comicId: string
 }
 
-// Purchase Modal Component with all states
 const PurchaseNFTModal: React.FC<PurchaseNFTModalProps> = ({
   isOpen,
   onClose,
@@ -40,13 +40,35 @@ const PurchaseNFTModal: React.FC<PurchaseNFTModalProps> = ({
   onPurchaseSuccess,
   isPurchasing = false,
   purchaseError = null,
-  purchaseSuccess = false
+  purchaseSuccess = false,
+  comicId
 }) => {
+  const [isProcessing, setIsProcessing] = useState(false)
+
+  // Reset processing state when modal opens/closes
+  useEffect(() => {
+    if (!isOpen) {
+      setIsProcessing(false)
+    }
+  }, [isOpen])
+
   if (!isOpen) return null
 
   const formatPrice = (price: number | string): string => {
     const numPrice = typeof price === 'string' ? parseFloat(price) : price
     return numPrice.toFixed(3)
+  }
+
+  // Handle purchase with loading state
+  const handlePurchase = async () => {
+    setIsProcessing(true)
+    try {
+      await onPurchase()
+    } catch (error) {
+      console.error('Purchase failed:', error)
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   // Success Modal
@@ -62,7 +84,6 @@ const PurchaseNFTModal: React.FC<PurchaseNFTModalProps> = ({
           </button>
 
           <div className="p-8 text-center space-y-6">
-            {/* Comic Image */}
             <div className="flex justify-center">
               <img
                 src={comicImage}
@@ -71,10 +92,9 @@ const PurchaseNFTModal: React.FC<PurchaseNFTModalProps> = ({
               />
             </div>
 
-            {/* Title */}
             <div>
               <h2 className="text-3xl font-bold text-white mb-2">
-                Mint Successful!🎉
+                Purchase Successful! 🎉
               </h2>
               <p className="text-white/70 text-sm">
                 You now own <span className="text-white font-semibold">{comicTitle}</span>. 
@@ -82,7 +102,6 @@ const PurchaseNFTModal: React.FC<PurchaseNFTModalProps> = ({
               </p>
             </div>
 
-            {/* Buttons */}
             <div className="space-y-3 pt-4">
               <button 
                 onClick={onPurchaseSuccess}
@@ -103,33 +122,49 @@ const PurchaseNFTModal: React.FC<PurchaseNFTModalProps> = ({
     )
   }
 
-  // Loading Modal
-  if (isPurchasing) {
+  // Loading Modal - Show when purchase is in progress
+  if (isPurchasing || isProcessing) {
+    const getLoadingMessage = () => {
+      if (isProcessing) {
+        return 'Initiating purchase...'
+      }
+      if (isPurchasing) {
+        return 'Processing blockchain transaction...'
+      }
+      return 'Processing purchase...'
+    }
+
+    const getLoadingDescription = () => {
+      if (isProcessing) {
+        return 'Preparing your purchase transaction. This may take a moment.'
+      }
+      return `We're processing your purchase of ${comicTitle}. This may take a few moments. Please don't refresh the page.`
+    }
+
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
         <div className="relative bg-[#1A1A1A] rounded-3xl max-w-4xl w-full overflow-hidden shadow-xl shadow-secondary-200/10">
           <button
             onClick={onClose}
-            disabled
-            className="absolute top-6 right-6 text-white/50 cursor-not-allowed transition-colors z-10"
+            disabled={isPurchasing}
+            className={`absolute top-6 right-6 transition-colors z-10 ${
+              isPurchasing ? 'text-white/50 cursor-not-allowed' : 'text-white hover:text-gray-300'
+            }`}
           >
             <X size={24} />
           </button>
 
           <div className="p-12 text-center space-y-6">
-            {/* Hourglass Icon */}
             <div className="flex justify-center">
               <div className="text-6xl animate-pulse">⏳</div>
             </div>
 
-            {/* Title */}
             <div>
               <h2 className="text-2xl font-bold text-white mb-3">
-                Minting in progress...
+                {getLoadingMessage()}
               </h2>
               <p className="text-white/60 text-sm leading-relaxed">
-                We're adding your copy of {comicTitle} to the blockchain. 
-                This may take a few seconds. Please don't refresh the page.
+                {getLoadingDescription()}
               </p>
             </div>
           </div>
@@ -151,7 +186,6 @@ const PurchaseNFTModal: React.FC<PurchaseNFTModalProps> = ({
           </button>
 
           <div className="p-8 text-center space-y-6">
-            {/* Comic Image */}
             <div className="flex justify-center">
               <img
                 src={comicImage}
@@ -160,26 +194,28 @@ const PurchaseNFTModal: React.FC<PurchaseNFTModalProps> = ({
               />
             </div>
 
-            {/* Title with X */}
             <div>
               <h2 className="text-3xl font-bold text-white mb-3">
-                Oops, something went wrong.
-                <span className="text-red-500">✕</span>
+                Purchase Failed
+                <span className="text-red-500 ml-2">✕</span>
               </h2>
               <p className="text-white/60 text-sm">
-                We couldn't complete the mint. You can try again or use a different payment option.
+                We couldn't complete the purchase. Please try again or contact support if the issue persists.
               </p>
+              {purchaseError.message && (
+                <p className="text-red-400 text-xs mt-2">
+                  Error: {purchaseError.message}
+                </p>
+              )}
             </div>
 
-            {/* Retry Button */}
             <div className="pt-4">
               <MainButton 
-                onClick={() => {
-                  onPurchase()
-                }}
-                className="w-full bg-secondary-200 hover:bg-primary-400 text-black font-bold py-4 rounded-full transition-all"
+                onClick={handlePurchase}
+                disabled={isProcessing}
+                className="w-full bg-secondary-200 hover:bg-primary-400 text-black font-bold py-4 rounded-full transition-all disabled:opacity-50"
               >
-                Retry Mint
+                {isProcessing ? 'Retrying...' : 'Retry Purchase'}
               </MainButton>
             </div>
           </div>
@@ -199,7 +235,6 @@ const PurchaseNFTModal: React.FC<PurchaseNFTModalProps> = ({
           <X size={24} />
         </button>
 
-        {/* Comic Image Header */}
         <div className="pt-12 pb-6 flex justify-center">
           <img
             src={comicImage}
@@ -208,40 +243,30 @@ const PurchaseNFTModal: React.FC<PurchaseNFTModalProps> = ({
           />
         </div>
 
-        {/* Content */}
         <div className="px-8 pb-8 space-y-6">
-          {/* Title */}
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-white mb-2">Mint this comic</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">Purchase this comic</h2>
             <p className="text-sm text-white/60">
-              You are about to mint: <span className="text-white font-medium">{comicTitle}</span>
+              You are about to purchase: <span className="text-white font-medium">{comicTitle}</span>
             </p>
           </div>
 
-          {/* Creator and Edition Info */}
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
             {/* Creator Info */}
             <div className="flex items-center gap-4 bg-[#2A2A2A] rounded-2xl p-4">
-              {/* <img
-                src={creatorAvatar}
-                alt={creatorName}
-                className="w-14 h-14 rounded-full object-cover"
-              /> */}
-
               <div className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-2xl">
                   <Image
                     src={creatorIcon}
-                    alt="Coin Icon"
+                    alt="Creator Icon"
                     width={56}
                     height={56}
                     className=""
                   />
                 </span>
               </div>
-
               <div className="flex-1">
-                <p className="text-xs text-white/50 mb-1">Creators</p>
+                <p className="text-xs text-white/50 mb-1">Creator</p>
                 <p className="text-white font-semibold">{creatorName}</p>
               </div>
             </div>
@@ -252,7 +277,7 @@ const PurchaseNFTModal: React.FC<PurchaseNFTModalProps> = ({
                 <span className="text-2xl">
                   <Image
                     src={coinIcon}
-                    alt="Coin Icon"
+                    alt="Edition Icon"
                     width={56}
                     height={56}
                     className=""
@@ -266,12 +291,12 @@ const PurchaseNFTModal: React.FC<PurchaseNFTModalProps> = ({
             </div>
 
             {/* Price */}
-            <div className="flex items-center gap-4 bg-[#2A2A2A] rounded-2xl p-4">
+            <div className="flex items-center gap-4 bg-[#2A2A2A] rounded-2xl p-4 lg:col-span-2">
               <div className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-2xl">
                   <Image
                     src={coinIcon}
-                    alt="Coin Icon"
+                    alt="Price Icon"
                     width={56}
                     height={56}
                     className=""
@@ -285,13 +310,13 @@ const PurchaseNFTModal: React.FC<PurchaseNFTModalProps> = ({
             </div>
           </div>
 
-          {/* Action Button */}
           <div className="pt-2">
             <MainButton
-              onClick={onPurchase}
-              className="w-full bg-secondary-200 hover:bg-primary-400 text-black font-normal py-4 rounded-full transition-all"
+              onClick={handlePurchase}
+              disabled={isProcessing || isPurchasing}
+              className="w-full bg-secondary-200 hover:bg-primary-400 text-black font-normal py-4 rounded-full transition-all disabled:opacity-50"
             >
-              Proceed to Mint
+              {isProcessing || isPurchasing ? 'Processing...' : 'Proceed to Purchase'}
             </MainButton>
           </div>
         </div>

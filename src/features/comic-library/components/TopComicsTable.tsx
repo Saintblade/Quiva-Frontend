@@ -12,7 +12,7 @@ import {
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { useState } from "react"
 
-interface TopComic {
+export interface TopComic {
   rank: number
   title: string
   author: string

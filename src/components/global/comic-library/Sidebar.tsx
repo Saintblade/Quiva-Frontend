@@ -36,8 +36,8 @@ export function Sidebar({ isMobileMenuOpen, onMobileMenuClose }) {
 
   return (
     <>
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-[280px] h-screen fixed bg-black-200 border-r border-dashed border-white/30 px-4 py-6 flex-col z-40">
+      {/* Desktop Sidebar - FIXED: Removed fixed positioning */}
+      <aside className="hidden lg:flex w-full h-screen bg-black-200 border-r border-dashed border-white/30 px-4 py-6 flex-col z-40 sticky top-0">
         {/* Logo */}
         <div className="flex items-center justify-left mb-8 pt-2">
           <QuivaLogo showText className="invert" />
@@ -64,6 +64,7 @@ export function Sidebar({ isMobileMenuOpen, onMobileMenuClose }) {
         {/* Become a Creator Button */}
         <MainButton
           onClick={handleBecomeCreator}
+          className='text-xs'
         >
           Become a Creator
         </MainButton>
@@ -114,7 +115,7 @@ export function Sidebar({ isMobileMenuOpen, onMobileMenuClose }) {
 
         {/* Become a Creator Button */}
         <Button 
-          className="bg-secondary-200 hover:bg-orange-600 text-white font-medium rounded-full transition-colors"
+          className="bg-secondary-200 hover:bg-orange-600 text-white font-medium rounded-full transition-colors text-xs"
           onClick={handleBecomeCreator}
         >
           Become a Creator

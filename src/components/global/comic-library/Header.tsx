@@ -87,7 +87,7 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
   };
 
   return (
-    <header className="bg-black-200 border-b border-dashed border-white/30 sticky top-0 z-30">
+    <header className="bg-black-200 border-b border-dashed border-white/30 w-full relative">
       <div className="px-4 lg:px-6 py-3">
         <div className="flex items-center justify-between">
           {/* Mobile Menu Button & Logo */}
@@ -156,9 +156,9 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
                 )}
               </Button>
 
-              {/* Notification Dropdown */}
+              {/* Notification Dropdown - FIXED: Better positioning */}
               {showNotifications && (
-                <div className="absolute right-0 top-full mt-2 w-80 bg-black-200 border border-white/70 rounded-lg shadow-xl z-50">
+                <div className="absolute right-0 top-full mt-2 w-80 bg-black-200 border border-white/70 rounded-lg shadow-xl z-[60] transform translate-z-0">
                   <div className="p-4 border-b border-white/70 flex justify-between items-center">
                     <h3 className="text-white font-semibold">Notifications</h3>
                     {unreadCount > 0 && (
@@ -210,17 +210,10 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
                 </div>
               )}
             </div>
-
-            {/* Avatar */}
-            {/* <Avatar className="w-7 h-7 lg:w-8 lg:h-8 border border-secondary-200/50">
-              <AvatarImage src="https://github.com/shadcn.png" alt="User Avatar" />
-              <AvatarFallback className="bg-secondary-200 text-white text-xs font-medium">
-                GA
-              </AvatarFallback>
-            </Avatar> */}
-
-            {/* <RainbowConnect/> */}
-            <HashConnectButton />
+            <div className="flex flex-col gap-3">
+              <HashConnectButton />
+              <RainbowConnect />
+            </div>
           </div>
         </div>
 
