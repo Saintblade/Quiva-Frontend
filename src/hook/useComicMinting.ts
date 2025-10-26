@@ -5,6 +5,7 @@ import { QUIVA_COMICS_ABI, QUIVA_COMICS_ADDRESS } from '../contracts/QuivaComics
 import { mainnet } from 'wagmi/chains';
 import type { Chain } from 'wagmi/chains';
 import { parseEther, decodeEventLog, Address } from 'viem';
+import axiosInstance from '../redux/axios-instance';
 
 interface ComicData {
   title: string;
@@ -319,8 +320,9 @@ export const useComicMinting = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `http://localhost:5000/api/creators/check-approval/${address}`,
+      const response = await axiosInstance.get(`creators/check-approval/${address}`, 
+        // `http://localhost:5000/api/creators/check-approval/${address}`,
+
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -344,8 +346,10 @@ export const useComicMinting = () => {
     try {
       console.log('🔍 Requesting creator approval...');
       const token = localStorage.getItem('token');
-      const response = await axios.post(
-        'http://localhost:5000/api/creators/approve-creator',
+      // const response = await axios.post(
+        // 'http://localhost:5000/api/creators/approve-creator',
+      const response = await axiosInstance.post(
+        '/creators/approve-creator',
         { creatorAddress: address },
         {
           headers: {
@@ -436,8 +440,10 @@ export const useComicMinting = () => {
 
       // Step 2: Upload to backend (which handles IPFS upload and metadata generation)
       const token = localStorage.getItem('token');
-      const response = await axios.post(
-        'http://localhost:5000/api/comics/full',
+      // const response = await axios.post(
+      //   'http://localhost:5000/api/comics/full',
+      const response = await axiosInstance.post(
+        '/comics/full',
         formData,
         {
           headers: {
@@ -613,8 +619,10 @@ export const useComicMinting = () => {
   ) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(
-        `http://localhost:5000/api/comics/token/${comicId}`,
+      // await axios.put(
+      //   `http://localhost:5000/api/comics/token/${comicId}`,
+      await axiosInstance.put(
+        `/comics/token/${comicId}`,
         {
             tokenId: tokenId.toString(),
         },

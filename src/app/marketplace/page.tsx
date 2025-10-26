@@ -21,6 +21,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hook"
 import { getAllComics } from "@/redux/slices/comicSlice"
 import { useEffect, useMemo } from "react"
 import { transformApiComicsToComics } from '@/features/comic-library/utils/transformComicData'
+import { transformApiComicsToTopComics } from '@/features/comic-library/utils/transformtopcomicsdata';
 
 export default function MainPage() {
   const { comics, isLoading } = useAppSelector((state) => state.comic)
@@ -45,6 +46,12 @@ export default function MainPage() {
     transformedComics.filter(comic => comic.premium),
     [transformedComics]
   )
+
+  // Transform API comics to TopComic format for the table
+  const topNftComics = useMemo(() => {
+    if (!comics?.data?.comics?.data) return topComics // Fallback to sample data
+    return transformApiComicsToTopComics(comics.data.comics.data)
+  }, [comics])
 
   return (
     <>
@@ -78,8 +85,8 @@ export default function MainPage() {
       {/* Our Creators */}
       <CreatorsSection creators={creators} />
 
-      {/* Top Comics Table */}
-      <TopComicsTable comics={topComics} />
+      {/* Top Comics Table - Use API NFT comics */}
+      <TopComicsTable comics={topNftComics} />
 
       {/* Mint These Comics - Use NFT comics */}
       <ComicSection 
