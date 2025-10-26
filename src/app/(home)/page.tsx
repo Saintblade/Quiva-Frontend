@@ -32,7 +32,6 @@ export const metadata: Metadata = {
 };
 
 const page = () => {
-<<<<<<< HEAD
   return (
     <AppLayout className="">
       <Hero />
@@ -51,27 +50,6 @@ const page = () => {
       <div id="community" />
     </AppLayout>
   );
-=======
-	
-	return (
-		<AppLayout className=''>
-			<Hero />
-			<div id='products' />
-			<ExcitingProducts />
-			<HowComicPadWorks />
-			<NoToolsNoProblem />
-			<div id='creators' />
-			<WhyQuiva />
-			<WhyBlockchain />
-			<WhatYouCanDoWithTMS />
-			<div id='faq' />
-			<WhatIsQuiva />
-			<div id='roadmap' />
-			<HomeRoadMap />
-			<div id='community' />
-		</AppLayout>
-	);
->>>>>>> main
 };
 
 export default page;

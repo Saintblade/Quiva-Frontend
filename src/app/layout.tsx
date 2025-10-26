@@ -37,14 +37,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="">
       <body className={`mx-auto relative bg-black-100`}>
-        {/* <RainbowProvider> */}
-        <ReduxProviders>
-          <HeroUIProvider>
-            <ToastContainer />
-            {children}
-          </HeroUIProvider>
-        </ReduxProviders>
-        {/* </RainbowProvider> */}
+        <RainbowProvider>
+          <ReduxProviders>
+            <HeroUIProvider>
+              <ToastContainer />
+              {children}
+            </HeroUIProvider>
+          </ReduxProviders>
+        </RainbowProvider>
       </body>
     </html>
   );
