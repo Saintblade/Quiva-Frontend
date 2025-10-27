@@ -15,42 +15,41 @@ import ScrollToTopBottom from "@/components/button/ScrollToTopBottom";
 
 const { description, keywords, title, url, ogImage } = SEO_CONFIG.home;
 export const metadata: Metadata = {
-	title: title,
-	description: description,
-	keywords: keywords,
-	robots: {
-		index: true,
-	},
-	openGraph: {
-		images: [
-			{
-				url: "",
-			},
-		],
-		url: url,
-	},
+  title: title,
+  description: description,
+  keywords: keywords,
+  robots: {
+    index: true,
+  },
+  openGraph: {
+    images: [
+      {
+        url: "",
+      },
+    ],
+    url: url,
+  },
 };
 
 const page = () => {
-	
-	return (
-		<AppLayout className=''>
-			<Hero />
-			<div id='products' />
-			<ExcitingProducts />
-			<HowComicPadWorks />
-			<NoToolsNoProblem />
-			<div id='creators' />
-			<WhyQuiva />
-			<WhyBlockchain />
-			<WhatYouCanDoWithTMS />
-			<div id='faq' />
-			<WhatIsQuiva />
-			<div id='roadmap' />
-			<HomeRoadMap />
-			<div id='community' />
-		</AppLayout>
-	);
+  return (
+    <AppLayout className="">
+      <Hero />
+      <div id="products" />
+      <ExcitingProducts />
+      <HowComicPadWorks />
+      <NoToolsNoProblem />
+      <div id="creators" />
+      <WhyQuiva />
+      <WhyBlockchain />
+      <WhatYouCanDoWithTMS />
+      <div id="faq" />
+      <WhatIsQuiva />
+      <div id="roadmap" />
+      <HomeRoadMap />
+      <div id="community" />
+    </AppLayout>
+  );
 };
 
 export default page;

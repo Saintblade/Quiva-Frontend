@@ -8,7 +8,7 @@ interface WalletAuthResponse {
 
 interface WalletVerifyResponse {
   accessToken: string;
-  refreshToken:string;
+  refreshToken: string;
   user: any;
 }
 
@@ -74,12 +74,12 @@ export const walletVerifyAuth = createAsyncThunk<
 >("auth/walletVerifyAuth", async (payload, { rejectWithValue }) => {
   try {
     const response = await axiosInstance.post("/auth/wallet/verify", payload);
-    
+
     // Store token in localStorage if needed
     if (response.data.data.accessToken) {
-      localStorage.setItem('authToken', response.data.data.accessToken);
+      localStorage.setItem("authToken", response.data.data.accessToken);
     }
-    
+
     return response.data.data;
   } catch (error: any) {
     return rejectWithValue(
@@ -100,8 +100,7 @@ export const creatorRegister = createAsyncThunk<
     return response;
   } catch (error: any) {
     return rejectWithValue(
-      error.response?.data?.message ||
-        "Creator registration failed"
+      error.response?.data?.message || "Creator registration failed"
     );
   }
 });
@@ -118,14 +117,14 @@ const walletAuthSlice = createSlice({
     },
     logout: (state) => {
       state.token = null;
-      state.refreshToken = null; 
+      state.refreshToken = null;
       state.user = null;
       state.isAuthenticated = false;
       state.walletAddress = null;
       state.message = null;
       state.error = null;
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('token');
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("token");
     },
     setWalletAddress: (state, action) => {
       state.walletAddress = action.payload;
@@ -190,13 +189,18 @@ const walletAuthSlice = createSlice({
 });
 
 // Actions
-export const { clearError, clearMessage, logout, setWalletAddress } = walletAuthSlice.actions;
+export const { clearError, clearMessage, logout, setWalletAddress } =
+  walletAuthSlice.actions;
 
 // Selectors
-export const selectWalletAuth = (state: { walletAuth: WalletAuthState }) => state.walletAuth;
-export const selectIsAuthenticated = (state: { walletAuth: WalletAuthState }) => state.walletAuth.isAuthenticated;
-export const selectUser = (state: { walletAuth: WalletAuthState }) => state.walletAuth.user;
-export const selectWalletAddress = (state: { walletAuth: WalletAuthState }) => state.walletAuth.walletAddress;
+export const selectWalletAuth = (state: { walletAuth: WalletAuthState }) =>
+  state.walletAuth;
+export const selectIsAuthenticated = (state: { walletAuth: WalletAuthState }) =>
+  state.walletAuth.isAuthenticated;
+export const selectUser = (state: { walletAuth: WalletAuthState }) =>
+  state.walletAuth.user;
+export const selectWalletAddress = (state: { walletAuth: WalletAuthState }) =>
+  state.walletAuth.walletAddress;
 
 // Reducer
 export default walletAuthSlice.reducer;
