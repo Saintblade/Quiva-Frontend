@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from "react";
 import { QuivaLogo } from "@/components/utils/function";
 import { RainbowConnect } from "@/components/button/RainbowConnect";
 import HashConnectButton from "@/components/button/HashConnectButton";
+import ComicConnect from "./ComicConnect";
 
 export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -211,8 +212,9 @@ export function Header({ onMobileMenuToggle, isMobileMenuOpen }) {
               )}
             </div>
             <div className="flex flex-col gap-3">
-              <HashConnectButton />
-              <RainbowConnect />
+              {/* <HashConnectButton />
+              <RainbowConnect /> */}
+              <ComicConnect/>
             </div>
           </div>
         </div>

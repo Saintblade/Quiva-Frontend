@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { HashConnect, HashConnectTypes } from "@hashgraph/hashconnect";
+import { MainButton } from ".";
 
 export default function HashConnectButton() {
   const [accountId, setAccountId] = useState<string | null>(null);
@@ -38,7 +39,7 @@ export default function HashConnectButton() {
             );
           }
         };
-
+        console.log("Init data:", initData);
         hc.pairingEvent.on(pairingListener);
         setHashconnect(hc);
       } catch (error) {
@@ -83,13 +84,13 @@ export default function HashConnectButton() {
           </button>
         </div>
       ) : (
-        <button
+        <MainButton
           onClick={handleConnect}
           disabled={isConnecting}
           className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
         >
-          {isConnecting ? "Connecting..." : "Connect HashPack"}
-        </button>
+          {isConnecting ? "Connecting..." : "Connect with HashPack"}
+        </MainButton>
       )}
     </div>
   );

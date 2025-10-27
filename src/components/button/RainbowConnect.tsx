@@ -9,6 +9,7 @@ import { setWalletAddress } from "@/redux/slices/walletSlice";
 
 // Import your Avatar components (adjust path as needed)
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { MainButton } from ".";
 
 type RainbowConnectProps = {
   disabled?: boolean;
@@ -32,8 +33,8 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
   // Auto-login when wallet connects
   const autoLogin = useCallback(async () => {
     // Auto-login on initial connection or when JWT expires
-    console.log("Auto-login check:", { isConnected, isAuthenticated, address, isLoggingIn });
-    console.log(isConnected && !isAuthenticated && address && !isLoggingIn)
+    // console.log("Auto-login check:", { isConnected, isAuthenticated, address, isLoggingIn });
+    // console.log(isConnected && !isAuthenticated && address && !isLoggingIn)
     if (isConnected && !isAuthenticated && address && !isLoggingIn) {
       try {
         setIsLoggingIn(true);
@@ -146,7 +147,7 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
             {(() => {
               if (!connected) {
                 return (
-                  <button
+                  <MainButton
                     onClick={
                       disabled
                         ? undefined
@@ -154,7 +155,6 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                             openConnectModal();
                           }
                     }
-                    type="button"
                     disabled={disabled || isLoggingIn}
                     className={`w-full px-4 py-2 rounded-xl font-medium border transition-colors flex items-center justify-center gap-2
                       ${
@@ -169,17 +169,16 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                         Connecting...
                       </>
                     ) : (
-                      "Connect Wallet"
+                      "Connect with Rainbowkit "
                     )}
-                  </button>
+                  </MainButton>
                 );
               }
 
               if (chain.unsupported) {
                 return (
-                  <button
+                  <MainButton
                     onClick={disabled ? undefined : openChainModal}
-                    type="button"
                     disabled={disabled}
                     className={`w-full px-4 py-2 rounded-xl font-medium border transition-colors
                       ${
@@ -189,20 +188,19 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                       }`}
                   >
                     Wrong network
-                  </button>
+                  </MainButton>
                 );
               }
 
               return (
                 <div className="relative" ref={dropdownRef}>
-                  {/* Avatar Button */}
+                  {/* Avatar MainButton */}
                   <button
                     onClick={
                       disabled
                         ? undefined
                         : () => setIsDropdownOpen(!isDropdownOpen)
                     }
-                    type="button"
                     disabled={disabled}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors
                       ${
@@ -273,9 +271,9 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                             </p>
                           </div>
                           <div className="flex gap-2">
-                            <button
+                            <MainButton
                               onClick={() => copyToClipboard(account.address)}
-                              className="p-2 hover:bg-white/10 rounded-lg transition-colors relative"
+                              className="!p-2 hover:bg-white/10 rounded-lg transition-colors relative"
                               title="Copy address"
                             >
                               <Copy size={14} className="text-white/60" />
@@ -284,14 +282,14 @@ export const RainbowConnect: React.FC<RainbowConnectProps> = ({
                                   Copied!
                                 </span>
                               )}
-                            </button>
-                            <button
+                            </MainButton>
+                            <MainButton
                               onClick={() => window.open(getExplorerUrl(), "_blank")}
-                              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                              className="!p-2 hover:bg-white/10 rounded-lg transition-colors"
                               title="View on explorer"
                             >
                               <ExternalLink size={14} className="text-white/60" />
-                            </button>
+                            </MainButton>
                           </div>
                         </div>
                       </div>

@@ -4,6 +4,7 @@ interface MainButtonProps {
   onClick?: () => void;
   className?: string;
   type?: "button" | "submit";
+  title?: string;
 }
 
 export const MainButton = ({
@@ -12,11 +13,13 @@ export const MainButton = ({
   disabled = false,
   className = "",
   type = "button",
+  title,
 }: MainButtonProps) => {
   return (
     <button
       onClick={onClick}
       type={type}
+      title={title}
       className={`bg-secondary-200 text-black-200 font-recursive text-sm rounded-full px-7 py-3 border-[3px] border-black-200 shadow-[2px_2px_0_0_black] transition-all duration-200 font-medium ${className} hover:scale-105`}
     >
       {children}
