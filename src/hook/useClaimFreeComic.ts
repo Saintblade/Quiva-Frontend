@@ -1,0 +1,325 @@
+import { useState, useEffect } from 'react';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract, useChainId } from 'wagmi';
+import { QUIVA_FREE_COMICS_ABI, QUIVA_FREE_COMICS_ADDRESS } from '../contracts/QuivaComics';
+import { useAppDispatch } from '@/redux/hook';
+import { createTransaction } from '@/redux/slices/transactionSlice';
+import type { Address, Chain } from 'viem';
+
+interface ClaimFreeComicParams {
+  tokenId: bigint | string;
+  comicId: string;
+}
+
+interface ClaimResult {
+  success: boolean;
+  transactionHash?: string;
+  error?: Error;
+}
+
+
+const hederaTestnet = {
+  id: 296,
+  name: 'HederaTestnet',
+  nativeCurrency: { name: 'Hedera Testnet', symbol: 'HBAR', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://testnet.hashio.io/api'] },
+  },
+  blockExplorers: {
+    default: { name: 'HashScan', url: 'https://hashscan.io/testnet/home' },
+  },
+} as const satisfies Chain;
+export const useClaimFreeComic = () => {
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const dispatch = useAppDispatch();
+
+  const [isClaiming, setIsClaiming] = useState(false);
+  const [claimError, setClaimError] = useState<Error | null>(null);
+  const [claimSuccess, setClaimSuccess] = useState(false);
+  const [currentComicId, setCurrentComicId] = useState<string | null>(null);
+  const [claimProgress, setClaimProgress] = useState(0);
+
+  // Wagmi hooks for contract interaction
+  const {
+    data: hash,
+    writeContract,
+    error: writeError,
+    isPending: isWritePending,
+  } = useWriteContract();
+
+  const {
+    isLoading: isConfirming,
+    isSuccess: isClaimComplete,
+    data: receipt,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+  // Monitor transaction hash
+  useEffect(() => {
+    if (hash) {
+      console.log('🔗 Claim transaction hash received:', hash);
+      setClaimProgress(60);
+    }
+  }, [hash]);
+
+  // Monitor confirmation status
+  useEffect(() => {
+    if (isConfirming) {
+      console.log('⏳ Claim transaction confirming...');
+      setClaimProgress(80);
+    }
+  }, [isConfirming]);
+
+  // Handle successful claim
+  useEffect(() => {
+    const processClaimSuccess = async () => {
+      if (isClaimComplete && receipt && currentComicId && address) {
+        console.log('✅ Free comic NFT claimed successfully!');
+        console.log('📄 Transaction receipt:', receipt);
+        setClaimProgress(100);
+        setClaimSuccess(true);
+        setIsClaiming(false);
+
+        // Update backend with claim information
+        try {
+          await dispatch(
+            createTransaction({
+              payload: {
+                comicId: currentComicId,
+                buyerAddress: address,
+                transactionHash: receipt.transactionHash,
+                amount: 0, // Free claim
+                currency: 'FREE',
+                type: 'claim',
+              }
+            } as any)
+          ).unwrap();
+
+          console.log('✅ Backend updated with claim data');
+        } catch (error) {
+          console.error('❌ Error updating backend:', error);
+          // Don't fail the whole process if backend update fails
+        }
+      }
+    };
+
+    processClaimSuccess();
+  }, [isClaimComplete, receipt, currentComicId, address, dispatch]);
+
+  // Monitor write errors
+  useEffect(() => {
+    if (writeError) {
+      console.error('❌ Write contract error:', writeError);
+      setClaimError(writeError as Error);
+      setIsClaiming(false);
+      setClaimProgress(0);
+    }
+  }, [writeError]);
+
+  /**
+   * Claim a free comic NFT
+   */
+  const claimFreeComic = async ({
+    tokenId,
+    comicId,
+  }: ClaimFreeComicParams): Promise<ClaimResult> => {
+    try {
+      console.log('🎁 Starting free comic claim process...');
+      console.log('Token ID:', tokenId);
+      console.log('Comic ID:', comicId);
+        const currentChain = chainId === 296 ? hederaTestnet : null;
+
+      // Validation
+      if (!isConnected || !address) {
+        const error = new Error('Please connect your wallet to claim');
+        setClaimError(error);
+        return { success: false, error };
+      }
+
+      // Reset states
+      setClaimError(null);
+      setClaimSuccess(false);
+      setIsClaiming(true);
+      setCurrentComicId(comicId);
+      setClaimProgress(20);
+
+      console.log('📝 Calling claimFreeComic contract function...');
+
+      // Call the smart contract
+     await  writeContract({
+        address: QUIVA_FREE_COMICS_ADDRESS,
+        abi: QUIVA_FREE_COMICS_ABI,
+        functionName: 'claimFreeComic',
+        args: [BigInt(tokenId)],
+        account: address,
+        chain: currentChain,
+      });
+
+      setClaimProgress(40);
+
+      return { success: true };
+    } catch (error: any) {
+      console.error('❌ Error claiming free comic:', error);
+      const claimError = new Error(
+        error?.message || 'Failed to claim free comic'
+      );
+      setClaimError(claimError);
+      setIsClaiming(false);
+      setClaimProgress(0);
+      return { success: false, error: claimError };
+    }
+  };
+
+  /**
+   * Reset claim state
+   */
+  const resetClaimState = () => {
+    setIsClaiming(false);
+    setClaimError(null);
+    setClaimSuccess(false);
+    setCurrentComicId(null);
+    setClaimProgress(0);
+  };
+
+  return {
+    // Functions
+    claimFreeComic,
+    resetClaimState,
+
+    // States
+    isClaiming: isClaiming || isWritePending || isConfirming,
+    claimError,
+    claimSuccess,
+    claimProgress,
+    transactionHash: hash,
+    receipt,
+
+    // Connection states
+    isConnected,
+    address,
+  };
+};
+
+/**
+ * Hook to check if a user has claimed a specific free comic
+ */
+export const useCheckComicClaim = (tokenId?: string | bigint, userAddress?: Address) => {
+  const { data: hasClaimed, isLoading, refetch } = useReadContract({
+    address: QUIVA_FREE_COMICS_ADDRESS,
+    abi: QUIVA_FREE_COMICS_ABI,
+    functionName: 'hasUserClaimed',
+    args: tokenId && userAddress ? [BigInt(tokenId), userAddress] : undefined,
+    query: {
+      enabled: !!tokenId && !!userAddress,
+    },
+  });
+
+  return {
+    hasClaimed: hasClaimed as boolean,
+    isLoading,
+    refetch,
+  };
+};
+
+/**
+ * Hook to check if a comic is claimable by a user
+ */
+export const useIsComicClaimable = (tokenId?: string | bigint, userAddress?: Address) => {
+  const { data: hasClaimed, isLoading: hasClaimedLoading } = useReadContract({
+    address: QUIVA_FREE_COMICS_ADDRESS,
+    abi: QUIVA_FREE_COMICS_ABI,
+    functionName: 'hasUserClaimed',
+    args: tokenId && userAddress ? [BigInt(tokenId), userAddress] : undefined,
+    query: {
+      enabled: !!tokenId && !!userAddress,
+    },
+  });
+
+  const { data: comicData, isLoading: comicLoading, refetch } = useReadContract({
+    address: QUIVA_FREE_COMICS_ADDRESS,
+    abi: QUIVA_FREE_COMICS_ABI,
+    functionName: 'getComic',
+    args: tokenId ? [BigInt(tokenId)] : undefined,
+    query: {
+      enabled: !!tokenId,
+    },
+  });
+
+  const comic = comicData as any;
+  const isClaimable = comic?.isFree && comic?.exists && !hasClaimed;
+  const reason = !comic?.exists ? 'Comic does not exist' : 
+                !comic?.isFree ? 'Comic is not free' :
+                hasClaimed ? 'Already claimed' : '';
+
+  return {
+    isClaimable,
+    reason,
+    isLoading: hasClaimedLoading || comicLoading,
+    refetch,
+  };
+};
+
+/**
+ * Hook to get comic details including whether it's free
+ */
+export const useComicDetails = (tokenId?: string | bigint) => {
+  const { data: comicData, isLoading, refetch } = useReadContract({
+    address: QUIVA_FREE_COMICS_ADDRESS,
+    abi: QUIVA_FREE_COMICS_ABI,
+    functionName: 'getComic',
+    args: tokenId ? [BigInt(tokenId)] : undefined,
+    query: {
+      enabled: !!tokenId,
+    },
+  });
+
+  // Parse the comic struct
+  const comic = comicData as any;
+
+  return {
+    comic: comic
+      ? {
+          tokenId: comic.tokenId,
+          creator: comic.creator,
+          metadataURI: comic.metadataURI,
+          maxSupply: comic.maxSupply,
+          currentSupply: comic.currentSupply,
+          royaltyPercentage: comic.royaltyPercentage,
+          isFree: comic.isFree,
+          exists: comic.exists,
+        }
+      : null,
+    isLoading,
+    refetch,
+  };
+};
+
+/**
+ * Combined hook for free comic claiming flow
+ */
+export const useFreeComicFlow = (comicId: string, tokenId?: string | bigint) => {
+  const { address } = useAccount();
+  const claimHook = useClaimFreeComic();
+  const { hasClaimed, isLoading: isCheckingClaim } = useCheckComicClaim(
+    tokenId,
+    address
+  );
+  const { isClaimable, reason, isLoading: isCheckingClaimable } = useIsComicClaimable(
+    tokenId,
+    address
+  );
+  const { comic, isLoading: isLoadingComic } = useComicDetails(tokenId);
+
+  const canClaim = !hasClaimed && isClaimable && comic?.isFree;
+
+  return {
+    ...claimHook,
+    hasClaimed,
+    isClaimable,
+    claimableReason: reason,
+    comic,
+    canClaim,
+    isLoading: isCheckingClaim || isCheckingClaimable || isLoadingComic,
+  };
+};
