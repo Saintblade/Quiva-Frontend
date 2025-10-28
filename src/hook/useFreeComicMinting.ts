@@ -329,20 +329,33 @@ export const useFreeComicMinting = () => {
       console.log('📤 Step 1: Uploading comic data to backend...');
 
       const formData = new FormData();
-
-      // Add cover image if exists
+  // Add cover image if exists
       if (comicData.coverImage) {
-        formData.append('coverImage', comicData.coverImage);
+        if (comicData.coverImage instanceof File) {
+          formData.append('coverImage', comicData.coverImage);
+        } else {
+          const coverFile = new File(
+            [comicData.coverImage],
+            'cover.jpg',
+            { type: (comicData.coverImage as Blob).type || 'image/jpeg' }
+          );
+          formData.append('coverImage', coverFile);
+        }
       }
 
-      // Add all comic pages
-      if (comicData.pages && comicData.pages.length > 0) {
-        comicData.pages.forEach((page, index) => {
-          if (page.file) {
-            formData.append('pages', page.file);
-          }
-        });
-      }
+      // Add page images
+      comicData.pages.forEach((page, index) => {
+        if (page.blob) {
+          const fileName = page.name || `page-${index + 1}.jpg`;
+          const file = new File(
+            [page.blob], 
+            fileName, 
+            { type: page.blob.type || 'image/jpeg' }
+          );
+          formData.append('pages', file);
+        }
+      }); 
+
 
       // Prepare comic payload with free comic specific data
       const comicPayload = {

@@ -98,84 +98,138 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 		}
 	}, [isComplete, tokenId, mintHash]);
 
-	const validateComicData = (): boolean => {
-		const errors: string[] = [];
+	// const validateComicData = (): boolean => {
+	// 	const errors: string[] = [];
 
-		// Validate title
-		if (!comicData.title || comicData.title.trim().length === 0) {
-			errors.push("Comic title is required");
+	// 	// Validate title
+	// 	if (!comicData.title || comicData.title.trim().length === 0) {
+	// 		errors.push("Comic title is required");
+	// 	}
+
+	// 	// Validate description
+	// 	if (!comicData.description || comicData.description.trim().length === 0) {
+	// 		errors.push("Comic description is required");
+	// 	}
+
+	// 	// Validate genres
+	// 	if (!comicData.genre || comicData.genre.length === 0) {
+	// 		errors.push("At least one genre must be selected");
+	// 	}
+
+	// 	// Validate pages
+	// 	if (!comicData.pages || comicData.pages.length === 0) {
+	// 		errors.push("At least one comic page is required");
+	// 	}
+
+	// 	// Validate age rating
+	// 	if (!comicData.ageRating) {
+	// 		errors.push("Age rating is required");
+	// 	}
+
+	// 	// Validate monetization
+	// 	if (monetizationData.publishType === "paid") {
+	// 		if (!monetizationData.price || monetizationData.price <= 0) {
+	// 			errors.push("Valid price is required for paid comics");
+	// 		}
+	// 	}
+
+	// 	// Validate NFT data
+	// 	if (monetizationData.mintAsNFT) {
+	// 		if (!monetizationData.nftCopies || monetizationData.nftCopies <= 0) {
+	// 			errors.push("Valid number of NFT copies is required");
+	// 		}
+	// 		if (!monetizationData.nftPrice || monetizationData.nftPrice <= 0) {
+	// 			errors.push("Valid NFT mint price is required");
+	// 		}
+	// 	}
+
+	// 	setValidationErrors(errors);
+	// 	return errors.length === 0;
+	// };
+
+	
+
+const validateComicData = (): boolean => {
+	const errors: string[] = [];
+	// Validate title
+	if (!comicData.title || comicData.title.trim().length === 0) {
+		errors.push("Comic title is required");
+	}
+
+	// Validate description
+	if (!comicData.description || comicData.description.trim().length === 0) {
+		errors.push("Comic description is required");
+	}
+
+	// Validate genres
+	if (!comicData.genre || comicData.genre.length === 0) {
+		errors.push("At least one genre must be selected");
+	}
+
+	// Validate pages
+	if (!comicData.pages || comicData.pages.length === 0) {
+		errors.push("At least one comic page is required");
+	}
+
+	// Validate age rating
+	if (!comicData.ageRating) {
+		errors.push("Age rating is required");
+	}
+
+	// Validate monetization
+	if (monetizationData.publishType === "paid") {
+		if (!monetizationData.price || monetizationData.price <= 0) {
+			errors.push("Valid price is required for paid comics");
 		}
+	}
 
-		// Validate description
-		if (!comicData.description || comicData.description.trim().length === 0) {
-			errors.push("Comic description is required");
+	// Validate NFT data - FIXED: Only require price for paid comics
+	if (monetizationData.mintAsNFT) {
+		if (!monetizationData.nftCopies || monetizationData.nftCopies <= 0) {
+			errors.push("Valid number of NFT copies is required");
 		}
-
-		// Validate genres
-		if (!comicData.genre || comicData.genre.length === 0) {
-			errors.push("At least one genre must be selected");
-		}
-
-		// Validate pages
-		if (!comicData.pages || comicData.pages.length === 0) {
-			errors.push("At least one comic page is required");
-		}
-
-		// Validate age rating
-		if (!comicData.ageRating) {
-			errors.push("Age rating is required");
-		}
-
-		// Validate monetization
+		// Only require price for paid comics
 		if (monetizationData.publishType === "paid") {
-			if (!monetizationData.price || monetizationData.price <= 0) {
-				errors.push("Valid price is required for paid comics");
-			}
-		}
-
-		// Validate NFT data
-		if (monetizationData.mintAsNFT) {
-			if (!monetizationData.nftCopies || monetizationData.nftCopies <= 0) {
-				errors.push("Valid number of NFT copies is required");
-			}
 			if (!monetizationData.nftPrice || monetizationData.nftPrice <= 0) {
 				errors.push("Valid NFT mint price is required");
 			}
 		}
+	}
 
-		setValidationErrors(errors);
-		return errors.length === 0;
-	};
+	setValidationErrors(errors);
+	return errors.length === 0;
+};
 
-	const handlePublish = async () => {
-		// Clear previous errors
-		setError(null);
-		setValidationErrors([]);
-		setPublishingStep('');
+// FIXED FUNCTION 2: handlePublish (replaces lines ~150-233)
+const handlePublish = async () => {
+	// Clear previous errors
+	setError(null);
+	setValidationErrors([]);
+	setPublishingStep('');
 
-		// Validate data first
-		if (!validateComicData()) {
-			setError("Please fix the validation errors before publishing");
-			return;
-		}
+	// Validate data first
+	if (!validateComicData()) {
+		setError("Please fix the validation errors before publishing");
+		return;
+	}
 
-		if (!user) {
-			setError("Please connect your wallet to publish your comic");
-			return;
-		}
+	if (!user) {
+		setError("Please connect your wallet to publish your comic");
+		return;
+	}
 
-		// Additional validation for paid comics and NFTs
-		if ((monetizationData.publishType === "paid" || monetizationData.mintAsNFT) && !isConnected) {
-			setError("Please connect your wallet to publish paid comics or mint NFTs");
-			return;
-		}
+	// Additional validation for paid comics and NFTs
+	if ((monetizationData.publishType === "paid" || monetizationData.mintAsNFT) && !isConnected) {
+		setError("Please connect your wallet to publish paid comics or mint NFTs");
+		return;
+	}
 
-		try {
-			setIsPublishing(true);
-			setShowSuccessModal(false);
+	try {
+		setIsPublishing(true);
+		setShowSuccessModal(false);
 
-			// Use the new comic minting hook for enhanced publishing
-			if(monetizationData.publishType === "paid"){
+		// Use the new comic minting hook for enhanced publishing
+		if(monetizationData.publishType === "paid"){
 			const result = await publishComic({
 				comicData,
 				monetizationData,
@@ -185,10 +239,15 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 			console.log('🎉 Paid Comic published successfully:', result);
 
 		} else {
+			// FIXED: For free comics, use nftCopies if provided
+			const maxSupply = monetizationData.mintAsNFT && monetizationData.nftCopies 
+				? monetizationData.nftCopies 
+				: 1000;
+			
 			const freeComic = await publishFreeComic({
 				comicData,
 				freeComicData: {
-					maxSupply: 1000, // Set a default max supply for free comics
+					maxSupply: maxSupply,
 					royaltyPercentage: 0 // No royalties for free comics
 				},
 				user,
@@ -196,48 +255,140 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 			console.log('🎉 Free Comic published successfully:', freeComic);
 		}
 
-			// Show success notification
-			setShowNotification(true);
+		// Show success notification
+		setShowNotification(true);
 
-		} catch (err: any) {
-			console.error('Error publishing comic:', err);
-			
-			// Extract meaningful error message
-			let errorMessage = 'Failed to publish comic. Please try again.';
-			
-			if (err?.response?.data?.message) {
-				errorMessage = err.response.data.message;
-			} else if (err?.response?.data?.error) {
-				errorMessage = err.response.data.error;
-			} else if (err?.message) {
-				errorMessage = err.message;
-			} else if (typeof err === 'string') {
-				errorMessage = err;
-			}
-
-			// Handle specific error types
-			if (errorMessage.toLowerCase().includes('network')) {
-				errorMessage = 'Network error. Please check your connection and try again.';
-			} else if (errorMessage.toLowerCase().includes('timeout')) {
-				errorMessage = 'Request timed out. Your file might be too large. Please try again.';
-			} else if (errorMessage.toLowerCase().includes('unauthorized')) {
-				errorMessage = 'Authentication error. Please log in again.';
-			} else if (errorMessage.toLowerCase().includes('validation')) {
-				errorMessage = 'Validation error. Please check your comic details.';
-			} else if (errorMessage.toLowerCase().includes('wallet')) {
-				errorMessage = 'Wallet connection error. Please check your wallet and try again.';
-			} else if (errorMessage.toLowerCase().includes('gas')) {
-				errorMessage = 'Insufficient gas fees. Please add funds to your wallet and try again.';
-			} else if (errorMessage.toLowerCase().includes('rejected')) {
-				errorMessage = 'Transaction was rejected. Please approve the transaction in your wallet.';
-			}
-
-			setError(errorMessage);
-		} finally {
-			setIsPublishing(false);
-			setPublishingStep('');
+	} catch (err: any) {
+		console.error('Error publishing comic:', err);
+		
+		// Extract meaningful error message
+		let errorMessage = 'Failed to publish comic. Please try again.';
+		
+		if (err?.response?.data?.message) {
+			errorMessage = err.response.data.message;
+		} else if (err?.response?.data?.error) {
+			errorMessage = err.response.data.error;
+		} else if (err?.message) {
+			errorMessage = err.message;
+		} else if (typeof err === 'string') {
+			errorMessage = err;
 		}
-	};
+
+		// Handle specific error types
+		if (errorMessage.toLowerCase().includes('network')) {
+			errorMessage = 'Network error. Please check your connection and try again.';
+		} else if (errorMessage.toLowerCase().includes('timeout')) {
+			errorMessage = 'Request timed out. Your file might be too large. Please try again.';
+		} else if (errorMessage.toLowerCase().includes('unauthorized')) {
+			errorMessage = 'Authentication error. Please log in again.';
+		} else if (errorMessage.toLowerCase().includes('validation')) {
+			errorMessage = 'Validation error. Please check your comic details.';
+		} else if (errorMessage.toLowerCase().includes('wallet')) {
+			errorMessage = 'Wallet connection error. Please check your wallet and try again.';
+		} else if (errorMessage.toLowerCase().includes('gas')) {
+			errorMessage = 'Insufficient gas fees. Please add funds to your wallet and try again.';
+		} else if (errorMessage.toLowerCase().includes('rejected')) {
+			errorMessage = 'Transaction was rejected. Please approve the transaction in your wallet.';
+		}
+
+		setError(errorMessage);
+	} finally {
+		setIsPublishing(false);
+		setPublishingStep('');
+	}
+};
+
+	// const handlePublish = async () => {
+	// 	// Clear previous errors
+	// 	setError(null);
+	// 	setValidationErrors([]);
+	// 	setPublishingStep('');
+
+	// 	// Validate data first
+	// 	if (!validateComicData()) {
+	// 		setError("Please fix the validation errors before publishing");
+	// 		return;
+	// 	}
+
+	// 	if (!user) {
+	// 		setError("Please connect your wallet to publish your comic");
+	// 		return;
+	// 	}
+
+	// 	// Additional validation for paid comics and NFTs
+	// 	if ((monetizationData.publishType === "paid" || monetizationData.mintAsNFT) && !isConnected) {
+	// 		setError("Please connect your wallet to publish paid comics or mint NFTs");
+	// 		return;
+	// 	}
+
+	// 	try {
+	// 		setIsPublishing(true);
+	// 		setShowSuccessModal(false);
+
+	// 		// Use the new comic minting hook for enhanced publishing
+	// 		if(monetizationData.publishType === "paid"){
+	// 		const result = await publishComic({
+	// 			comicData,
+	// 			monetizationData,
+	// 			user,
+	// 		});
+                         
+	// 		console.log('🎉 Paid Comic published successfully:', result);
+
+	// 	} else {
+	// 		const freeComic = await publishFreeComic({
+	// 			comicData,
+	// 			freeComicData: {
+	// 				maxSupply: 1000, // Set a default max supply for free comics
+	// 				royaltyPercentage: 0 // No royalties for free comics
+	// 			},
+	// 			user,
+	// 		});
+	// 		console.log('🎉 Free Comic published successfully:', freeComic);
+	// 	}
+
+	// 		// Show success notification
+	// 		setShowNotification(true);
+
+	// 	} catch (err: any) {
+	// 		console.error('Error publishing comic:', err);
+			
+	// 		// Extract meaningful error message
+	// 		let errorMessage = 'Failed to publish comic. Please try again.';
+			
+	// 		if (err?.response?.data?.message) {
+	// 			errorMessage = err.response.data.message;
+	// 		} else if (err?.response?.data?.error) {
+	// 			errorMessage = err.response.data.error;
+	// 		} else if (err?.message) {
+	// 			errorMessage = err.message;
+	// 		} else if (typeof err === 'string') {
+	// 			errorMessage = err;
+	// 		}
+
+	// 		// Handle specific error types
+	// 		if (errorMessage.toLowerCase().includes('network')) {
+	// 			errorMessage = 'Network error. Please check your connection and try again.';
+	// 		} else if (errorMessage.toLowerCase().includes('timeout')) {
+	// 			errorMessage = 'Request timed out. Your file might be too large. Please try again.';
+	// 		} else if (errorMessage.toLowerCase().includes('unauthorized')) {
+	// 			errorMessage = 'Authentication error. Please log in again.';
+	// 		} else if (errorMessage.toLowerCase().includes('validation')) {
+	// 			errorMessage = 'Validation error. Please check your comic details.';
+	// 		} else if (errorMessage.toLowerCase().includes('wallet')) {
+	// 			errorMessage = 'Wallet connection error. Please check your wallet and try again.';
+	// 		} else if (errorMessage.toLowerCase().includes('gas')) {
+	// 			errorMessage = 'Insufficient gas fees. Please add funds to your wallet and try again.';
+	// 		} else if (errorMessage.toLowerCase().includes('rejected')) {
+	// 			errorMessage = 'Transaction was rejected. Please approve the transaction in your wallet.';
+	// 		}
+
+	// 		setError(errorMessage);
+	// 	} finally {
+	// 		setIsPublishing(false);
+	// 		setPublishingStep('');
+	// 	}
+	// };
 
 	const handleCloseSuccessModal = () => {
 		setShowSuccessModal(false);
@@ -321,7 +472,7 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 									</span>
 								</div>
 
-								{monetizationData.mintAsNFT && (
+								{/* {monetizationData.mintAsNFT && (
 									<>
 										<div className='flex items-center gap-3'>
 											<span className='text-white/60'>NFT Edition:</span>
@@ -339,7 +490,34 @@ export default function ComicPublisher({ onclose, comicData, monetizationData }:
 											<span>${monetizationData.nftPrice?.toFixed(2)} HBAR per NFT</span>
 										</div>
 									</>
-								)}
+								)} */}
+								{monetizationData.mintAsNFT && (
+	<>
+		<div className='flex items-center gap-3'>
+			<span className='text-white/60'>NFT Edition:</span>
+			<span className='flex items-center gap-1'>
+				<CheckCircle size={14} className='text-green-400' />
+				Limited Edition
+			</span>
+		</div>
+		<div className='flex items-center gap-3'>
+			<span className='text-white/60'>NFT Copies:</span>
+			<span>{monetizationData.nftCopies} editions</span>
+		</div>
+		{monetizationData.publishType === "paid" && monetizationData.nftPrice && (
+			<div className='flex items-center gap-3'>
+				<span className='text-white/60'>Mint Price:</span>
+				<span>${monetizationData.nftPrice.toFixed(2)} HBAR per NFT</span>
+			</div>
+		)}
+		{monetizationData.publishType === "free" && (
+			<div className='flex items-center gap-3'>
+				<span className='text-white/60'>NFT Type:</span>
+				<span className='text-green-400'>Free Claimable (Gas fees only)</span>
+			</div>
+		)}
+	</>
+)}
 
 								<div className='flex items-center gap-3'>
 									<span className='text-white/60'>Pages:</span>
