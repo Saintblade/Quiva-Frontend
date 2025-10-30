@@ -467,7 +467,7 @@ const handlePublish = async () => {
 									<span>
 										{monetizationData.publishType === 'free' 
 											? 'Free to Read' 
-											: `Pay-Per-View ($${monetizationData.price?.toFixed(2)} HBAR)`
+											: `You will Pay ($${monetizationData.price?.toFixed(2)} HBAR)`
 										}
 									</span>
 								</div>
@@ -494,7 +494,7 @@ const handlePublish = async () => {
 								{monetizationData.mintAsNFT && (
 	<>
 		<div className='flex items-center gap-3'>
-			<span className='text-white/60'>NFT Edition:</span>
+			<span className='text-white/60'>Total Supply:</span>
 			<span className='flex items-center gap-1'>
 				<CheckCircle size={14} className='text-green-400' />
 				Limited Edition

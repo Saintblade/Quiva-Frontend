@@ -443,7 +443,7 @@ export const useFreeComicMinting = () => {
       const currentChain = chainId === 296 ? hederaTestnet : mainnet;
 
       // Construct IPFS gateway URL for metadata
-      const metadataURI = `https://gray-tough-elk-417.mypinata.cloud/ipfs/${metadataCid}`;
+      const metadataURI = `https://jade-major-lobster-143.mypinata.cloud/ipfs/${metadataCid}`;
 
       // Prepare minting parameters
       const maxSupply = BigInt(freeComicData.maxSupply);

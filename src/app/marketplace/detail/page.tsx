@@ -433,7 +433,7 @@ function Page() {
           <div className="text-6xl mb-4">❌</div>
           <h3 className="text-white text-xl font-bold mb-2">Comic Not Found</h3>
           <p className="text-white/60 text-sm mb-6">
-            The comic you're looking for doesn't exist or has been removed.
+            Maybe There is a network issue.
           </p>
           <button
             onClick={() => router.push('/marketplace')}

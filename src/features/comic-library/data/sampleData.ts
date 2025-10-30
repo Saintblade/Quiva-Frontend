@@ -219,9 +219,9 @@ export const FeaturesComics = [
     {
       title: "Demon Slayer Chronicles",
       author: "Koyoharu Gotouge",
-      floorPrice: "0.025 ETH",
+      floorPrice: "0.025 HBAR",
       items: "7,500",
-      mintPrice: "15.50 USDT",
+      mintPrice: "15.50 HBAR",
       countdown: "48 :05 :22 :15",
       tags: ["Action", "Supernatural", "Adventure"],
       image: "https://cdn.marvel.com/content/1x/asm2025001_dimeo.jpg"
@@ -229,9 +229,9 @@ export const FeaturesComics = [
     {
       title: "My Hero Academia",
       author: "Kohei Horikoshi",
-      floorPrice: "0.018 ETH",
+      floorPrice: "0.018 HBAR",
       items: "12,000",
-      mintPrice: "8.75 USDT",
+      mintPrice: "8.75 HBAR",
       countdown: "72 :18 :45 :30",
       tags: ["Superhero", "School", "Action"],
       image: "https://i.ebayimg.com/images/g/b6oAAOSwez5l-jYm/s-l1200.jpg"

@@ -426,7 +426,7 @@ export default function OnboardingPage({ onclose, comicData }: OnboardingPagePro
 										{publishType === "paid" && (
 											<div>
 												<label className='block text-white/80 text-xs mb-2'>
-													Mint Price (USDT per NFT)
+													Mint Price (HBAR per NFT)
 												</label>
 												<input
 													type='number'
@@ -459,7 +459,7 @@ export default function OnboardingPage({ onclose, comicData }: OnboardingPagePro
 					</div>
 
 					{/* Info Box based on selections */}
-					{(publishType === "paid" || mintAsNFT) && (
+					{/* {(publishType === "paid" || mintAsNFT) && (
 						<div className='mb-6 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border border-orange-500/30 rounded-lg p-4'>
 							<div className='flex items-start gap-3'>
 								<div className='w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0'>
@@ -477,7 +477,7 @@ export default function OnboardingPage({ onclose, comicData }: OnboardingPagePro
 								</div>
 							</div>
 						</div>
-					)}
+					)} */}
 
 					{/* Action Buttons */}
 					<div className='flex gap-4 pt-4'>
