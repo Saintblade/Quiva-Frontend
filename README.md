@@ -141,7 +141,7 @@ For **Readers**:
 3. **Smart Contracts** (Solidity on Hedera EVM)
 4. **IPFS Network** (Pinata Gateway)
 5. **Database** (MongoDB Atlas)
-6. **Wallet Integration** (RainbowKit + Wagmi)
+6. **Wallet Integration** (Hashpack,RainbowKit + Wagmi)
 7. **Blockchain Network** (Hedera Testnet)
 
 ---
