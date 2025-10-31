@@ -42,7 +42,7 @@ Quiva is a next-generation comic platform that bridges traditional comic publish
 - **IPFS Storage**: Decentralized storage ensuring permanent availability
 - **Smart Contract Marketplace**: On-chain trading with automated royalties
 - **Creator-First Approach**: Tools designed for comic creators' needs
-- **Hedera Network**: Leveraging Hedera Testnet for fast, low-cost transactions
+- **Hedera Network**: Leveraging Hedera  Smart Contract Service,Hedera Token Service for fast,  low-cost transactions
 
 ### 1.3 Core Value Proposition
 
