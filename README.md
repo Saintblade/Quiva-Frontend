@@ -25,7 +25,7 @@
 15. [Development Workflow](#development-workflow)
 16. [Troubleshooting](#troubleshooting)
 17. [Future Roadmap](#future-roadmap)
-
+18. Pitch Deck Doc [https://drive.google.com/file/d/1IkCd9hBZkaqNjHMH1npsIUC9pV2Gl038/view?usp=drivesdk]
 ---
 
 ## 1. Executive Summary
